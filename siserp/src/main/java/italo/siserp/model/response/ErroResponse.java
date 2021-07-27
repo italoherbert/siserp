@@ -21,10 +21,14 @@ public class ErroResponse {
 	public final static int USUARIO_NAO_ENCONTRADO = 100;
 	public final static int FUNCIONARIO_NAO_ENCONTRADO = 101;
 	public final static int FORNECEDOR_NAO_ENCONTRADO = 102;	
+	public final static int CATEGORIA_NAO_ENCONTRADA = 103;
+	public final static int SUBCATEGORIA_NAO_ENCONTRADA = 104;
 		
 	public final static int PESSOA_JA_EXISTE = 200;
 	public final static int USUARIO_JA_EXISTE = 201;
 	public final static int FORNECEDOR_JA_EXISTE = 202;
+	public final static int CATEGORIA_JA_EXISTE = 203;
+	public final static int SUBCATEGORIA_JA_EXISTE = 204;
 	
 	public final static int USERNAME_OBRIGATORIO = 300;
 	public final static int PASSWORD_OBRIGATORIO = 301;			
@@ -33,6 +37,8 @@ public class ErroResponse {
 	public final static int CNPJ_OBRIGATORIO = 304;
 	public final static int INSCRICAO_ESTADUAL_OBRIGATORIA = 305;
 	public final static int FORNECEDOR_EMPRESA_OBRIGATORIA = 306;
+	public final static int CATEGORIA_DESCRICAO_OBRIGATORIA = 307;
+	public final static int SUBCATEGORIA_DESCRICAO_OBRIGATORIA = 308;
 
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
@@ -73,6 +79,12 @@ public class ErroResponse {
 			case FORNECEDOR_NAO_ENCONTRADO:
 				mensagem = "Fornecedor não encontrado.";
 				break;
+			case CATEGORIA_NAO_ENCONTRADA:
+				mensagem = "Categoria não encontrada.";
+				break;
+			case SUBCATEGORIA_NAO_ENCONTRADA:
+				mensagem = "Subcategoria não encontrada.";
+				break;
 				
 			case USUARIO_JA_EXISTE:
 				mensagem = "Já existe outro usuário para o username informado.";
@@ -83,24 +95,36 @@ public class ErroResponse {
 			case FORNECEDOR_JA_EXISTE:
 				mensagem = "Já existe cadastrado outro fornecedor com o nome de empresa informado.";
 				break;
+			case CATEGORIA_JA_EXISTE:
+				mensagem = "Já existe cadastrada outra categoria com a descrição informada.";
+				break;			
+			case SUBCATEGORIA_JA_EXISTE:
+				mensagem = "Já existe cadastrada outra subcategoria com a descrição informada.";
+				break;
 				
 			case USERNAME_OBRIGATORIO:
-				mensagem = "O username é um campo obrigatório.";
+				mensagem = "O username é um campo de preenchimento obrigatório.";
 				break;
 			case PASSWORD_OBRIGATORIO:
-				mensagem = "A senha é um campo obrigatório.";
+				mensagem = "A senha é um campo de preenchimento obrigatório.";
 				break;																						
 			case RAZAO_SOCIAL_OBRIGATORIA:
-				mensagem = "Razão social é um campo obrigatório.";
+				mensagem = "Razão social é um campo de preenchimento obrigatório.";
 				break;			
 			case CNPJ_OBRIGATORIO:
-				mensagem = "O cnpj é um campo obrigatório.";
+				mensagem = "O cnpj é um campo de preenchimento obrigatório.";
 				break;
 			case INSCRICAO_ESTADUAL_OBRIGATORIA:
-				mensagem = "A inscrição estadual é um campo obrigatório.";
+				mensagem = "A inscrição estadual é um campo de preenchimento obrigatório.";
 				break;
 			case FORNECEDOR_EMPRESA_OBRIGATORIA:
-				mensagem = "A empresa do fornecedor é um campo obrigatório.";
+				mensagem = "A empresa do fornecedor é um campo de preenchimento obrigatório.";
+				break;
+			case CATEGORIA_DESCRICAO_OBRIGATORIA:
+				mensagem = "A descrição da categoria é um campo de preenchimento obrigatório.";
+				break;
+			case SUBCATEGORIA_DESCRICAO_OBRIGATORIA:
+				mensagem = "A descrição da subcategoria é um campo de preenchimento obrigatório.";
 				break;
 				
 			case USUARIO_TIPO_INVALIDO:

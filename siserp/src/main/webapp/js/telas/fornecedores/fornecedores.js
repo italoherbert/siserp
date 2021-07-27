@@ -35,19 +35,17 @@ class Fornecedores extends React.Component {
 				"empresaIni" : this.refs.empresaIni.value,
 			} )
 		} ).then( (resposta) => {	
-			resposta.json().then( (dados) => {
-				this.state.status = resposta.status;
-				if ( resposta.status == 200 ) {						
+			if ( resposta.status == 200 ) {						
+				resposta.json().then( (dados) => {
 					this.state.fornecedores = dados;						
 					if ( dados.length == 0 )
-						this.state.infoMsg = "Nenhum fornecedor registrado!";																		
-				} else if ( resposta.status == 400 ) {
-					this.state.erroMsg = dados.mensagem;	
-				} else {
-					this.state.erroMsg = sistema.getMensagemErro( resposta.status );
-				}
-				this.setState( this.state );				
-			} );			 
+						this.state.infoMsg = "Nenhum fornecedor registrado!";
+																							
+					this.setState( this.state );
+				} );				
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}
 		} );
 	}
 		
@@ -69,14 +67,8 @@ class Fornecedores extends React.Component {
 			if ( resposta.status == 200 ) {						
 				this.state.infoMsg = "Fornecedor removido com êxito!";
 				this.filtrar();																	
-			} else if ( resposta.status == 400 ) {
-				resposta.json().then( (dados) => {
-					this.state.erroMsg = dados.mensagem;
-					this.setState( this.state );				
-				} );	
 			} else {
-				this.state.erroMsg = sistema.getMensagemErro( resposta.status );
-				this.setState( this.state );				
+				sistema.trataRespostaNaoOk( resposta, this );
 			}
 		} );
 	}

@@ -1,5 +1,5 @@
 
-class FornecedorForm extends React.Component {
+class CategoriaForm extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -12,7 +12,7 @@ class FornecedorForm extends React.Component {
 	
 	componentDidMount() {			
 		if ( this.props.op == 'editar' )
-			this.refs.empresa.value = this.props.empresa;					
+			this.refs.descricao.value = this.props.descricao;					
 	}
 	
 	salvar( e ) {
@@ -25,10 +25,10 @@ class FornecedorForm extends React.Component {
 		let url;
 		let metodo;
 		if ( this.props.op == 'editar' ) {			
-			url = "/api/fornecedor/atualiza/"+this.props.fornecedorId;
+			url = "/api/categoria/atualiza/"+this.props.categoriaId;
 			metodo = 'PUT';									
 		} else {
-			url = "/api/fornecedor/registra";
+			url = "/api/categoria/registra";
 			metodo = 'POST';
 		}
 				
@@ -39,12 +39,15 @@ class FornecedorForm extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"empresa" : this.refs.empresa.value
+				"descricao" : this.refs.descricao.value
 			} )		
 		} ).then( (resposta) => {				
 			if ( resposta.status == 200 ) {
-				this.state.infoMsg = "Fornecedor cadastrado com sucesso.";		
+				this.state.infoMsg = "Categoria cadastrada com sucesso.";		
 				this.setState( this.state );
+				
+				if ( typeof( this.props.registrou ) == "function" )
+					this.props.registrou.call();
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -59,7 +62,7 @@ class FornecedorForm extends React.Component {
 				<div className="row">
 					<div className="col-md-2"></div>
 					<div className="col-md-8">
-						<h4 className="card-title text-center">Registro de fornecedores</h4>
+						<h4 className="card-title text-center">Cadastre uma categoria</h4>
 																
 						<form onSubmit={(e) => this.salvar( e ) } className="container">
 							<div className="card border-1">								
@@ -68,17 +71,11 @@ class FornecedorForm extends React.Component {
 									
 									<div className="row">
 										<div className="form-group col-sm-12">
-											<label className="control-label" for="empresa">Empresa: </label>
-											<input type="text" ref="empresa" name="empresa" className="form-control" />
+											<label className="control-label" for="descricao">Descrição: </label>
+											<input type="text" ref="descricao" name="descricao" className="form-control" />
 										</div>
 									</div>
-								</div>
-							</div>
-							
-							<br />
-														
-							<div className="card border-1">																
-								<div className="card-body">
+								
 									<MensagemPainel tipo="erro" msg={erroMsg} />
 									<MensagemPainel tipo="info" msg={infoMsg} />
 									<div class="form-group">

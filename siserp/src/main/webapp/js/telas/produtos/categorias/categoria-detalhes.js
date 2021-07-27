@@ -1,5 +1,5 @@
 
-class FornecedorDetalhes extends React.Component {
+class CategoriaDetalhes extends React.Component {
 
 	constructor( props ) {
 		super( props );
@@ -7,14 +7,14 @@ class FornecedorDetalhes extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			fornecedor : {} 
+			categoria : {} 
 		};
 	}
 	
 	componentDidMount() {
-		let fornecedorId = this.props.fornecedorId;
+		let categoriaId = this.props.categoriaId;
 		
-		fetch( "/api/fornecedor/get/"+fornecedorId, {
+		fetch( "/api/categoria/get/"+categoriaId, {
 			method : "GET",			
 			headers : { 
 				"Authorization" : "Bearer "+sistema.token
@@ -22,12 +22,12 @@ class FornecedorDetalhes extends React.Component {
 		} ).then( (resposta) => {
 			if ( resposta.status == 200 ) {						
 				resposta.json().then( (dados) => {											
-					this.state.fornecedor = dados;
+					this.state.categoria = dados;
 					this.setState( this.state );				
 				} );		
-			} else {				
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			 
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );				
+			}			
 		} );
 	}
 	
@@ -35,29 +35,32 @@ class FornecedorDetalhes extends React.Component {
 		e.preventDefault();
 					
 		ReactDOM.render( 
-			<FornecedorForm op="editar"
-				fornecedorId={this.props.fornecedorId} 
-				empresa={this.state.fornecedor.empresa} 
+			<CategoriaForm op="editar"
+				categoriaId={this.props.categoriaId} 
+				descricao={this.state.categoria.descricao} 
 			/>,
 			sistema.paginaElemento() );
 	}
 	
 	render() {
-		const { fornecedor, erroMsg, infoMsg } = this.state;
+		const { categoria, erroMsg, infoMsg } = this.state;
 		
 		return( 
 			<div className="container">
 				<div className="row">
 					<div className="col-md-2"></div>
 					<div className="col-md-8">
-						<h4 className="text-center">Dados do fornecedor</h4>																
+						<h4 className="text-center">Dados do categoria</h4>																
 						
 						<div className="card border-1">								
 							<div className="card-body">
 								<h4 className="card-title">Dados gerais</h4>
 								
-								<span className="text-dark font-weight-bold">Empresa: </span>
-								<span className="text-info">{fornecedor.empresa}</span>																							
+								<span className="text-dark font-weight-bold">Descrição: </span>
+								<span className="text-info">{categoria.descricao}</span>
+																
+								<MensagemPainel tipo="erro" msg={erroMsg} />
+								<MensagemPainel tipo="info" msg={infoMsg} />																							
 							</div>									
 						</div>
 						
@@ -65,13 +68,9 @@ class FornecedorDetalhes extends React.Component {
 						
 						<div className="card border-1">								
 							<div className="card-body">
-								<a href="#" onClick={(e) => this.editar( e )}>Editar fornecedor</a>
-													
-								<MensagemPainel tipo="erro" msg={erroMsg} />
-								<MensagemPainel tipo="info" msg={infoMsg} />																																								
+								<a href="#" onClick={(e) => this.editar( e )}>Editar categoria</a>																																																				
 							</div>
-						</div>
-												
+						</div>												
 					</div>
 				</div>															
 			</div>

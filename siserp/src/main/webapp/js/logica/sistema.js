@@ -40,6 +40,18 @@ class Sistema {
 		}
 	}
 	
+	trataRespostaNaoOk( resposta, compRef ) {
+		if ( resposta.status == 400 ) {
+			resposta.json().then( (dados) => {											
+				compRef.state.erroMsg = dados.mensagem;	
+				compRef.setState( compRef.state );				
+			} );
+		} else {
+			compRef.state.erroMsg = sistema.getMensagemErro( resposta.status );
+			compRef.setState( compRef.state );				
+		}
+	}
+	
 	getMensagemErro( status ) {						
 		switch( status ) {
 			case 401:

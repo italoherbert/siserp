@@ -20,6 +20,7 @@ import italo.siserp.repository.FornecedorRepository;
 
 @Service
 public class FornecedorService {
+	
 	@Autowired
 	private FornecedorRepository fornecedorRepository;
 				

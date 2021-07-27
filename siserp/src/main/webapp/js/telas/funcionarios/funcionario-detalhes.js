@@ -25,17 +25,14 @@ class FuncionarioDetalhes extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {
-			resposta.json().then( (dados) => {											
-				this.state.status = resposta.status;
-				if ( resposta.status == 200 ) {						
-					this.state.funcionario = dados;		
-				} else if ( resposta.status == 400 ) {
-					this.state.erroMsg = dados.mensagem;	
-				} else {
-					this.state.erroMsg = sistema.getMensagemErro( resposta.status );
-				}
-				this.setState( this.state );				
-			} );			 
+			if ( resposta.status == 200 ) {						
+				resposta.json().then( (dados) => {											
+					this.state.funcionario = dados;
+					this.setState( this.state );
+				} );		
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}			 
 		} );
 	}
 	
