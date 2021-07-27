@@ -1,0 +1,9 @@
+.visivel {
+	display: block;
+	visibility: visible;
+}
+
+.invisivel {
+	display: none;
+	visibility: hidden;
+}

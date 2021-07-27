@@ -1,0 +1,17 @@
+
+spring:
+  application:
+    name: siserp
+  datasource:    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/siserp
+    username: postgres
+    password: postgres
+  jpa:    hibernate:      ddl-auto: update
+    generate-ddl: true
+    show-sql: true  
+    
+server:  port: 8080
+
+oauth:
+  clientId: supermercado
+  secret: supermercado  
