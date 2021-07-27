@@ -1,0 +1,102 @@
+package italo.siserp.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import italo.siserp.exception.FornecedorJaExisteException;
+import italo.siserp.exception.FornecedorNaoEncontradoException;
+import italo.siserp.model.request.BuscaFornecedoresRequest;
+import italo.siserp.model.request.SaveFornecedorRequest;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.FornecedorResponse;
+import italo.siserp.model.response.IdResponse;
+import italo.siserp.service.FornecedorService;
+
+@RestController
+@RequestMapping(value="/api/fornecedor")
+public class FornecedorController {
+	
+	@Autowired
+	private FornecedorService fornecedorService;
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PostMapping("/registra")
+	public ResponseEntity<Object> registra( @RequestBody SaveFornecedorRequest request ) {						
+		if ( request.getEmpresa() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );		
+		if ( request.getEmpresa().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );		
+		
+		try {
+			IdResponse resp = fornecedorService.registraFornecedor( request );
+			return ResponseEntity.ok( resp );
+		} catch (FornecedorJaExisteException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_JA_EXISTE ) );		
+		}				
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PutMapping("/atualiza/{id}")
+	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveFornecedorRequest request ) {	
+		if ( request.getEmpresa() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );		
+		if ( request.getEmpresa().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );		
+		
+		try {
+			fornecedorService.atualizaFornecedor( id, request );
+			return ResponseEntity.ok().build();
+		} catch (FornecedorNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );		
+		} catch (FornecedorJaExisteException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_JA_EXISTE ) );		
+		}				
+	}
+
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PostMapping("/filtra")
+	public ResponseEntity<Object> buscaFornecedors( @RequestBody BuscaFornecedoresRequest request ) {		
+		if ( request.getEmpresaIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+		if ( request.getEmpresaIni().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+		
+		List<FornecedorResponse> fornecedors = fornecedorService.buscaFornecedorsPorEmpresaIni( request );
+		return ResponseEntity.ok( fornecedors );		
+	}
+
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
+	@GetMapping("/get/{id}")
+	public ResponseEntity<Object> buscaFornecedorPorId( @PathVariable Long id ) {		
+		try {
+			FornecedorResponse fornecedor = fornecedorService.buscaFornecedorPorId( id );
+			return ResponseEntity.ok( fornecedor );
+		} catch (FornecedorNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );		
+		}
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@DeleteMapping("/deleta/{id}")
+	public ResponseEntity<Object> deletaFornecedor( @PathVariable Long id ) {		
+		try {
+			fornecedorService.deleta( id );
+			return ResponseEntity.ok().build();
+		} catch (FornecedorNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );		
+		}
+	}
+	
+}
+

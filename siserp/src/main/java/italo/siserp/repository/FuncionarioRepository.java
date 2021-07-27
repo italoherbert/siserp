@@ -12,6 +12,6 @@ public interface FuncionarioRepository extends JpaRepository<Funcionario, Long> 
 
 	@Query( "select f from Funcionario f join f.pessoa p join f.usuario u " +
 			"where lower(p.nome) like lower(:nomeIni) and lower(u.username) like lower(:usernameIni)" )
-	public List<Funcionario> filtra( @Param("nomeIni") String nomeIni, @Param("usernameIni") String usernameIni );
+	public List<Funcionario> filtra( @Param("nomeIni") String nomeIni, @Param("usernameIni") String usernameIni ); 
 	
 }

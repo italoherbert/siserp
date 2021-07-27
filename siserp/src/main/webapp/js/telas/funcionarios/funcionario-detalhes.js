@@ -32,7 +32,7 @@ class FuncionarioDetalhes extends React.Component {
 				} else if ( resposta.status == 400 ) {
 					this.state.erroMsg = dados.mensagem;	
 				} else {
-					this.state.erroMsg = "Erro desconhecido.";
+					this.state.erroMsg = sistema.getMensagemErro( resposta.status );
 				}
 				this.setState( this.state );				
 			} );			 

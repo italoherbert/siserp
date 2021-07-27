@@ -9,7 +9,6 @@ public class EnumConversor {
 
 	public String getUsuarioTipoString( UsuarioTipo tipo ) {
 		switch( tipo ) {
-			case RAIZ: return "RAIZ";
 			case ADMIN: return "ADMIN";
 			case CAIXA: return "CAIXA";
 			case GERENTE: return "GERENTE";			
@@ -18,9 +17,7 @@ public class EnumConversor {
 	}
 	
 	public UsuarioTipo getUsuarioTipo( String tipo ) {
-		if ( tipo.equalsIgnoreCase( "RAIZ" ) ) {
-			return UsuarioTipo.RAIZ;
-		} else if ( tipo.equalsIgnoreCase( "ADMIN" ) ) {
+		if ( tipo.equalsIgnoreCase( "ADMIN" ) ) {
 			return UsuarioTipo.ADMIN;
 		} else if ( tipo.equalsIgnoreCase( "CAIXA" ) ) {
 			return UsuarioTipo.CAIXA;

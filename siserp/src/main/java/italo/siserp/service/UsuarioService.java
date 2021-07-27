@@ -9,7 +9,6 @@ import italo.siserp.component.builder.UsuarioBuilder;
 import italo.siserp.exception.UsernameNaoEncontradoException;
 import italo.siserp.exception.UsernamePasswordNaoCorrespondemException;
 import italo.siserp.model.Usuario;
-import italo.siserp.model.UsuarioTipo;
 import italo.siserp.model.request.LoginRequest;
 import italo.siserp.model.response.LoginResponse;
 import italo.siserp.model.response.UsuarioResponse;
@@ -29,18 +28,7 @@ public class UsuarioService {
 	
 	@Autowired
 	private JwtTokenUtil tokenUtil;
-	
-	public boolean ehUsuarioRaiz( String authorizationHeader ) {
-		String token = tokenUtil.extraiBearerToken( authorizationHeader );
-		
-		String[] roles = tokenUtil.getAuthorities( token );
-		for( int i = 0; i < roles.length; i++ )
-			if ( roles[0].equalsIgnoreCase( UsuarioTipo.RAIZ.toString() ) )
-				return true;
-		
-		return false;
-	}
-		
+			
 	public LoginResponse login( LoginRequest request ) 
 			throws UsernameNaoEncontradoException, 
 				UsernamePasswordNaoCorrespondemException {

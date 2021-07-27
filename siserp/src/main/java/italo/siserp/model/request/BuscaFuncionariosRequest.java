@@ -12,9 +12,5 @@ public class BuscaFuncionariosRequest {
 	private String nomeIni;
 	
 	private String usernameIni;
-		
-	private String offsetId;
-		
-	private String paglen;
 	
 }

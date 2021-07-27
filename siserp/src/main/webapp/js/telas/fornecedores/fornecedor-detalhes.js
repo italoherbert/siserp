@@ -1,5 +1,5 @@
 
-class SedeDetalhes extends React.Component {
+class FornecedorDetalhes extends React.Component {
 
 	constructor( props ) {
 		super( props );
@@ -7,12 +7,14 @@ class SedeDetalhes extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			sede : {} 
+			fornecedor : {} 
 		};
 	}
 	
-	componentDidMount() {		
-		fetch( "/api/sede/get", {
+	componentDidMount() {
+		let fornecedorId = this.props.fornecedorId;
+		
+		fetch( "/api/fornecedor/get/"+fornecedorId, {
 			method : "GET",			
 			headers : { 
 				"Authorization" : "Bearer "+sistema.token
@@ -21,7 +23,7 @@ class SedeDetalhes extends React.Component {
 			resposta.json().then( (dados) => {											
 				this.state.status = resposta.status;
 				if ( resposta.status == 200 ) {						
-					this.state.sede = dados;		
+					this.state.fornecedor = dados;		
 				} else if ( resposta.status == 400 ) {
 					this.state.erroMsg = dados.mensagem;	
 				} else {
@@ -36,40 +38,37 @@ class SedeDetalhes extends React.Component {
 		e.preventDefault();
 					
 		ReactDOM.render( 
-			<SedeForm op="editar" 
-				cnpj={this.state.sede.cnpj} 
-				inscricaoEstadual={this.state.sede.inscricaoEstadual}
+			<FornecedorForm op="editar"
+				fornecedorId={this.props.fornecedorId} 
+				empresa={this.state.fornecedor.empresa} 
 			/>,
 			sistema.paginaElemento() );
 	}
-		
+	
 	render() {
-		const { sede, erroMsg, infoMsg } = this.state;
+		const { fornecedor, erroMsg, infoMsg } = this.state;
 		
 		return( 
 			<div className="container">
 				<div className="row">
 					<div className="col-md-2"></div>
 					<div className="col-md-8">
-						<h4 className="text-center">Dados da sede</h4>																
+						<h4 className="text-center">Dados do fornecedor</h4>																
 						
 						<div className="card border-1">								
 							<div className="card-body">
 								<h4 className="card-title">Dados gerais</h4>
 								
-								<span className="text-dark font-weight-bold">CNPJ: </span>
-								<span className="text-info">{sede.cnpj}</span>
-								<br />
-								<span className="text-dark font-weight-bold">Inscrição Estadual: </span>
-								<span className="text-info">{sede.inscricaoEstadual}</span>
-							</div>
+								<span className="text-dark font-weight-bold">Empresa: </span>
+								<span className="text-info">{fornecedor.empresa}</span>																							
+							</div>									
 						</div>
 						
 						<br />
 						
 						<div className="card border-1">								
 							<div className="card-body">
-								<a href="#" onClick={(e) => this.editar( e )}>Editar sede</a>
+								<a href="#" onClick={(e) => this.editar( e )}>Editar fornecedor</a>
 													
 								<MensagemPainel tipo="erro" msg={erroMsg} />
 								<MensagemPainel tipo="info" msg={infoMsg} />																																								

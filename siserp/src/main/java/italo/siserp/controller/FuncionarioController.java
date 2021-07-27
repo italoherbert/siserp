@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
-import italo.siserp.model.UsuarioTipo;
 import italo.siserp.model.request.BuscaFuncionariosRequest;
 import italo.siserp.model.request.SaveFuncionarioRequest;
 import italo.siserp.model.response.ErroResponse;
@@ -34,11 +33,7 @@ public class FuncionarioController {
 	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
 	@PostMapping("/registra")
-	public ResponseEntity<Object> registra( @RequestBody SaveFuncionarioRequest request ) {		
-		String utipo = request.getUsuario().getTipo();
-		if ( utipo.equalsIgnoreCase( String.valueOf( UsuarioTipo.RAIZ ) ) )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SEM_PERMISSAO_REG_USUARIO_RAIZ ) );		
-		
+	public ResponseEntity<Object> registra( @RequestBody SaveFuncionarioRequest request ) {				
 		if ( request.getUsuario().getUsername() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USERNAME_OBRIGATORIO ) );
 		if ( request.getUsuario().getUsername().trim().isEmpty() )
@@ -64,12 +59,7 @@ public class FuncionarioController {
 	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
 	@PutMapping("/atualiza/{id}")
-	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveFuncionarioRequest request ) {
-			
-		String utipo = request.getUsuario().getTipo();
-		if ( utipo.equalsIgnoreCase( String.valueOf( UsuarioTipo.RAIZ ) ) )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SEM_PERMISSAO_REG_USUARIO_RAIZ ) );				
-		
+	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveFuncionarioRequest request ) {	
 		if ( request.getUsuario().getUsername() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USERNAME_OBRIGATORIO ) );
 		if ( request.getUsuario().getUsername().trim().isEmpty() )

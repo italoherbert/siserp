@@ -1,5 +1,5 @@
 
-class SedeForm extends React.Component {
+class FornecedorForm extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -11,10 +11,8 @@ class SedeForm extends React.Component {
 	}
 	
 	componentDidMount() {			
-		if ( this.props.op == 'editar' ) {
-			this.refs.cnpj.value = this.props.cnpj;
-			this.refs.inscricaoEstadual.value = this.props.inscricaoEstadual;
-		}										
+		if ( this.props.op == 'editar' )
+			this.refs.empresa.value = this.props.empresa;					
 	}
 	
 	salvar( e ) {
@@ -23,26 +21,35 @@ class SedeForm extends React.Component {
 		this.state.erroMsg = null;
 		this.state.infoMsg = null;
 		this.setState( this.state );
-						
-		fetch( '/api/sede/salva', {
-			method : 'PUT',			
+		
+		let url;
+		let metodo;
+		if ( this.props.op == 'editar' ) {			
+			url = "/api/fornecedor/atualiza/"+this.props.fornecedorId;
+			metodo = 'PUT';									
+		} else {
+			url = "/api/fornecedor/registra";
+			metodo = 'POST';
+		}
+				
+		fetch( url, {
+			method : metodo,			
 			headers : {
 				"Content-Type" : "application/json; charset=UTF-8",
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"cnpj" : this.refs.cnpj.value,	
-				"inscricaoEstadual" : this.refs.inscricaoEstadual.value				
+				"empresa" : this.refs.empresa.value
 			} )		
 		} ).then( (resposta) => {				
 			if ( resposta.status == 200 ) {
-				this.state.infoMsg = "Dados da sede salvos com sucesso.";		
+				this.state.infoMsg = "Fornecedor cadastrado com sucesso.";		
 				this.setState( this.state );
 			} else if ( resposta.status == 400 ) {
 				resposta.json().then( (dados) => {
 					this.state.erroMsg = dados.mensagem;
 					this.setState( this.state );
-				} );
+				} );			 
 			} else {
 				this.state.erroMsg = sistema.getMensagemErro( resposta.status );
 				this.setState( this.state );
@@ -58,25 +65,19 @@ class SedeForm extends React.Component {
 				<div className="row">
 					<div className="col-md-2"></div>
 					<div className="col-md-8">
-						<h4 className="card-title text-center">Registro de sede</h4>
+						<h4 className="card-title text-center">Registro de fornecedores</h4>
 																
 						<form onSubmit={(e) => this.salvar( e ) } className="container">
 							<div className="card border-1">								
 								<div className="card-body">
 									<h4 className="card-title">Dados gerais</h4>
 									
-									<div className="row form-group">
-										<div className="col-sm-12">
-											<label className="control-label" for="cnpj">CNPJ: </label>
-											<input type="text" ref="cnpj" name="cnpj" className="form-control" />
-										</div>										
-									</div>	
-									<div className="row form-group">
-										<div className="col-sm-12">
-											<label className="control-label" for="inscricaoEstadual">Inscrição estadual: </label>
-											<input type="text" ref="inscricaoEstadual" name="inscricaoEstadual" className="form-control" />
-										</div>										
-									</div>								
+									<div className="row">
+										<div className="form-group col-sm-12">
+											<label className="control-label" for="empresa">Empresa: </label>
+											<input type="text" ref="empresa" name="empresa" className="form-control" />
+										</div>
+									</div>
 								</div>
 							</div>
 							

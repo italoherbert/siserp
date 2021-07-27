@@ -3,9 +3,6 @@ package italo.siserp.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -30,9 +27,6 @@ import italo.siserp.repository.UsuarioRepository;
 
 @Service
 public class FuncionarioService {
-
-	@PersistenceContext
-	private EntityManager entityManager;
 	
 	@Autowired
 	private FuncionarioRepository funcionarioRepository;

@@ -1,8 +1,7 @@
 package italo.siserp.exception;
 
-public class SedeJaExisteException extends Exception {
+public class FornecedorJaExisteException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
 }
-

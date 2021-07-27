@@ -22,6 +22,10 @@ class Navbar extends React.Component {
 		ReactDOM.render( <Funcionarios />, sistema.paginaElemento() );
 	}
 	
+	paraTelaFornecedores() {
+		ReactDOM.render( <Fornecedores />, sistema.paginaElemento() );
+	}
+	
 	render() {
 		return(
 			<nav className="navbar navbar-expand-sm navbar-dark bg-dark">				
@@ -67,10 +71,9 @@ class Navbar extends React.Component {
 							<a className="nav-link" href="#">Clientes</a>
 						</li>
 						
-						{ ( sistema.usuario.tipo == 'ADMIN' || 
-								sistema.usuario.tipo == 'GERENTE' ) &&  (
+						{ ( sistema.usuario.tipo == 'ADMIN' || sistema.usuario.tipo == 'GERENTE' ) && (
 							<li className="nav-item">
-								<a className="nav-link" href="#">Fornecedores</a>
+								<a className="nav-link" href="#" onClick={ () => this.paraTelaFornecedores() }>Fornecedores</a>
 							</li>
 						) }
 												

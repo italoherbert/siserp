@@ -1,6 +1,6 @@
 package italo.siserp.exception;
 
-public class EmpresaJaExisteException extends Exception {
+public class FornecedorNaoEncontradoException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

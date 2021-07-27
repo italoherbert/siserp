@@ -39,6 +39,19 @@ class Sistema {
 			el.style.visibility = "hidden";
 		}
 	}
+	
+	getMensagemErro( status ) {						
+		switch( status ) {
+			case 401:
+			case 403:
+				return "Você não tem permissão para acessar esse recurso"				
+			case 500:
+				return "Erro interno no servidor.";
+				
+			default:
+				return "Erro desconhecido";
+		}
+	}
 			
 }
 

@@ -20,13 +20,11 @@ public class ErroResponse {
 
 	public final static int USUARIO_NAO_ENCONTRADO = 100;
 	public final static int FUNCIONARIO_NAO_ENCONTRADO = 101;
-	public final static int EMPRESA_NAO_ENCONTRADA = 102;
-	public final static int SEDE_NAO_ENCONTRADA = 103;
+	public final static int FORNECEDOR_NAO_ENCONTRADO = 102;	
 		
 	public final static int PESSOA_JA_EXISTE = 200;
 	public final static int USUARIO_JA_EXISTE = 201;
-	public final static int EMPRESA_JA_EXISTE = 202;
-	public final static int SEDE_JA_EXISTE = 203;
+	public final static int FORNECEDOR_JA_EXISTE = 202;
 	
 	public final static int USERNAME_OBRIGATORIO = 300;
 	public final static int PASSWORD_OBRIGATORIO = 301;			
@@ -34,6 +32,7 @@ public class ErroResponse {
 	public final static int RAZAO_SOCIAL_OBRIGATORIA = 303;	
 	public final static int CNPJ_OBRIGATORIO = 304;
 	public final static int INSCRICAO_ESTADUAL_OBRIGATORIA = 305;
+	public final static int FORNECEDOR_EMPRESA_OBRIGATORIA = 306;
 
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
@@ -71,25 +70,19 @@ public class ErroResponse {
 			case FUNCIONARIO_NAO_ENCONTRADO:
 				mensagem = "Funcionario não encontrado.";
 				break;	
-			case EMPRESA_NAO_ENCONTRADA:
-				mensagem = "Empresa não encontrada.";				
+			case FORNECEDOR_NAO_ENCONTRADO:
+				mensagem = "Fornecedor não encontrado.";
 				break;
-			case SEDE_NAO_ENCONTRADA:
-				mensagem = "Sede não encontrada.";
-				break;	
-			
+				
 			case USUARIO_JA_EXISTE:
 				mensagem = "Já existe outro usuário para o username informado.";
 				break;
 			case PESSOA_JA_EXISTE:
 				mensagem = "Já existe cadastrada outra pessoa com o nome informado.";
-				break;	
-			case EMPRESA_JA_EXISTE:
-				mensagem = "Empresa já existe registrada com a razão social informada.";				
 				break;
-			case SEDE_JA_EXISTE:
-				mensagem = "Já existe uma sede registrada com o cnpj informado.";
-				break;							
+			case FORNECEDOR_JA_EXISTE:
+				mensagem = "Já existe cadastrado outro fornecedor com o nome de empresa informado.";
+				break;
 				
 			case USERNAME_OBRIGATORIO:
 				mensagem = "O username é um campo obrigatório.";
@@ -105,6 +98,9 @@ public class ErroResponse {
 				break;
 			case INSCRICAO_ESTADUAL_OBRIGATORIA:
 				mensagem = "A inscrição estadual é um campo obrigatório.";
+				break;
+			case FORNECEDOR_EMPRESA_OBRIGATORIA:
+				mensagem = "A empresa do fornecedor é um campo obrigatório.";
 				break;
 				
 			case USUARIO_TIPO_INVALIDO:

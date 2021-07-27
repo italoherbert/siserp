@@ -90,17 +90,19 @@ class FuncionarioForm extends React.Component {
 					"tipo" : this.refs.tipo.value	
 				}
 			} )		
-		} ).then( (resposta) => {				
-			resposta.json().then( (dados) => {
-				if ( resposta.status == 200 ) {
-					this.state.infoMsg = "Funcionario cadastrado com sucesso.";		
-				} else if ( resposta.status == 400 ) {
-					this.state.erroMsg = dados.mensagem;
-				} else {
-					this.state.erroMsg = "Erro desconhecido.";
-				}
+		} ).then( (resposta) => {
+			if ( resposta.status == 200 ) {
+				this.state.infoMsg = "Funcionario cadastrado com sucesso.";		
 				this.setState( this.state );
-			} );			 
+			} else if ( resposta.status == 400 ) {
+				resposta.json().then( (dados) => {
+					this.state.erroMsg = dados.mensagem;
+					this.setState( this.state );
+				} );
+			} else {
+				this.state.erroMsg = sistema.getMensagemErro( resposta.status );
+				this.setState( this.state );
+			}
 		} );				
 	}
 	
