@@ -37,4 +37,5 @@ public class SubCategoria {
 	
 	@OneToMany(mappedBy="subcategoria", cascade=CascadeType.REMOVE)
 	private List<ItemProduto> itensProdutos;
+	
 }

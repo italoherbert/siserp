@@ -51,33 +51,6 @@ class Categorias extends React.Component {
 		} );
 	}
 	
-	registrou( e ) {
-		if ( e != null )
-			e.preventDefault();
-					
-		this.state.addErroMsg = null;
-		this.state.addInfoMsg = null;
-		this.setState( this.state );
-
-		fetch( "/api/categoria/registra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"descricao" : this.refs.descricao.value,
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
-				this.state.addInfoMsg = "Categoria adicionada com êxito!"
-				this.filtrar();
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			
-		} );
-	}
-		
 	detalhes( e, id ) {
 		e.preventDefault();
 		
@@ -109,60 +82,66 @@ class Categorias extends React.Component {
 			<div className="container">				
 				<div className="row">
 					<div className="col-md-12">
-						<CategoriaForm op="cadastrar" registrou={ () => this.filtrar(null) } />
+						<CategoriaForm 
+							op="cadastrar"
+							titulo="Cadastre nova categoria" 
+							registrou={ () => this.filtrar(null) } />
 					</div>
 				</div>
 				
 				<br />
 				
-				<div className="row">
-					<h4 className="text-center col-md-12">Lista de Categorias</h4>
-					<div className="tbl-pnl col-md-12">
-						<table id="tabela_funcionarios" className="table table-striped table-bordered col-md-12">
-							<thead>
-								<tr>
-									<th>ID</th>
-									<th>Nome da empresa</th>
-									<th>Detalhes</th>
-									<th>Remover</th>
-								</tr>
-							</thead>
-							<tbody>
-								{categorias.map( ( categoria, index ) => {
-									return (
-										<tr>
-											<td>{categoria.id}</td>
-											<td>{categoria.descricao}</td>
-											<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
-											<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, categoria.id )}>remover</button></td>
-										</tr>
-									);
-								} ) }	
-							</tbody>							
-						</table>
-					</div>
-				</div>
+				<div className="row card">
+					<div className="col-sm-12 card-body">
+						<h4 className="text-center">Lista de Categorias</h4>
+						<div className="tbl-pnl col-md-12">
+							<table id="tabela_funcionarios" className="table table-striped table-bordered col-md-12">
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Nome da empresa</th>
+										<th>Detalhes</th>
+										<th>Remover</th>
+									</tr>
+								</thead>
+								<tbody>
+									{categorias.map( ( categoria, index ) => {
+										return (
+											<tr>
+												<td>{categoria.id}</td>
+												<td>{categoria.descricao}</td>
+												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
+												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, categoria.id )}>remover</button></td>
+											</tr>
+										);
+									} ) }	
+								</tbody>							
+							</table>
+						</div>
+						
+						<br />
 				
-				<br />
-				
-				<MensagemPainel tipo="erro" msg={erroMsg} />				
-				<MensagemPainel tipo="info" msg={infoMsg} />
-																
-				<div className="row">
-					<div className="col-md-3"></div>
-					<div className="col-md-6">
-						<form onSubmit={ (e) => this.filtrar( e ) }>
-							<div className="form-group">
-								<label className="control-label" for="descricaoIni">Descrição:</label>
-								<input type="text" ref="descricaoIni" name="descricaoIni" className="form-control" />						
+						<MensagemPainel tipo="erro" msg={erroMsg} />				
+						<MensagemPainel tipo="info" msg={infoMsg} />
+						
+						<div className="row">
+							<div className="col-md-3"></div>
+							<div className="col-md-6">
+								<form onSubmit={ (e) => this.filtrar( e ) }>
+									<div className="form-group">
+										<label className="control-label" for="descricaoIni">Descrição:</label>
+										<input type="text" ref="descricaoIni" name="descricaoIni" className="form-control" />						
+									</div>
+																							
+									<div className="form-group">																							
+										<input type="submit" value="Filtrar" className="btn btn-primary" />				
+									</div>		
+								</form>	
 							</div>
-																					
-							<div className="form-group">																							
-								<input type="submit" value="Filtrar" className="btn btn-primary" />				
-							</div>		
-						</form>	
+						</div>
 					</div>
-				</div>							 
+				</div>
+																															
 			</div>					
 		);
 	}

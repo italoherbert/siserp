@@ -56,7 +56,11 @@ class Sistema {
 		switch( status ) {
 			case 401:
 			case 403:
-				return "Você não tem permissão para acessar esse recurso"				
+				return "Você não tem permissão para acessar esse recurso";
+				
+			case 404:
+				return "Recurso não encontrado no servidor.";	
+								
 			case 500:
 				return "Erro interno no servidor.";
 				

@@ -1,5 +1,5 @@
 
-class CategoriaForm extends React.Component {
+class SubCategoriaForm extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -12,7 +12,7 @@ class CategoriaForm extends React.Component {
 	
 	componentDidMount() {			
 		if ( this.props.op == 'editar' )
-			this.refs.descricao.value = this.props.descricao;					
+			this.refs.descricao.value = this.props.descricao;							
 	}
 	
 	salvar( e ) {
@@ -25,10 +25,10 @@ class CategoriaForm extends React.Component {
 		let url;
 		let metodo;
 		if ( this.props.op == 'editar' ) {			
-			url = "/api/categoria/atualiza/"+this.props.categoriaId;
+			url = "/api/subcategoria/atualiza/"+this.props.subcategoriaId;
 			metodo = 'PUT';									
 		} else {
-			url = "/api/categoria/registra";
+			url = "/api/subcategoria/registra/"+this.props.categoriaId;
 			metodo = 'POST';
 		}
 				
@@ -43,7 +43,7 @@ class CategoriaForm extends React.Component {
 			} )		
 		} ).then( (resposta) => {				
 			if ( resposta.status == 200 ) {
-				this.state.infoMsg = "Categoria cadastrada com sucesso.";		
+				this.state.infoMsg = "Subcategoria salva com sucesso.";		
 				this.setState( this.state );
 				
 				if ( typeof( this.props.registrou ) == "function" )
@@ -54,19 +54,26 @@ class CategoriaForm extends React.Component {
 		} );				
 	}
 	
+	paraTelaCategoria( e ) {
+		e.preventDefault();
+		
+		ReactDOM.render( 
+			<CategoriaDetalhes categoriaId={this.props.categoriaId} />, 
+			sistema.paginaElemento() );
+	}
+	
 	render() {
 		const { erroMsg, infoMsg } = this.state;
 				
-		return(	
-			<div className="container-fluid">
+		return(
+			<div className="container">
 				<div className="row">
-					<div className="col-sm-2"></div>	
-					<div className="col-sm-8">															
-						<form onSubmit={(e) => this.salvar( e ) }>
+					<div className="col-md-2"></div>
+					<div className="col-md-8">																
+						<form onSubmit={(e) => this.salvar( e ) } className="container">
 							<div className="card border-1">								
-								<div className="card-body">
+								<div className="card-body">									
 									<h4 className="card-title">{this.props.titulo}</h4>
-									
 									<div className="row">
 										<div className="form-group col-sm-12">
 											<label className="control-label" for="descricao">Descrição: </label>
@@ -78,12 +85,16 @@ class CategoriaForm extends React.Component {
 									<MensagemPainel tipo="info" msg={infoMsg} />
 									<div class="form-group">
 										<button type="submit" className="btn btn-primary">Salvar</button>
-									</div>																												
+									</div>	
+									
+									{(this.props.op == 'editar' ) && ( 
+										<a href="#" onClick={(e) => this.paraTelaCategoria(e) }>Voltar para tela de categoria</a>
+									) }																											
 								</div>
 							</div>									
 						</form>
 					</div>
-				</div>					
+				</div>
 			</div>
 		);
 	}

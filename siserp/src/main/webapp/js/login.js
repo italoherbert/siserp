@@ -23,21 +23,21 @@ class Login extends React.Component {
 				username : this.refs.username.value,
 				password : this.refs.password.value
 			} )
-		} ).then( (resposta) => {	
-			resposta.json().then( (dados) => {
-				this.state.status = resposta.status;
-				if ( resposta.status == 200 ) {						
+		} ).then( (resposta) => {
+			if ( resposta.status == 200 ) {						
+				resposta.json().then( (dados) => {
 					sistema.token = dados.token;
 					sistema.usuario = dados.usuario;
 										
 					ReactDOM.render( <Layout />, sistema.rootElemento() );				
 					ReactDOM.render( <Navbar />, sistema.menuNavegElemento() );				
 					ReactDOM.render( <Inicial />, sistema.paginaElemento() );				
-				} else if ( resposta.status == 400 ) {
-					this.state.erroMsg = dados.mensagem;	
-				}
-				this.setState( this.state )
-			} );			 
+				
+					this.setState( this.state )
+				} );
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}			 
 		} );
 	}
 	
