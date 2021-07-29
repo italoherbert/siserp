@@ -1,4 +1,4 @@
-package italo.siserp.component;
+package italo.siserp.util;
 
 import java.util.Date;
 import java.util.HashMap;

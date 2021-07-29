@@ -1,13 +1,13 @@
-package italo.siserp.component.builder;
+package italo.siserp.builder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import italo.siserp.component.EnumConversor;
-import italo.siserp.component.HashUtil;
 import italo.siserp.model.Usuario;
 import italo.siserp.model.request.SaveUsuarioRequest;
 import italo.siserp.model.response.UsuarioResponse;
+import italo.siserp.util.EnumConversor;
+import italo.siserp.util.HashUtil;
 
 @Component
 public class UsuarioBuilder {

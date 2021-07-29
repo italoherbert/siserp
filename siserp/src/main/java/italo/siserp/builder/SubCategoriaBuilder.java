@@ -1,8 +1,7 @@
-package italo.siserp.component.builder;
+package italo.siserp.builder;
 
 import org.springframework.stereotype.Component;
 
-import italo.siserp.model.Categoria;
 import italo.siserp.model.SubCategoria;
 import italo.siserp.model.request.SaveSubCategoriaRequest;
 import italo.siserp.model.response.SubCategoriaResponse;
@@ -23,12 +22,8 @@ public class SubCategoriaBuilder {
 		return new SubCategoriaResponse();
 	}
 	
-	public SubCategoria novoSubCategoria( Long categoriaId ) {				
-		SubCategoria sc = new SubCategoria();
-		sc.setCategoria( new Categoria() );
-		
-		sc.getCategoria().setId( categoriaId ); 
-		return sc;
+	public SubCategoria novoSubCategoria() {				
+		return new SubCategoria();		
 	}
 	
 }

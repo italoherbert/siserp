@@ -1,6 +1,6 @@
 package italo.siserp.exception;
 
-public class IDOffsetBuscaInvalidoException extends Exception {
+public class IDOffsetBuscaInvalidoException extends GenericaException {
 
 	private static final long serialVersionUID = 1L;
 

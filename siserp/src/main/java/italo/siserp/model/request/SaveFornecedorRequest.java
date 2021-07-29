@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SaveFornecedorRequest {
-
+		
 	private String empresa;
 	
 }

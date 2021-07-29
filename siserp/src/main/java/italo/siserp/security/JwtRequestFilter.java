@@ -16,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.SignatureException;
-import italo.siserp.component.JwtTokenUtil;
+import italo.siserp.util.JwtTokenUtil;
 
 public class JwtRequestFilter extends OncePerRequestFilter {
 	

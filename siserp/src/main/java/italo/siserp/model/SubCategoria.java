@@ -34,8 +34,8 @@ public class SubCategoria {
 	@ManyToOne
 	@JoinColumn(name="categoria_id")
 	private Categoria categoria;
-	
-	@OneToMany(mappedBy="subcategoria", cascade=CascadeType.REMOVE)
-	private List<ItemProduto> itensProdutos;
+		
+	@OneToMany(mappedBy="subcategoria", cascade = CascadeType.ALL)
+	private List<CategoriaMap> categoriaMaps;
 	
 }

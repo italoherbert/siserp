@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import italo.siserp.component.EnumConversor;
+import italo.siserp.util.EnumConversor;
 
 @RestController
 @RequestMapping(value="/api/usuario")

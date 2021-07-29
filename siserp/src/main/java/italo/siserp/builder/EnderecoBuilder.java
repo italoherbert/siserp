@@ -1,4 +1,4 @@
-package italo.siserp.component.builder;
+package italo.siserp.builder;
 
 import org.springframework.stereotype.Component;
 

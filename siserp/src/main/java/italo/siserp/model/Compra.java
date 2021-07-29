@@ -36,10 +36,13 @@ public class Compra {
 	private Date dataCompra;
 		
 	@OneToMany(mappedBy="compra", cascade=CascadeType.ALL)
-	private List<ItemCompra> itemsCompra;
+	private List<ItemCompra> itensCompra;
 	
-	@ManyToOne
+	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name="fornecedor_id")
 	private Fornecedor fornecedor;
+	
+	@OneToMany(mappedBy="compra", cascade=CascadeType.ALL)
+	private List<CompraParcela> parcelas;
 	
 }

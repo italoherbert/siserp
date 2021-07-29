@@ -32,7 +32,7 @@ public class Categoria {
 	@OneToMany(mappedBy="categoria", cascade=CascadeType.ALL)
 	private List<SubCategoria> subcategorias;
 	
-	@OneToMany(mappedBy = "categoria", cascade=CascadeType.ALL)	
-	private List<ItemProduto> itensProdutos;
+	@OneToMany(mappedBy="categoria", cascade = CascadeType.ALL)
+	private List<CategoriaMap> categoriaMaps;
 	
 }

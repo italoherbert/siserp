@@ -1,4 +1,4 @@
-package italo.siserp.component.builder;
+package italo.siserp.builder;
 
 import java.util.ArrayList;
 import java.util.List;

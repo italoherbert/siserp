@@ -3,9 +3,7 @@ package italo.siserp.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.component.HashUtil;
-import italo.siserp.component.JwtTokenUtil;
-import italo.siserp.component.builder.UsuarioBuilder;
+import italo.siserp.builder.UsuarioBuilder;
 import italo.siserp.exception.UsernameNaoEncontradoException;
 import italo.siserp.exception.UsernamePasswordNaoCorrespondemException;
 import italo.siserp.model.Usuario;
@@ -13,6 +11,8 @@ import italo.siserp.model.request.LoginRequest;
 import italo.siserp.model.response.LoginResponse;
 import italo.siserp.model.response.UsuarioResponse;
 import italo.siserp.repository.UsuarioRepository;
+import italo.siserp.util.HashUtil;
+import italo.siserp.util.JwtTokenUtil;
 
 @Service
 public class UsuarioService {

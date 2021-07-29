@@ -1,4 +1,4 @@
-package italo.siserp.component;
+package italo.siserp.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

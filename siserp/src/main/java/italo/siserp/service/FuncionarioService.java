@@ -8,8 +8,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.component.HashUtil;
-import italo.siserp.component.builder.FuncionarioBuilder;
+import italo.siserp.builder.FuncionarioBuilder;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
@@ -24,6 +23,7 @@ import italo.siserp.model.response.IdResponse;
 import italo.siserp.repository.FuncionarioRepository;
 import italo.siserp.repository.PessoaRepository;
 import italo.siserp.repository.UsuarioRepository;
+import italo.siserp.util.HashUtil;
 
 @Service
 public class FuncionarioService {

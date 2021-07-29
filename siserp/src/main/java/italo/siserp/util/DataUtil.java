@@ -1,4 +1,4 @@
-package italo.siserp.component;
+package italo.siserp.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,15 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataUtil {
 
-	private final SimpleDateFormat sdfParaData = new SimpleDateFormat( "yyyy-MM-dd hh:mm:ss" );
-	private final SimpleDateFormat sdfParaString = new SimpleDateFormat( "dd/MM/yyyy hh:mm:ss" );
+	private final SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
 		
 	public String dataParaString( Date date ) {
-		return sdfParaString.format( date );
+		return sdf.format( date );
 	}
 	
 	public Date stringParaData( String data ) throws ParseException {
-		return sdfParaData.parse( data );		
+		return sdf.parse( data );		
 	}
 	
 }

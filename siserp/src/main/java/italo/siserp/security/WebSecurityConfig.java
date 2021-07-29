@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import italo.siserp.component.JwtTokenUtil;
+import italo.siserp.util.JwtTokenUtil;
 
 @Configuration
 @EnableWebSecurity
@@ -17,7 +17,7 @@ import italo.siserp.component.JwtTokenUtil;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 	private final String[] PUBLIC = {
-		"/*", "/js/**", "/css/**", 
+		"/**", "/js/**", "/css/**", 
 		"/api/login/entrar", "/h2-console/**"
 	};
 	

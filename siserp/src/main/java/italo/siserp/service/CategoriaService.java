@@ -8,7 +8,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.component.builder.CategoriaBuilder;
+import italo.siserp.builder.CategoriaBuilder;
 import italo.siserp.exception.CategoriaJaExisteException;
 import italo.siserp.exception.CategoriaNaoEncontradaException;
 import italo.siserp.model.Categoria;

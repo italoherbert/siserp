@@ -8,7 +8,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.component.builder.FornecedorBuilder;
+import italo.siserp.builder.FornecedorBuilder;
 import italo.siserp.exception.FornecedorJaExisteException;
 import italo.siserp.exception.FornecedorNaoEncontradoException;
 import italo.siserp.model.Fornecedor;

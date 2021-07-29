@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.component.builder.SubCategoriaBuilder;
+import italo.siserp.builder.SubCategoriaBuilder;
 import italo.siserp.exception.CategoriaNaoEncontradaException;
 import italo.siserp.exception.SubCategoriaJaExisteException;
 import italo.siserp.exception.SubCategoriaNaoEncontradaException;
@@ -42,8 +42,11 @@ public class SubCategoriaService {
 		if ( !existeCategoria )
 			throw new CategoriaNaoEncontradaException();
 		
-		SubCategoria sc = subcategoriaBuilder.novoSubCategoria( categoriaId );
-		subcategoriaBuilder.carregaSubCategoria( sc, request ); 
+		SubCategoria sc = subcategoriaBuilder.novoSubCategoria();
+		subcategoriaBuilder.carregaSubCategoria( sc, request );
+		
+		sc.setCategoria( new Categoria() );		
+		sc.getCategoria().setId( categoriaId ); 
 		
 		subcategoriaRepository.save( sc );
 					

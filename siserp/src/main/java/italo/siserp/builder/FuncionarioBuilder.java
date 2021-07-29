@@ -1,4 +1,4 @@
-package italo.siserp.component.builder;
+package italo.siserp.builder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -30,10 +30,10 @@ public class Produto {
 	private String descricao;
 
 	@Column
-	private double precoCompra;
+	private double precoUnitarioCompra;
 
 	@Column
-	private double precoVenda;
+	private double precoUnitarioVenda;
 
 	@Column
 	private String codigoBarras;
@@ -44,13 +44,13 @@ public class Produto {
 	@Column
 	private String unidade;
 	
-	@OneToMany(mappedBy="produto", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="produto", cascade = CascadeType.ALL)
 	private List<ItemProduto> itensProdutos;
 		
 	@OneToMany(mappedBy="produto", cascade=CascadeType.REMOVE)
 	private List<ItemCompra> itensCompra;
 	
-	@OneToMany(mappedBy="produto", cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="produto", cascade = CascadeType.ALL)
 	private List<ProdutoImpostoMap> produtoImpostoMap;
 	
 }

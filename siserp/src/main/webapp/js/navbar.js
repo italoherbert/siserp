@@ -26,8 +26,16 @@ class Navbar extends React.Component {
 		ReactDOM.render( <Fornecedores />, sistema.paginaElemento() );
 	}
 	
+	paraTelaProdutos() {
+		ReactDOM.render( <Produtos />, sistema.paginaElemento() );
+	}
+	
 	paraTelaCategorias() {
 		ReactDOM.render( <Categorias />, sistema.paginaElemento() );
+	}
+	
+	paraTelaCompras() {
+		ReactDOM.render( <Compras />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -38,7 +46,7 @@ class Navbar extends React.Component {
 				<div className="collapse navbar-collapse" id="nav-content">   
 					<ul className="navbar-nav">
 						<li className="nav-item">
-							<div className="dropdown show">
+							<div className="dropdown">
 							  	<a className="btn btn-link nav-link dropdown-toggle" href="#" role="button" id="financeiro_menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 							    	Financeiro
 							  	</a>
@@ -63,7 +71,7 @@ class Navbar extends React.Component {
 							<a className="nav-link" href="#">Vendas</a>
 						</li>
 						<li className="nav-item">
-							<a className="nav-link" href="#">Compras</a>
+							<a className="nav-link" href="#" onClick={ () => this.paraTelaCompras() }>Compras</a>
 						</li>						
 						<li className="nav-item">
 							<div className="dropdown show">
@@ -72,7 +80,7 @@ class Navbar extends React.Component {
 							  	</a>
 							
 							  	<div className="dropdown-menu" aria-labelledby="financeiro_menu">
-							    	<a className="dropdown-item" href="#">Produtos</a>
+							    	<a className="dropdown-item" href="#" onClick={ () => this.paraTelaProdutos() }>Produtos</a>
 							    	<a className="dropdown-item" href="#" onClick={ () => this.paraTelaCategorias() }>Categorias</a>
 							    	<a className="dropdown-item" href="#">Impostos</a>
 							  	</div>

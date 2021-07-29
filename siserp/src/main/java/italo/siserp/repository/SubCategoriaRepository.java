@@ -1,6 +1,7 @@
 package italo.siserp.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +17,7 @@ public interface SubCategoriaRepository extends JpaRepository<SubCategoria, Long
 	@Query( "select count(*)=1 from SubCategoria sc join sc.categoria c "
 			+ "where c.id=?1 and lower(sc.descricao)=lower(?2)" )
 	public boolean existePorDescricao( Long categoriaId, String descricao );
+	
+	public Optional<SubCategoria> findByDescricao( String descricao );
 	
 }
