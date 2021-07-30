@@ -1,5 +1,6 @@
 package italo.siserp.builder;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +15,16 @@ import italo.siserp.model.Produto;
 import italo.siserp.model.request.SaveItemProdutoRequest;
 import italo.siserp.model.request.SaveProdutoRequest;
 import italo.siserp.model.response.ProdutoResponse;
+import italo.siserp.util.NumeroUtil;
 
 @Component
 public class ProdutoBuilder {
 
 	@Autowired
 	private ItemProdutoBuilder itemProdutoBuilder;
+	
+	@Autowired
+	private NumeroUtil numeroUtil;
 	
 	public void carregaProduto( Produto p, SaveProdutoRequest req ) 
 			throws PrecoUnitCompraInvalidoException, 
@@ -29,16 +34,16 @@ public class ProdutoBuilder {
 		p.setDescricao( req.getDescricao() );
 		
 		try {
-			p.setPrecoUnitarioCompra( Double.parseDouble( req.getPrecoUnitCompra() ) );
-		} catch ( NumberFormatException e ) {
+			p.setPrecoUnitarioCompra( numeroUtil.stringParaDouble( req.getPrecoUnitCompra() ) );
+		} catch ( ParseException e ) {
 			PrecoUnitCompraInvalidoException ex = new PrecoUnitCompraInvalidoException();
 			ex.setParams( req.getPrecoUnitCompra() );
 			throw ex;
 		}
 		
 		try {
-			p.setPrecoUnitarioVenda( Double.parseDouble( req.getPrecoUnitVenda() ) ); 
-		} catch ( NumberFormatException e ) {
+			p.setPrecoUnitarioVenda( numeroUtil.stringParaDouble( req.getPrecoUnitVenda() ) ); 
+		} catch ( ParseException e ) {
 			PrecoUnitVendaInvalidoException ex = new PrecoUnitVendaInvalidoException();
 			ex.setParams( req.getPrecoUnitVenda() );
 			throw ex;
@@ -60,8 +65,8 @@ public class ProdutoBuilder {
 	public void carregaProdutoResponse( ProdutoResponse resp, Produto p ) {
 		resp.setId( p.getId() );
 		resp.setDescricao( p.getDescricao() );
-		resp.setPrecoUnitCompra( String.valueOf( p.getPrecoUnitarioCompra() ) );
-		resp.setPrecoUnitVenda( String.valueOf( p.getPrecoUnitarioVenda() ) );
+		resp.setPrecoUnitCompra( numeroUtil.doubleParaString( p.getPrecoUnitarioCompra() ) );
+		resp.setPrecoUnitVenda( numeroUtil.doubleParaString( p.getPrecoUnitarioVenda() ) );
 		resp.setUnidade( p.getUnidade() );
 		resp.setCodigoBarras( p.getCodigoBarras() ); 
 	}	

@@ -1,7 +1,9 @@
 package italo.siserp.service;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +18,12 @@ import italo.siserp.builder.ItemCompraBuilder;
 import italo.siserp.builder.ItemProdutoBuilder;
 import italo.siserp.builder.ProdutoBuilder;
 import italo.siserp.builder.SubCategoriaBuilder;
+import italo.siserp.builder.TotalCompraBuilder;
+import italo.siserp.exception.CompraNaoEncontradaException;
 import italo.siserp.exception.DataCompraException;
+import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataPagamentoInvalidaException;
 import italo.siserp.exception.DataVencimentoInvalidaException;
 import italo.siserp.exception.ParcelaValorInvalidoException;
@@ -32,17 +39,21 @@ import italo.siserp.model.ItemCompra;
 import italo.siserp.model.ItemProduto;
 import italo.siserp.model.Produto;
 import italo.siserp.model.SubCategoria;
+import italo.siserp.model.request.BuscaCompraRequest;
 import italo.siserp.model.request.SaveCategoriaRequest;
 import italo.siserp.model.request.SaveCompraParcelaRequest;
 import italo.siserp.model.request.SaveCompraRequest;
 import italo.siserp.model.request.SaveItemCompraRequest;
 import italo.siserp.model.request.SaveItemProdutoRequest;
 import italo.siserp.model.request.SaveSubCategoriaRequest;
+import italo.siserp.model.response.CompraResponse;
+import italo.siserp.model.response.TotalCompraResponse;
 import italo.siserp.repository.CategoriaMapRepository;
 import italo.siserp.repository.CategoriaRepository;
 import italo.siserp.repository.CompraRepository;
 import italo.siserp.repository.FornecedorRepository;
 import italo.siserp.repository.ProdutoRepository;
+import italo.siserp.util.DataUtil;
 
 @Service
 public class CompraService {
@@ -61,10 +72,13 @@ public class CompraService {
 	
 	@Autowired
 	private CategoriaMapRepository categoriaMapRepository;	
-	
+		
 		
 	@Autowired
 	private CompraBuilder compraBuilder;
+
+	@Autowired
+	private TotalCompraBuilder totalCompraBuilder;
 	
 	@Autowired
 	private FornecedorBuilder fornecedorBuilder;
@@ -85,7 +99,10 @@ public class CompraService {
 	private CategoriaBuilder categoriaBuilder;
 		
 	@Autowired
-	private SubCategoriaBuilder subcategoriaBuilder;
+	private SubCategoriaBuilder subcategoriaBuilder;		
+	
+	@Autowired
+	private DataUtil dataUtil;
 		
 	public void salvaCompra( SaveCompraRequest request ) 
 			throws DataCompraException, 
@@ -254,6 +271,57 @@ public class CompraService {
 			ex.setParams( request.getQuantidade() );
 			throw ex;
 		}
+	}
+	
+	public List<TotalCompraResponse> filtra( BuscaCompraRequest request ) 
+			throws DataIniInvalidaException, 
+					DataFimInvalidaException, 
+					DataFimAposDataIniException {
+		Date dataIni, dataFim;
+		try {
+			dataIni = dataUtil.stringParaData( request.getDataIni() );
+		} catch ( ParseException e ) {
+			DataIniInvalidaException ex = new DataIniInvalidaException();
+			ex.setParams( request.getDataIni() ); 
+			throw ex;
+		}
+		try {
+			dataFim = dataUtil.stringParaData( request.getDataFim() );
+		} catch ( ParseException e ) {
+			DataFimInvalidaException ex = new DataFimInvalidaException();
+			ex.setParams( request.getDataFim() ); 
+			throw ex;
+		}
+		
+		if ( dataIni.after( dataFim ) )
+			throw new DataFimAposDataIniException();
+		
+		List<Compra> compras = compraRepository.filtra( dataIni, dataFim );
+		List<TotalCompraResponse> responses = new ArrayList<>();
+		for( Compra c : compras ) {
+			TotalCompraResponse resp = totalCompraBuilder.novoTotalCompraResponse();
+			totalCompraBuilder.carregaTotalCompraResponse( resp, c );
+			
+			responses.add( resp );
+		}
+		
+		return responses;
+	}
+	
+	public CompraResponse buscaCompra( Long id ) throws CompraNaoEncontradaException {
+		Compra c = compraRepository.findById( id ).orElseThrow( CompraNaoEncontradaException::new );
+		
+		CompraResponse resp = compraBuilder.novoCompraResponse();
+		compraBuilder.carregaCompraResponse( resp, c );
+		
+		return resp;
+	}
+	
+	public void delete( Long id ) throws CompraNaoEncontradaException {
+		if ( !compraRepository.existsById( id ) )
+			throw new CompraNaoEncontradaException();
+		
+		compraRepository.deleteById( id );
 	}
 	
 }

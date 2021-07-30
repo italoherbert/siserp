@@ -18,6 +18,7 @@ public class ErroResponse {
 	public final static int CATEGORIA_NAO_ENCONTRADA = 103;
 	public final static int SUBCATEGORIA_NAO_ENCONTRADA = 104;
 	public final static int PRODUTO_NAO_ENCONTRADO = 105;
+	public final static int COMPRA_NAO_ENCONTRADA = 106;
 		
 	public final static int PESSOA_JA_EXISTE = 200;
 	public final static int USUARIO_JA_EXISTE = 201;
@@ -41,6 +42,8 @@ public class ErroResponse {
 	public final static int PRODUTO_UNIDADE_OBRIGATORIA = 312;
 	public final static int PRODUTO_CODIGO_BARRAS_OBRIGATORIO = 313;
 	public final static int PRODUTO_DESCRICAO_OU_CODIGO_BARRAS_OBRIGATORIO = 314;
+	public final static int COMPRA_DATA_INI_OBRIGATORIA = 315;
+	public final static int COMPRA_DATA_FIM_OBRIGATORIA = 316;
 
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
@@ -51,6 +54,9 @@ public class ErroResponse {
 	public final static int DATA_PAGAMENTO_INVALIDA = 506;
 	public final static int DATA_VENCIMENTO_INVALIDA = 507;
 	public final static int DATA_COMPRA_INVALIDA = 508;
+	public final static int DATA_INI_INVALIDA = 509;
+	public final static int DATA_FIM_INVALIDA = 510;
+	public final static int DATA_INI_APOS_DATA_FIM = 511;
 		
 	private int codigo;
 	private String mensagem;
@@ -82,6 +88,9 @@ public class ErroResponse {
 				break;
 			case PRODUTO_NAO_ENCONTRADO:
 				mensagem = "Produto não encontrado.";
+				break;
+			case COMPRA_NAO_ENCONTRADA:
+				mensagem = "Compra não encontrada.";
 				break;
 				
 			case USUARIO_JA_EXISTE:
@@ -145,6 +154,12 @@ public class ErroResponse {
 			case PRODUTO_DESCRICAO_OU_CODIGO_BARRAS_OBRIGATORIO:
 				mensagem = "É necessário informar as iniciais da descrição ou codigo de barras do produto.";
 				break;
+			case COMPRA_DATA_INI_OBRIGATORIA:
+				mensagem = "A data de início para filtro de compras é um campo de preenchimento obrigatório.";
+				break;
+			case COMPRA_DATA_FIM_OBRIGATORIA:
+				mensagem = "A data de fim para filtro de compras é um campo de preenchimento obrigatório.";
+				break;
 				
 			case USUARIO_TIPO_INVALIDO:
 				mensagem = "Tipo de usuário inválido.";
@@ -172,6 +187,15 @@ public class ErroResponse {
 				break;
 			case DATA_COMPRA_INVALIDA:
 				mensagem = "A data de compra está em formato inválido. Valor="+params[0];
+				break;
+			case DATA_INI_INVALIDA:
+				mensagem = "A data de início está em formato inválido. Valor="+params[0];
+				break;
+			case DATA_FIM_INVALIDA:
+				mensagem = "A data de fim está em formato inválido. Valor="+params[0];
+				break;
+			case DATA_INI_APOS_DATA_FIM:
+				mensagem = "A data de início tem valor de antes da data de fim";
 				break;
 		}
 	}

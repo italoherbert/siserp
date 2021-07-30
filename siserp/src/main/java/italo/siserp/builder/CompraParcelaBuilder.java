@@ -13,6 +13,7 @@ import italo.siserp.model.CompraParcela;
 import italo.siserp.model.request.SaveCompraParcelaRequest;
 import italo.siserp.model.response.CompraParcelaResponse;
 import italo.siserp.util.DataUtil;
+import italo.siserp.util.NumeroUtil;
 
 @Component
 public class CompraParcelaBuilder {
@@ -20,13 +21,16 @@ public class CompraParcelaBuilder {
 	@Autowired
 	private DataUtil dataUtil;
 	
+	@Autowired
+	private NumeroUtil numeroUtil;
+	
 	public void carregaCompraParcela( CompraParcela parcela, SaveCompraParcelaRequest req ) 
 			throws ParcelaValorInvalidoException, 
 				DataPagamentoInvalidaException, 
 				DataVencimentoInvalidaException {
 		try {
-			parcela.setValor( Double.parseDouble( req.getValor() ) );
-		} catch ( NumberFormatException e ) {
+			parcela.setValor( numeroUtil.stringParaDouble( req.getValor() ) );
+		} catch ( ParseException e ) {
 			ParcelaValorInvalidoException ex = new ParcelaValorInvalidoException();
 			ex.setParams( req.getValor() ); 
 			throw ex;
@@ -60,7 +64,7 @@ public class CompraParcelaBuilder {
 		return new CompraParcelaResponse();
 	}
 	
-	public CompraParcela novoCompraParcela(Long compraId) {
+	public CompraParcela novoCompraParcela( Long compraId ) {
 		CompraParcela parcela = new CompraParcela();
 		parcela.setCompra( new Compra() );
 		
