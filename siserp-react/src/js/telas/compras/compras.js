@@ -1,5 +1,10 @@
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 
-class Compras extends React.Component {
+import MensagemPainel from './../../componente/mensagem-painel';
+import sistema from './../../logica/sistema';
+
+export default class Compras extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -14,8 +19,8 @@ class Compras extends React.Component {
 	}
 	
 	componentDidMount() {
-		this.state.dataIni = moment( new Date() ).format( "dd-mm-yyyy" );
-		this.state.dataFim = moment( new Date() ).format( "dd-mm-yyyy" );
+		//this.state.dataIni = moment( new Date() ).format( "dd-mm-yyyy" );
+		//this.state.dataFim = moment( new Date() ).format( "dd-mm-yyyy" );
 	}
 	
 	filtrar( e ) {
@@ -55,7 +60,7 @@ class Compras extends React.Component {
 	paraRegistroForm( e ) {
 		e.preventDefault();
 		
-		ReactDOM.render( <CompraRegistro />, sistema.paginaElemento() );
+		//ReactDOM.render( <CompraRegistro />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -95,8 +100,8 @@ class Compras extends React.Component {
 						
 						<br />
 				
-						<MensagemPainel tipo="erro" msg={erroMsg} />				
-						<MensagemPainel tipo="info" msg={infoMsg} />
+						<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
+						<MensagemPainel color="info">{infoMsg}</MensagemPainel>
 						
 						<div className="row">
 							<div className="col-md-1"></div>

@@ -1,0 +1,13 @@
+
+body {
+	background-color: #F50;
+}
+
+.tbl-pnl {
+	height: 20em;
+	display: block;
+	overflow-y: scroll;
+	padding: 1em;
+	border: 1px solid #EEF;
+	background-color: #FFF;
+}
