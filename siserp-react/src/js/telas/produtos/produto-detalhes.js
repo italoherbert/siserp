@@ -15,7 +15,7 @@ export default class ProdutoDetalhes extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			produto : { subprodutos : [] } 
+			produto : { subcategorias : [] } 
 		};
 	}
 	

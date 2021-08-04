@@ -55,8 +55,8 @@ public class CompraController {
 
 		if ( request.getItensCompra().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NENHUM_PRODUTO_INFORMADO ) );						
-		
-		for( SaveItemCompraRequest icreq : request.getItensCompra() ) {
+				
+		for( SaveItemCompraRequest icreq : request.getItensCompra() ) {			
 			if ( icreq.getPrecoUnitario() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );								
 			if ( icreq.getPrecoUnitario().trim().isEmpty() )
@@ -66,11 +66,6 @@ public class CompraController {
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
 			if ( icreq.getQuantidade().trim().isEmpty() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );
-			
-			if ( icreq.getProduto().getCodigoBarras() == null )
-				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );								
-			if ( icreq.getProduto().getCodigoBarras().trim().isEmpty() )
-				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );
 			
 			if ( icreq.getProduto().getDescricao() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );								
@@ -90,12 +85,17 @@ public class CompraController {
 			if ( icreq.getProduto().getUnidade() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_UNIDADE_OBRIGATORIA ) );								
 			
-			if ( icreq.getItemProduto().getQuantidade() == null )
+			if ( icreq.getProduto().getQuantidade() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
-			if ( icreq.getItemProduto().getQuantidade().trim().isEmpty() )
+			if ( icreq.getProduto().getQuantidade().trim().isEmpty() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );
 			
-			for ( SaveCategoriaRequest catreq : icreq.getItemProduto().getCategorias() ) {
+			if ( icreq.getProduto().getCodigoBarras() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );								
+			if ( icreq.getProduto().getCodigoBarras().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );			
+			
+			for ( SaveCategoriaRequest catreq : icreq.getProduto().getCategorias() ) {
 				if ( catreq.getDescricao() == null )
 					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
 				if ( catreq.getDescricao().trim().isEmpty() )

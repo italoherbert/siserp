@@ -7,7 +7,6 @@ body {
 	height: 20em;
 	display: block;
 	overflow-y: scroll;
-	padding: 1em;
 	border: 1px solid #EEF;
 }
 
@@ -15,7 +14,6 @@ body {
 	height: 12em;
 	display: block;
 	overflow-y: scroll;
-	padding: 1em;
 	border: 1px solid #EEF;
 }
 

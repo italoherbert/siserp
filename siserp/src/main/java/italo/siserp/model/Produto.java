@@ -35,22 +35,22 @@ public class Produto {
 	@Column
 	private double precoUnitarioVenda;
 
-	@Column(unique = true)
-	private String codigoBarras;
-
 	@Column
 	private double quantidade;
 
 	@Column
 	private String unidade;
-	
-	@OneToMany(mappedBy="produto", cascade = CascadeType.ALL)
-	private List<ItemProduto> itensProdutos;
+		
+	@Column(unique = true)
+	private String codigoBarras;
 		
 	@OneToMany(mappedBy="produto", cascade=CascadeType.REMOVE)
 	private List<ItemCompra> itensCompra;
 	
 	@OneToMany(mappedBy="produto", cascade = CascadeType.ALL)
 	private List<ProdutoImpostoMap> produtoImpostoMap;
+	
+	@OneToMany(mappedBy="produto", cascade = CascadeType.ALL)
+	private List<CategoriaMap> categoriaMaps;
 	
 }

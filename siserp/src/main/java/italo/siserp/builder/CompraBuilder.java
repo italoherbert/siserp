@@ -17,6 +17,7 @@ import italo.siserp.model.ItemCompra;
 import italo.siserp.model.request.SaveCompraRequest;
 import italo.siserp.model.response.CompraParcelaResponse;
 import italo.siserp.model.response.CompraResponse;
+import italo.siserp.model.response.FornecedorResponse;
 import italo.siserp.model.response.ItemCompraResponse;
 import italo.siserp.util.DataUtil;
 
@@ -28,6 +29,9 @@ public class CompraBuilder {
 	
 	@Autowired
 	private ItemCompraBuilder itemCompraBuilder;
+	
+	@Autowired
+	private FornecedorBuilder fornecedorBuilder;
 	
 	@Autowired
 	private DataUtil dataUtil;
@@ -49,6 +53,8 @@ public class CompraBuilder {
 	public void carregaCompraResponse( CompraResponse resp, Compra c ) {
 		resp.setId( c.getId() );
 		resp.setDataCompra( dataUtil.dataParaString( c.getDataCompra() ) ); 
+
+		fornecedorBuilder.carregaFornecedorResponse( resp.getFornecedor(), c.getFornecedor() ); 
 		
 		List<ItemCompraResponse> itemResps = new ArrayList<>();
 		for( ItemCompra item : c.getItensCompra() ) {
@@ -70,7 +76,9 @@ public class CompraBuilder {
 	}	
 	
 	public CompraResponse novoCompraResponse() {		
-		return new CompraResponse();
+		CompraResponse resp = new CompraResponse();
+		resp.setFornecedor( new FornecedorResponse() );
+		return resp;
 	}
 	
 	public Compra novoCompra() {

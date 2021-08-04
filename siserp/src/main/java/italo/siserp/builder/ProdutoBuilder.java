@@ -1,21 +1,27 @@
 package italo.siserp.builder;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
+import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
 import italo.siserp.model.request.SaveProdutoRequest;
+import italo.siserp.model.response.CategoriaResponse;
 import italo.siserp.model.response.ProdutoResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component
 public class ProdutoBuilder {
+	
+	@Autowired
+	private CategoriaBuilder categoriaBuilder;	
 	
 	@Autowired
 	private NumeroUtil numeroUtil;
@@ -26,10 +32,11 @@ public class ProdutoBuilder {
 				QuantidadeInvalidaException {
 		
 		p.setDescricao( req.getDescricao() );
+		p.setCodigoBarras( req.getCodigoBarras() );
 		
 		try {
 			p.setPrecoUnitarioCompra( numeroUtil.stringParaDouble( req.getPrecoUnitCompra() ) );
-		} catch ( ParseException e ) {
+		} catch ( DoubleInvalidoException e ) {
 			PrecoUnitCompraInvalidoException ex = new PrecoUnitCompraInvalidoException();
 			ex.setParams( req.getPrecoUnitCompra() );
 			throw ex;
@@ -37,33 +44,48 @@ public class ProdutoBuilder {
 		
 		try {
 			p.setPrecoUnitarioVenda( numeroUtil.stringParaDouble( req.getPrecoUnitVenda() ) ); 
-		} catch ( ParseException e ) {
+		} catch ( DoubleInvalidoException e ) {
 			PrecoUnitVendaInvalidoException ex = new PrecoUnitVendaInvalidoException();
 			ex.setParams( req.getPrecoUnitVenda() );
 			throw ex;
 		}
+		
+		try {
+			p.setQuantidade( p.getQuantidade() + numeroUtil.stringParaDouble( req.getQuantidade() ) );
+		} catch ( DoubleInvalidoException e ) {
+			QuantidadeInvalidaException ex = new QuantidadeInvalidaException();
+			ex.setParams( req.getQuantidade() );
+			throw ex;
+		}
 				
 		p.setUnidade( req.getUnidade() );
-		p.setCodigoBarras( req.getCodigoBarras() );		
 	}
 	
 	public void carregaProdutoResponse( ProdutoResponse resp, Produto p ) {
 		resp.setId( p.getId() );
 		resp.setDescricao( p.getDescricao() );
+		resp.setCodigoBarras( p.getCodigoBarras() ); 
 		resp.setPrecoUnitCompra( numeroUtil.doubleParaString( p.getPrecoUnitarioCompra() ) );
 		resp.setPrecoUnitVenda( numeroUtil.doubleParaString( p.getPrecoUnitarioVenda() ) );
 		resp.setUnidade( p.getUnidade() );
-		resp.setCodigoBarras( p.getCodigoBarras() ); 
+		
+		resp.setQuantidade( numeroUtil.doubleParaString( p.getQuantidade() ) );
+				
+		List<CategoriaResponse> categorias = new ArrayList<>();
+		for( CategoriaMap map : p.getCategoriaMaps() ) {
+			CategoriaResponse cresp = categoriaBuilder.novoCategoriaResponse();
+			categoriaBuilder.carregaCategoriaResponse( cresp, map.getCategoria() );
+			categorias.add( cresp );
+		}
+		resp.setCategorias( categorias );
 	}	
 	
 	public ProdutoResponse novoProdutoResponse() {
 		return new ProdutoResponse();
 	}
 	
-	public Produto novoProduto() {
-		Produto p = new Produto();
-		p.setItensProdutos( new ArrayList<>() );
-		return p;
+	public Produto novoProduto() {		
+		return new Produto();		
 	}
 	
 }

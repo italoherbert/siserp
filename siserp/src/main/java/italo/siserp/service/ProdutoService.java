@@ -36,28 +36,28 @@ public class ProdutoService {
 		String codigoBarras = req.getCodigoBarras();
 		Optional<Produto> pop = produtoRepository.findByCodigoBarras( codigoBarras );
 		
-		Produto p;
+		Produto ip;
 		if ( pop.isPresent() ) {
-			p = pop.get();
+			ip = pop.get();
 		} else {
-			p = produtoBuilder.novoProduto();
+			ip = produtoBuilder.novoProduto();
 		}
 								
-		produtoBuilder.carregaProduto( p, req );
+		produtoBuilder.carregaProduto( ip, req );
 		
-		produtoRepository.save( p );		
+		produtoRepository.save( ip );		
 	}		
 	
 	public List<ProdutoResponse> buscaProdutosPorDescIni( String descricaoIni ) {
 		String dini = (descricaoIni.equals( "*" ) ? "" : descricaoIni );
 		
-		List<Produto> produtos = produtoRepository.filtraPorDescIni( dini+"%" );
+		List<Produto> itens = produtoRepository.filtraPorDescIni( dini+"%" );
 		
 		List<ProdutoResponse> responses = new ArrayList<>();
 		
-		for( Produto p : produtos ) {			
+		for( Produto ip : itens ) {			
 			ProdutoResponse resp = produtoBuilder.novoProdutoResponse();
-			produtoBuilder.carregaProdutoResponse( resp, p );
+			produtoBuilder.carregaProdutoResponse( resp, ip );
 			
 			responses.add( resp );
 		}
@@ -66,10 +66,10 @@ public class ProdutoService {
 	}
 	
 	public ProdutoResponse buscaProdutoPorCodBarra( String codigoBarras ) throws ProdutoNaoEncontradoException {		
-		Produto p = produtoRepository.findByCodigoBarras( codigoBarras ).orElseThrow( ProdutoNaoEncontradoException::new ); 
+		Produto ip = produtoRepository.findByCodigoBarras( codigoBarras ).orElseThrow( ProdutoNaoEncontradoException::new ); 
 		
 		ProdutoResponse resp = produtoBuilder.novoProdutoResponse();
-		produtoBuilder.carregaProdutoResponse( resp, p );		
+		produtoBuilder.carregaProdutoResponse( resp, ip );		
 		return resp;
 	}
 	

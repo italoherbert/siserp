@@ -14,7 +14,5 @@ public class SaveItemCompraRequest {
 	private String precoUnitario;
 	
 	private SaveProdutoRequest produto;
-	
-	private SaveItemProdutoRequest itemProduto;
-	
+		
 }

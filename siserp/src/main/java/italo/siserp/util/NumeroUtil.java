@@ -1,23 +1,23 @@
 package italo.siserp.util;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-
 import org.springframework.stereotype.Component;
 
+import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.InteiroInvalidoException;
 
 @Component
 public class NumeroUtil {
-	
-	private DecimalFormat df = new DecimalFormat( "0.00" );
-	
+		
 	public String doubleParaString( double numero ) {
-		return df.format( numero );
+		return String.valueOf( numero );
 	}
 	
-	public double stringParaDouble( String numero ) throws ParseException {
-		return df.parse( numero ).doubleValue();		
+	public double stringParaDouble( String numero ) throws DoubleInvalidoException {
+		try {
+			return Double.parseDouble( numero );
+		} catch ( NumberFormatException e ) {
+			throw new DoubleInvalidoException();
+		}		
 	}
 	
 	public String inteiroParaString( int numero ) {

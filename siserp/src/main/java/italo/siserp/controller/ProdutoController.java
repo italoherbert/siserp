@@ -32,15 +32,21 @@ public class ProdutoController {
 	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
 	@PostMapping("/salva")
-	public ResponseEntity<Object> registra( @RequestBody SaveProdutoRequest request ) {						
-		if ( request.getDescricao() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
-		if ( request.getDescricao().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
+	public ResponseEntity<Object> registra( @RequestBody SaveProdutoRequest request ) {
+		if ( request.getQuantidade() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );		
+		if ( request.getQuantidade().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );		
 		if ( request.getCodigoBarras() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
 		if ( request.getCodigoBarras().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
+	
+		
+		if ( request.getDescricao() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
+		if ( request.getDescricao().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
 		if ( request.getUnidade() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_UNIDADE_OBRIGATORIA ) );		
 		if ( request.getUnidade().trim().isEmpty() )

@@ -20,8 +20,7 @@ export default class AddCompraProdutoCategorias extends React.Component {
 		this.categoria = React.createRef();
 		this.subcategoria = React.createRef();
 	}			
-		
-	
+			
 	addCategoria( item ) {
 		item.preventDefault();				
 

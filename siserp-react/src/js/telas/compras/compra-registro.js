@@ -49,11 +49,7 @@ export default class CompraRegistro extends React.Component {
 		let itensCompra = [];
 		for( let i = 0; i < produtos.length; i++ ) {
 			let p = produtos[ i ];
-			itensCompra.push( {
-				itemProduto : {
-					categorias : p.categorias,
-					quantidade : p.quantidade
-				},
+			itensCompra.push( {				
 				precoUnitario : p.precoUnitCompra,
 				quantidade : p.quantidade,
 				produto : {
@@ -62,6 +58,9 @@ export default class CompraRegistro extends React.Component {
 					precoUnitCompra : p.precoUnitCompra,
 					precoUnitVenda : p.precoUnitVenda,
 					unidade : p.unidade,
+					
+					categorias : p.categorias,
+					quantidade : p.quantidade
 				}
 			} );
 		}

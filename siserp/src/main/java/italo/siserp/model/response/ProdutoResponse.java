@@ -1,5 +1,7 @@
 package italo.siserp.model.response;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +20,11 @@ public class ProdutoResponse {
 	private String precoUnitVenda;
 	
 	private String unidade;
+		
+	private String quantidade;
 	
 	private String codigoBarras;
 	
+	private List<CategoriaResponse> categorias;
+		
 }

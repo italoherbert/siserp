@@ -17,19 +17,21 @@ export default class ProdutoForm extends React.Component {
 			infoMsg : null
 		};
 		this.descricao = React.createRef();
-		this.codigoBarras = React.createRef();
 		this.precoUnitCompra = React.createRef();
 		this.precoUnitVenda = React.createRef();
 		this.unidade = React.createRef();
+
+		this.codigoBarras = React.createRef();
 	}
 	
 	componentDidMount() {			
 		if ( this.props.op === 'editar' ) {
 			this.descricao.current.value = this.props.descricao;
-			this.codigoBarras.current.value = this.props.codigoBarras;
 			this.precoUnitCompra.current.value = this.props.precoUnitCompra;
 			this.precoUnitVenda.current.value = this.props.precoUnitVenda;
 			this.unidade.current.value = this.props.unidade;
+
+			this.codigoBarras.current.value = this.props.codigoBarras;
 		}					
 	}
 	
@@ -45,8 +47,8 @@ export default class ProdutoForm extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"descricao" : this.descricao.current.value,
 				"codigoBarras" : this.codigoBarras.current.value,
+				"descricao" : this.descricao.current.value,
 				"precoUnitCompra" : this.precoUnitCompra.current.value,
 				"precoUnitVenda" : this.precoUnitVenda.current.value,
 				"unidade" : this.unidade.current.value
@@ -79,8 +81,8 @@ export default class ProdutoForm extends React.Component {
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.descricao.current.value = dados.descricao;
 					this.codigoBarras.current.value = dados.codigoBarras;
+					this.descricao.current.value = dados.descricao;
 					this.precoUnitCompra.current.value = dados.precoUnitCompra;
 					this.precoUnitVenda.current.value = dados.precoUnitVenda;
 					this.unidade.current.value = dados.unidade;

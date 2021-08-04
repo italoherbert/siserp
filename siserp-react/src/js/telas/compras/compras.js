@@ -7,6 +7,7 @@ import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import CompraRegistro from './compra-registro';
+import CompraDetalhes from './compra-detalhes';
 
 export default class Compras extends React.Component {
 	
@@ -61,11 +62,24 @@ export default class Compras extends React.Component {
 	}
 	
 	detalhes( e, compraId ) {
-		
+		ReactDOM.render( <CompraDetalhes compraId={compraId} />, sistema.paginaElemento() );
 	}
 	
 	remover( e, compraId ) {
+		e.preventDefault();
 		
+		fetch( '/api/compra/deleta/'+compraId, {
+			method : 'DELETE',
+			headers : {
+				'Authorization' : 'Bearer '+sistema.token
+			}
+		} ).then( (resposta) => {
+			if ( resposta.status === 200 ) {
+				this.setState( { infoMsg : 'Compra deletada com êxito.' } );
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}
+		} );
 	}
 	
 	paraRegistroForm( e ) {
@@ -89,7 +103,7 @@ export default class Compras extends React.Component {
 										<tr>
 											<th>ID</th>
 											<th>Data compra</th>
-											<th>Debito total</th>	
+											<th>Valor total</th>	
 											<th>Detalhes</th>
 											<th>Remover</th>
 										</tr>

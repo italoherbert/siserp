@@ -39,6 +39,12 @@ class Sistema {
 	formataData( date ) {
 		return moment( date ).format( "DD/MM/YYYY" );
 	}
+	
+	formataReal( valor ) {
+		let n = parseInt( parseFloat( valor ) * 100 );
+		let s = ""+n;
+		return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		
+	}
 
 	trataRespostaNaoOk( resposta, compRef ) {
 		if ( resposta.status === 400 ) {

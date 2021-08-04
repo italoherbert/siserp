@@ -1,10 +1,9 @@
 package italo.siserp.builder;
 
-import java.text.ParseException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
@@ -27,7 +26,7 @@ public class ItemCompraBuilder {
 				QuantidadeInvalidaException {
 		try {
 			item.setPrecoUnitario( numeroUtil.stringParaDouble( req.getPrecoUnitario() ) );
-		} catch ( ParseException e ) {
+		} catch ( DoubleInvalidoException e ) {
 			PrecoUnitCompraInvalidoException ex = new PrecoUnitCompraInvalidoException();
 			ex.setParams( req.getPrecoUnitario() );
 			throw ex;
@@ -35,7 +34,7 @@ public class ItemCompraBuilder {
 		
 		try {
 			item.setQuantidade( numeroUtil.stringParaDouble( req.getQuantidade() ) ); 
-		} catch ( ParseException e ) {
+		} catch ( DoubleInvalidoException e ) {
 			QuantidadeInvalidaException ex = new QuantidadeInvalidaException();
 			ex.setParams( req.getPrecoUnitario() );
 			throw ex;

@@ -63,7 +63,7 @@ export default class GeraCompraParcelas extends React.Component {
 							{parcelas.map( ( p, index ) => {
 								return (									
 									<tr key={index}>
-										<td>{ p.valor.toLocaleString( 'pt-br', { style : 'currency', currency : 'BRL' } ) }</td>
+										<td>{ sistema.formataReal( p.valor ) }</td>
 										<td>{ sistema.formataData( p.dataPagamento ) }</td>
 										<td>{ sistema.formataData( p.dataVencimento ) }</td>
 									</tr>										

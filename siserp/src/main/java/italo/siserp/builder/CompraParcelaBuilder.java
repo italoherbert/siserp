@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.exception.DataPagamentoInvalidaException;
 import italo.siserp.exception.DataVencimentoInvalidaException;
+import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.model.Compra;
 import italo.siserp.model.CompraParcela;
@@ -30,7 +31,7 @@ public class CompraParcelaBuilder {
 				DataVencimentoInvalidaException {
 		try {
 			parcela.setValor( numeroUtil.stringParaDouble( req.getValor() ) );
-		} catch ( ParseException e ) {
+		} catch ( DoubleInvalidoException e ) {
 			ParcelaValorInvalidoException ex = new ParcelaValorInvalidoException();
 			ex.setParams( req.getValor() ); 
 			throw ex;
@@ -55,7 +56,7 @@ public class CompraParcelaBuilder {
 	
 	public void carregaCompraParcelaResponse( CompraParcelaResponse resp, CompraParcela parcela ) {
 		resp.setId( parcela.getId() );		
-		resp.setValor( String.valueOf( parcela.getValor() ) );
+		resp.setValor( numeroUtil.doubleParaString( parcela.getValor() ) );
 		resp.setDataPagamento( dataUtil.dataParaString( parcela.getDataPagamento() ) );
 		resp.setDataVencimento( dataUtil.dataParaString( parcela.getDataVencimento() ) );		
 	}	

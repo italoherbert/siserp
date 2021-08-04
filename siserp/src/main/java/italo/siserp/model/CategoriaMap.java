@@ -33,6 +33,6 @@ public class CategoriaMap {
 	private SubCategoria subcategoria;
 	
 	@ManyToOne
-	@JoinColumn(name="itemproduto_id") 
-	private ItemProduto itemProduto;
+	@JoinColumn(name="produto_id") 
+	private Produto produto;
 }

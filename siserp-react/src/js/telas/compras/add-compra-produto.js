@@ -102,8 +102,8 @@ export default class AddCompraProduto extends React.Component {
 					this.precoUnitCompra.current.value = dados.precoUnitCompra;
 					this.precoUnitVenda.current.value = dados.precoUnitVenda;
 					this.unidade.current.value = dados.unidade;
-					
-					this.setState( {} );
+										
+					this.setState( { categorias : dados.categorias } );
 				} );
 			} else {
 				sistema.trataRespostaNaoOkCBK( resposta, ( msg ) => {

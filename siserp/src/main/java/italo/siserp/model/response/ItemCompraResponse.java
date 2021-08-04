@@ -12,7 +12,7 @@ public class ItemCompraResponse {
 	private Long id;
 	
 	private String quantidade;
-	
-	private String precoUnitario;
 		
+	private String precoUnitario;
+	
 }

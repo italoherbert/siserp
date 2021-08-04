@@ -124,7 +124,7 @@ export default class Produtos extends React.Component {
 						<Col>
 							<h4 className="text-center">Lista de Produtos</h4>
 							<div className="tbl-pnl">
-								<Table striped bordered hover>
+								<Table className="table-responsive" style={{width: '60em'}} striped bordered hover>
 									<thead>
 										<tr>
 											<th>ID</th>
@@ -133,22 +133,24 @@ export default class Produtos extends React.Component {
 											<th>Preço compra</th>
 											<th>Preço venda</th>
 											<th>Unidade</th>
+											<th>Quantidade</th>											
 											<th>Detalhes</th>
 											<th>Remover</th>
 										</tr>
 									</thead>
 									<tbody>
-										{produtos.map( ( produto, index ) => {
+										{produtos.map( ( item, index ) => {
 											return (
 												<tr key={index}>
-													<td>{produto.id}</td>
-													<td>{produto.descricao}</td>
-													<td>{produto.codigoBarras}</td>
-													<td>{produto.precoUnitCompra}</td>
-													<td>{produto.precoUnitVenda}</td>
-													<td>{produto.unidade}</td>
-													<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, produto.id )}>detalhes</button></td>
-													<td><button className="btn btn-link p-0" onClick={(e) => this.remover( e, produto.id )}>remover</button></td>
+													<td>{item.id}</td>
+													<td>{item.descricao}</td>
+													<td>{item.codigoBarras}</td>
+													<td>{item.precoUnitCompra}</td>
+													<td>{item.precoUnitVenda}</td>
+													<td>{item.unidade}</td>
+													<td>{item.quantidade}</td>
+													<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, item.id )}>detalhes</button></td>
+													<td><button className="btn btn-link p-0" onClick={(e) => this.remover( e, item.id )}>remover</button></td>
 												</tr>
 											);
 										} ) }	
@@ -172,7 +174,7 @@ export default class Produtos extends React.Component {
 													<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
 												</Form.Group>	
 												
-												<Button type="submit"variant="primary">Filtrar</Button>				
+												<Button type="submit" variant="primary">Filtrar</Button>				
 											</Form>
 										</Col>
 										<Col className="col-sm-6">
