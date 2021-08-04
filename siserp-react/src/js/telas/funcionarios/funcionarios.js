@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { Container, Row, Col, Form, Table, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -16,12 +17,15 @@ export default class Funcionarios extends React.Component {
 			erroMsg : null, 
 			infoMsg : null, 
 			funcionarios : []
-		 };			
+		};
+
+		this.nomeIni = React.createRef();
+		this.usernameIni = React.createRef();
 	}
 	
 	componentDidMount() {
-		this.refs.nomeIni.value = "*";
-		this.refs.usernameIni.value = "*";
+		this.nomeIni.current.value = "*";
+		this.usernameIni.current.value = "*";
 		
 		this.filtrar( null );		
 	}
@@ -30,9 +34,7 @@ export default class Funcionarios extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );
 
 		fetch( "/api/funcionario/filtra", {
 			method : "POST",			
@@ -41,17 +43,15 @@ export default class Funcionarios extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
-				nomeIni : this.refs.nomeIni.value,
-				usernameIni : this.refs.usernameIni.value
+				nomeIni : this.nomeIni.current.value,
+				usernameIni : this.usernameIni.current.value
 			} )
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.state.funcionarios = dados;						
-					if ( dados.length == 0 )
-						this.state.infoMsg = "Nenhum funcionário registrado!";
-												
-					this.setState( this.state );
+					this.setState( { funcionarios : dados } );						
+					if ( dados.length === 0 )
+						this.setState( { infoMsg : "Nenhum funcionário encontrado!" } );												
 				} );							
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -74,17 +74,11 @@ export default class Funcionarios extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {				
-			if ( resposta.status == 200 ) {						
-				this.state.infoMsg = "Funcionario removido com êxito!";
+			if ( resposta.status === 200 ) {						
+				this.setState( { infoMsg : "Funcionario removido com êxito!" } );
 				this.filtrar();																	
-			} else if ( resposta.status == 400 ) {
-				resposta.json().then( (dados) => {
-					this.state.erroMsg = dados.mensagem;
-					this.setState( this.state );				
-				} );	
 			} else {
-				this.state.erroMsg = sistema.getMensagemErro( resposta.status );
-				this.setState( this.state );				
+				sistema.trataRespostaNaoOk( resposta, this );
 			}						
 		} );
 	}
@@ -97,11 +91,11 @@ export default class Funcionarios extends React.Component {
 		const { erroMsg, infoMsg, funcionarios } = this.state;
 		
 		return (
-			<div className="container">
-				<div className="row">
+			<Container>
+				<Row>
 					<h4 className="text-center col-md-12">Lista de Funcionarios</h4>
-					<div className="tbl-pnl col-md-12">
-						<table id="tabela_funcionarios" className="table table-striped table-bordered col-md-12">
+					<Col className="tbl-pnl">
+						<Table striped bordered hover>
 							<thead>
 								<tr>
 									<th>ID</th>
@@ -126,39 +120,38 @@ export default class Funcionarios extends React.Component {
 									);
 								} ) }	
 							</tbody>							
-						</table>
-					</div>
-				</div>
+						</Table>
+					</Col>
+				</Row>
 					
-				<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-				<MensagemPainel color="info">{infoMsg}</MensagemPainel>	
+				<br />
 				
-				<div className="row">
-					<div className="col-md-3"></div>
-					<div className="col-md-6">
-						<form onSubmit={ (e) => this.filtrar( e ) }>
-							<div className="form-group">
-								<label className="control-label" for="nomeIni">Nome:</label>
-								<input type="text" ref="nomeIni" name="nomeIni" className="form-control" />						
-							</div>
-							<div className="form-group">
-								<label className="control-label" for="usernameIni">Nome do usuário:</label>
-								<input type="text" ref="usernameIni" name="usernameIni" className="form-control" />						
-							</div>
-														
-							<div className="form-group">
-								<input type="submit" value="Filtrar" className="btn btn-primary" />				
-							</div>		
-						</form>	
-					</div>
-				</div>	
-				<div className="row">
-					<div className="col-md-3"></div>
-					<div className="col-md-6">
-						<button className="btn btn-link" style={{ padding : 0 }} onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo funcionário</button>	
-					</div>
-				</div>				 
-			</div>					
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />	
+				
+				<Row>
+					<Col className="col-md-3"></Col>
+					<Col className="col-md-6">
+						<Form onSubmit={ (e) => this.filtrar( e ) }>
+							<Form.Group className="mb-3">
+								<Form.Label>Nome:</Form.Label>
+								<Form.Control type="text" ref={this.nomeIni} name="nomeIni" />						
+							</Form.Group>
+							<Form.Group className="mb-3">
+								<Form.Label>Nome de usuário:</Form.Label>
+								<Form.Control type="text" ref={this.usernameIni} name="nomeIni" />						
+							</Form.Group>
+								
+							<Button type="submit" variant="primary">Filtrar</Button>							
+							
+							<br />
+							<br />
+							
+							<button className="btn btn-link" onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo funcionário</button>
+						</Form>	
+					</Col>
+				</Row>									 
+			</Container>					
 		);
 	}
 	

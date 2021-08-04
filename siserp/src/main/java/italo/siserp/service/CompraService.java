@@ -118,38 +118,46 @@ public class CompraService {
 		
 		List<ItemCompra> compraItens = new ArrayList<>();
 		
-		for( SaveItemCompraRequest icreq : request.getItens() ) {
+		List<Produto> itensProdutosList = new ArrayList<>();
+		
+		for( SaveItemCompraRequest icreq : request.getItensCompra() ) {
 			ItemCompra ic = itemCompraBuilder.novoItemCompra();
 			itemCompraBuilder.carregaItemCompra( ic, icreq );
 								
-			String codigoBarras = ic.getProduto().getCodigoBarras();
+			String codigoBarras = icreq.getProduto().getCodigoBarras();
 			Optional<Produto> pop = produtoRepository.findByCodigoBarras( codigoBarras );
 			Produto p;
 			if ( pop.isPresent() ) {
 				p = pop.get();
 			} else {
-				p = produtoBuilder.novoProduto();
+				p = null;
+				int size = itensProdutosList.size();
+				for( int i = 0; p == null && i < size; i++ ) {
+					Produto p2 = itensProdutosList.get( i );
+					if ( p2.getCodigoBarras().equalsIgnoreCase( codigoBarras ) )
+						p = p2;						
+				}
+				if ( p == null ) {
+					p = produtoBuilder.novoProduto();
+					itensProdutosList.add( p );
+				}
 			}
 			
 			produtoBuilder.carregaProduto( p, icreq.getProduto() );
 			
-			List<ItemProduto> produtoItens = new ArrayList<>(); 
-			for( SaveItemProdutoRequest ipreq : icreq.getProduto().getItensProdutos() ) {
-				ItemProduto ip = this.buscaItemProduto( codigoBarras , ipreq.getCategorias() );
-				if ( ip == null ) {		
-					ip = itemProdutoBuilder.novoItemProduto();
-					
-					itemProdutoBuilder.carregaItemProduto( ip, ipreq );
-					this.carregaCategorias( ip, ipreq ); 
-				} else {
-					this.addItemProdutoQuantidade( ip, ipreq ); 
-				}
-				ip.setProduto( p );
-				produtoItens.add( ip );
+			SaveItemProdutoRequest ipreq = icreq.getItemProduto();
+			ItemProduto ip = this.buscaItemProduto( codigoBarras , ipreq.getCategorias() );
+			if ( ip == null ) {		
+				ip = itemProdutoBuilder.novoItemProduto();
 				
-			}			
-			p.setItensProdutos( produtoItens );
-			
+				itemProdutoBuilder.carregaItemProduto( ip, ipreq );
+				this.carregaCategorias( ip, ipreq ); 
+			} else {
+				this.addItemProdutoQuantidade( ip, ipreq ); 
+			}
+			ip.setProduto( p ); 
+			p.getItensProdutos().add( ip );
+									
 			ic.setProduto( p ); 
 			ic.setCompra( compra );						
 			
@@ -168,7 +176,7 @@ public class CompraService {
 		compra.setParcelas( parcelas );						
 		
 		String femp = request.getFornecedor().getEmpresa();
-		Optional<Fornecedor> fop = fornecedorRepository.findByEmpresa( femp );
+		Optional<Fornecedor> fop = fornecedorRepository.buscaPorEmpresa( femp );
 		Fornecedor f;
 		if ( fop.isPresent() ) {
 			f = fop.get();
@@ -188,6 +196,13 @@ public class CompraService {
 		Optional<Produto> op = produtoRepository.findByCodigoBarras( codigoBarras );
 		if ( op.isPresent() ) {
 			Produto produto = op.get();
+			if( categorias == null ) {
+				if ( produto.getItensProdutos().isEmpty() )
+					return null;
+				
+				return produto.getItensProdutos().get( 0 );
+			}				
+			
 			if ( categorias.isEmpty() ) {
 				if ( produto.getItensProdutos().isEmpty() )
 					return null;
@@ -221,10 +236,13 @@ public class CompraService {
 	}
 	
 	private void carregaCategorias( ItemProduto ip, SaveItemProdutoRequest request ) {						
+		if ( request.getCategorias() == null )
+			return;
+
 		List<CategoriaMap> categoriasMap = new ArrayList<>();
 		for( SaveCategoriaRequest catreq : request.getCategorias() ) {
 			Categoria c;
-			Optional<Categoria> opc = categoriaRepository.findByDescricao( catreq.getDescricao() );
+			Optional<Categoria> opc = categoriaRepository.buscaPorDescricao( catreq.getDescricao() );
 			if ( opc.isPresent() ) {
 				c = opc.get();
 			} else {

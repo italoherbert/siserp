@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import {Container, Row, Col, Form, Table, Button} from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -17,10 +18,12 @@ export default class Fornecedores extends React.Component {
 			infoMsg : null,
 			fornecedores : [] 
 		};			
+		
+		this.empresaIni = React.createRef();
 	}
 	
 	componentDidMount() {
-		this.refs.empresaIni.value = "*";
+		this.empresaIni.current.value = "*";
 		
 		this.filtrar( null );		
 	}
@@ -28,10 +31,8 @@ export default class Fornecedores extends React.Component {
 	filtrar( e ) {
 		if ( e != null )
 			e.preventDefault();
-					
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+
+		this.setState( { erroMsg : null, infoMsg : null } );
 
 		fetch( "/api/fornecedor/filtra", {
 			method : "POST",			
@@ -40,16 +41,15 @@ export default class Fornecedores extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
-				"empresaIni" : this.refs.empresaIni.value,
+				"empresaIni" : this.empresaIni.current.value,
 			} )
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.state.fornecedores = dados;						
-					if ( dados.length == 0 )
-						this.state.infoMsg = "Nenhum fornecedor registrado!";
-																							
-					this.setState( this.state );
+					this.setState( { fornecedores : dados } );
+					
+					if ( dados.length === 0 )
+						this.setState( { infoMsg : "Nenhum fornecedor registrado!" } );																							
 				} );				
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -72,8 +72,8 @@ export default class Fornecedores extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
-				this.state.infoMsg = "Fornecedor removido com êxito!";
+			if ( resposta.status === 200 ) {						
+				this.setState( { infoMsg : "Fornecedor removido com êxito!" } );
 				this.filtrar();																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -89,11 +89,11 @@ export default class Fornecedores extends React.Component {
 		const { erroMsg, infoMsg, fornecedores } = this.state;
 		
 		return (
-			<div className="container">
-				<div className="row">
+			<Container>
+				<Row>
 					<h4 className="text-center col-md-12">Lista de Fornecedores</h4>
-					<div className="tbl-pnl col-md-12">
-						<table id="tabela_funcionarios" className="table table-striped table-bordered col-md-12">
+					<Col className="tbl-pnl">
+						<Table striped bordered hover>
 							<thead>
 								<tr>
 									<th>ID</th>
@@ -105,7 +105,7 @@ export default class Fornecedores extends React.Component {
 							<tbody>
 								{fornecedores.map( ( fornecedor, index ) => {
 									return (
-										<tr>
+										<tr key={index}>
 											<td>{fornecedor.id}</td>
 											<td>{fornecedor.empresa}</td>
 											<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, fornecedor.id )}>detalhes</button></td>
@@ -114,35 +114,33 @@ export default class Fornecedores extends React.Component {
 									);
 								} ) }	
 							</tbody>							
-						</table>
-					</div>
-				</div>
+						</Table>
+					</Col>
+				</Row>
 					
-				<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-				<MensagemPainel color="info">{infoMsg}</MensagemPainel>									
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />									
 				
-				<div className="row">
-					<div className="col-md-3"></div>
-					<div className="col-md-6">
-						<form onSubmit={ (e) => this.filtrar( e ) }>
-							<div className="form-group">
-								<label className="control-label" for="empresaIni">Empresa:</label>
-								<input type="text" ref="empresaIni" name="empresaIni" className="form-control" />						
-							</div>
+				<Row>
+					<Col className="col-md-3"></Col>
+					<Col className="col-md-6">
+						<Form onSubmit={ (e) => this.filtrar( e ) }>
+							<Form.Group className="mb-3">
+								<Form.Label>Empresa:</Form.Label>
+								<Form.Control type="text" ref={this.empresaIni} name="empresaIni" />						
+							</Form.Group>
 																					
-							<div className="form-group">
-								<input type="submit" value="Filtrar" className="btn btn-primary" />				
-							</div>		
-						</form>	
-					</div>
-				</div>	
-				<div className="row">
-					<div className="col-md-3"></div>
-					<div className="col-md-6">
+							<Button type="submit" variant="primary" className="mb-3">Filtrar</Button>				
+						</Form>	
+					</Col>
+				</Row>	
+				<Row>
+					<Col className="col-md-3"></Col>
+					<Col className="col-md-6">
 						<button className="btn btn-link" style={{ padding : 0 }} onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo fornecedor</button>	
-					</div>
-				</div>				 
-			</div>					
+					</Col>
+				</Row>				 
+			</Container>					
 		);
 	}
 	

@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -19,10 +20,12 @@ export default class Categorias extends React.Component {
 			infoMsg : null,
 			categorias : [] 
 		};			
+		
+		this.descricaoIni = React.createRef();
 	}
 	
 	componentDidMount() {
-		this.refs.descricaoIni.value = "*";
+		this.descricaoIni.current.value = "*";
 		
 		this.filtrar( null );		
 	}
@@ -31,9 +34,7 @@ export default class Categorias extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );
 
 		fetch( "/api/categoria/filtra", {
 			method : "POST",			
@@ -42,16 +43,15 @@ export default class Categorias extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
-				"descricaoIni" : this.refs.descricaoIni.value,
+				"descricaoIni" : this.descricaoIni.current.value
 			} )
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.state.categorias = dados;						
-					if ( dados.length == 0 )
-						this.state.infoMsg = "Nenhuma categoria registrado!";
-						
-					this.setState( this.state );
+					this.setState( { categorias : dados } );
+					
+					if ( dados.length === 0 )
+						this.setState( { infoMsg : "Nenhuma categoria registrado!" } );						
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -74,8 +74,8 @@ export default class Categorias extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
-				this.state.infoMsg = "Categoria removido com êxito!";
+			if ( resposta.status === 200 ) {						
+				this.setState( { infoMsg : "Categoria removido com êxito!" } );
 				this.filtrar();																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
@@ -87,70 +87,71 @@ export default class Categorias extends React.Component {
 		const { erroMsg, infoMsg, categorias } = this.state;
 		
 		return (
-			<div className="container">				
-				<div className="row">
-					<div className="col-md-12">
+			<Container>				
+			
+				<Row>
+					<Col>
 						<CategoriaForm 
 							op="cadastrar"
 							titulo="Cadastre nova categoria" 
 							registrou={ () => this.filtrar(null) } />
-					</div>
-				</div>
+					</Col>
+				</Row>
 				
 				<br />
 				
-				<div className="row card">
-					<div className="col-sm-12 card-body">
-						<h4 className="text-center">Lista de Categorias</h4>
-						<div className="tbl-pnl col-md-12">
-							<table id="tabela_funcionarios" className="table table-striped table-bordered col-md-12">
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Nome da empresa</th>
-										<th>Detalhes</th>
-										<th>Remover</th>
-									</tr>
-								</thead>
-								<tbody>
-									{categorias.map( ( categoria, index ) => {
-										return (
-											<tr>
-												<td>{categoria.id}</td>
-												<td>{categoria.descricao}</td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, categoria.id )}>remover</button></td>
-											</tr>
-										);
-									} ) }	
-								</tbody>							
-							</table>
-						</div>
-						
-						<br />
-				
-						<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-						<MensagemPainel color="info">{infoMsg}</MensagemPainel>
-						
-						<div className="row">
-							<div className="col-md-3"></div>
-							<div className="col-md-6">
-								<form onSubmit={ (e) => this.filtrar( e ) }>
-									<div className="form-group">
-										<label className="control-label" for="descricaoIni">Descrição:</label>
-										<input type="text" ref="descricaoIni" name="descricaoIni" className="form-control" />						
-									</div>
-																							
-									<div className="form-group">																							
-										<input type="submit" value="Filtrar" className="btn btn-primary" />				
-									</div>		
-								</form>	
+				<Row>
+					<Col>
+						<Card className="p-3">
+							<h4 className="text-center">Lista de Categorias</h4>
+							<div className="tbl-pnl">
+								<Table striped bordered hover>
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Nome da empresa</th>
+											<th>Detalhes</th>
+											<th>Remover</th>
+										</tr>
+									</thead>
+									<tbody>
+										{categorias.map( ( categoria, index ) => {
+											return (
+												<tr key={index}>
+													<td>{categoria.id}</td>
+													<td>{categoria.descricao}</td>
+													<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
+													<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, categoria.id )}>remover</button></td>
+												</tr>
+											)
+										} ) }	
+									</tbody>							
+								</Table>
 							</div>
-						</div>
-					</div>
-				</div>
+							
+							<br />
+					
+							<MensagemPainel cor="danger" msg={erroMsg} />
+							<MensagemPainel cor="primary" msg={infoMsg} />
+							
+							<Row>
+								<Col className="col-md-3"></Col>
+								<Col className="col-md-6">
+									<Form onSubmit={ (e) => this.filtrar( e ) }>
+										<Form.Group className="mb-2">
+											<Form.Label>Descrição:</Form.Label>
+											<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
+										</Form.Group>
+																																								
+										<Button type="submit" variant="primary">Filtrar</Button>				
+									</Form>	
+								</Col>
+							</Row>
+						</Card>
+					</Col>	
+				</Row>
 																															
-			</div>					
+			</Container>					
 		);
 	}
 	

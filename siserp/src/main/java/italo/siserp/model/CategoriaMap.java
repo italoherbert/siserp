@@ -24,11 +24,11 @@ public class CategoriaMap {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.REFRESH})
+	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="categoria_id") 
 	private Categoria categoria;
 	
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.REFRESH})
+	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="subcategoria_id") 
 	private SubCategoria subcategoria;
 	

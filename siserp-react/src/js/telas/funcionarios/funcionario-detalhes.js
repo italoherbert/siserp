@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -32,10 +32,9 @@ export default class FuncionarioDetalhes extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {											
-					this.state.funcionario = dados;
-					this.setState( this.state );
+					this.setState( { funcionario : dados } );
 				} );		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -144,10 +143,10 @@ export default class FuncionarioDetalhes extends React.Component {
 						
 						<div className="card border-1">								
 							<div className="card-body">
-								<a href="#" onClick={(e) => this.editar( e )}>Editar funcionario</a>
+								<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar funcionario</button>
 													
-								<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-								<MensagemPainel color="info">{infoMsg}</MensagemPainel>																																								
+								<MensagemPainel cor="danger" msg={erroMsg} />
+								<MensagemPainel cor="primary" msg={infoMsg} />																																								
 							</div>
 						</div>
 												

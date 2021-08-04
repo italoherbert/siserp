@@ -31,7 +31,7 @@ public class ItemCompra {
 	@Column
 	private double precoUnitario;
 		
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.REFRESH})
+	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name="produto_id")
 	private Produto produto;
 	

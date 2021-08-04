@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -25,10 +26,9 @@ export default class SedeDetalhes extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {											
-					this.state.sede = dados;		
-					this.setState( this.state );
+					this.setState( { sede : dados } );		
 				} );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -51,38 +51,37 @@ export default class SedeDetalhes extends React.Component {
 		const { sede, erroMsg, infoMsg } = this.state;
 		
 		return( 
-			<div className="container">
-				<div className="row">
-					<div className="col-md-2"></div>
-					<div className="col-md-8">
+			<Container>
+				<Row>
+					<Col className="col-md-2"></Col>
+					<Col className="col-md-8">
 						<h4 className="text-center">Dados da sede</h4>																
 						
-						<div className="card border-1">								
-							<div className="card-body">
-								<h4 className="card-title">Dados gerais</h4>
-								
+						<Card className="p-3">								
+							<h4>Dados gerais</h4>
+							
+							<div className="display: inline">
 								<span className="text-dark font-weight-bold">CNPJ: </span>
 								<span className="text-info">{sede.cnpj}</span>
-								<br />
-								<span className="text-dark font-weight-bold">Inscrição Estadual: </span>
-								<span className="text-info">{sede.inscricaoEstadual}</span>
 							</div>
-						</div>
+							<div className="display: inline">
+								<span className="text-dark font-weight-bold">Inscrição Estadual: </span>
+								<span className="text-info">{sede.inscricaoEstadual}</span>							
+							</div>
+						</Card>
 						
 						<br />
 						
-						<div className="card border-1">								
-							<div className="card-body">
-								<a href="#" onClick={(e) => this.editar( e )}>Editar sede</a>
-													
-								<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-								<MensagemPainel color="info">{infoMsg}</MensagemPainel>																																							
-							</div>
-						</div>
+						<Card>								
+							<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar sede</button>
 												
-					</div>
-				</div>															
-			</div>
+							<MensagemPainel cor="danger" msg={erroMsg} />
+							<MensagemPainel cor="primary" msg={infoMsg} />																																							
+						</Card>
+												
+					</Col>
+				</Row>															
+			</Container>
 		);
 	}
 

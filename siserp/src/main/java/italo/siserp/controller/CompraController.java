@@ -24,7 +24,11 @@ import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.model.request.BuscaCompraRequest;
+import italo.siserp.model.request.SaveCategoriaRequest;
+import italo.siserp.model.request.SaveCompraParcelaRequest;
 import italo.siserp.model.request.SaveCompraRequest;
+import italo.siserp.model.request.SaveItemCompraRequest;
+import italo.siserp.model.request.SaveSubCategoriaRequest;
 import italo.siserp.model.response.CompraResponse;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.TotalCompraResponse;
@@ -39,6 +43,90 @@ public class CompraController {
 	
 	@PostMapping(value="/registra")
 	public ResponseEntity<Object> registraCompra( @RequestBody SaveCompraRequest request ) {
+		if ( request.getDataCompra() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA ) );						
+		if ( request.getDataCompra().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA ) );
+		
+		if ( request.getFornecedor().getEmpresa() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );						
+		if ( request.getFornecedor().getEmpresa().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );
+
+		if ( request.getItensCompra().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NENHUM_PRODUTO_INFORMADO ) );						
+		
+		for( SaveItemCompraRequest icreq : request.getItensCompra() ) {
+			if ( icreq.getPrecoUnitario() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );								
+			if ( icreq.getPrecoUnitario().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );
+			
+			if ( icreq.getQuantidade() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
+			if ( icreq.getQuantidade().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );
+			
+			if ( icreq.getProduto().getCodigoBarras() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );								
+			if ( icreq.getProduto().getCodigoBarras().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );
+			
+			if ( icreq.getProduto().getDescricao() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );								
+			if ( icreq.getProduto().getDescricao().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );
+			
+			if ( icreq.getProduto().getPrecoUnitCompra() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );								
+			if ( icreq.getProduto().getPrecoUnitCompra().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );
+			
+			if ( icreq.getProduto().getPrecoUnitVenda() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_VENDA_OBRIGATORIO ) );								
+			if ( icreq.getProduto().getPrecoUnitVenda().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_VENDA_OBRIGATORIO ) );
+			
+			if ( icreq.getProduto().getUnidade() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_UNIDADE_OBRIGATORIA ) );								
+			
+			if ( icreq.getItemProduto().getQuantidade() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
+			if ( icreq.getItemProduto().getQuantidade().trim().isEmpty() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );
+			
+			for ( SaveCategoriaRequest catreq : icreq.getItemProduto().getCategorias() ) {
+				if ( catreq.getDescricao() == null )
+					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
+				if ( catreq.getDescricao().trim().isEmpty() )
+					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
+				
+				for( SaveSubCategoriaRequest subcatreq : catreq.getSubcategorias() ) {
+					if ( subcatreq.getDescricao() == null )
+						return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
+					if ( subcatreq.getDescricao().trim().isEmpty() )
+						return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );					
+				}
+			}			
+		}
+		
+		for( SaveCompraParcelaRequest parcelaReq : request.getParcelas() ) {
+			if ( parcelaReq.getValor() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PARCELA_VALOR_OBRIGATORIO ) );
+			if ( parcelaReq.getValor() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PARCELA_VALOR_OBRIGATORIO ) );		
+		
+			if ( parcelaReq.getDataPagamento() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_PAGAMENTO_OBRIGATORIA ) );
+			if ( parcelaReq.getDataPagamento() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_PAGAMENTO_OBRIGATORIA ) );
+			
+			if ( parcelaReq.getDataVencimento() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_VENCIMENTO_OBRIGATORIA ) );
+			if ( parcelaReq.getDataVencimento() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_VENCIMENTO_OBRIGATORIA ) );										
+		}
+		
 		try {
 			compraService.salvaCompra( request );
 			return ResponseEntity.ok().build();
@@ -92,5 +180,5 @@ public class CompraController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.COMPRA_NAO_ENCONTRADA ) );						
 		}
 	}
-	
+		
 }

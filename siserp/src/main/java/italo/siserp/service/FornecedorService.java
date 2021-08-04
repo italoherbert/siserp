@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.FornecedorBuilder;
@@ -56,10 +57,10 @@ public class FornecedorService {
 		fornecedorRepository.save( f );
 	}
 	
-	public List<FornecedorResponse> buscaFornecedorsPorEmpresaIni( BuscaFornecedoresRequest request ) {
+	public List<FornecedorResponse> filtra( BuscaFornecedoresRequest request, Pageable pageable ) {
 		String empresaIni = (request.getEmpresaIni().equals( "*" ) ? "" : request.getEmpresaIni() );
-		
-		List<Fornecedor> fornecedors = fornecedorRepository.filtra( empresaIni+"%" );
+				
+		List<Fornecedor> fornecedors = fornecedorRepository.filtra( empresaIni+"%", pageable );
 		
 		List<FornecedorResponse> responses = new ArrayList<>();
 		

@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Navbar, NavDropdown, Nav} from 'react-bootstrap';
+import { Navbar, NavDropdown, Nav } from 'react-bootstrap';
 
 import SedeDetalhes from './telas/sede/sede-detalhes';
 import Funcionarios from './telas/funcionarios/funcionarios';
@@ -12,15 +12,7 @@ import Compras from './telas/compras/compras';
 import sistema from './logica/sistema.js';
 
 export default class NavegBar extends React.Component {
-	
-	constructor( props ) {
-		super( props );
-	}
-	
-	componentDidMound() {
 		
-	}
-	
 	mostraEscondeMenu( elementoId ) {
 		sistema.showHide( elementoId );
 		this.setState( this.state );
@@ -53,35 +45,33 @@ export default class NavegBar extends React.Component {
 	render() {
 		return(
 			<Navbar bg="dark" variant="dark">
-				<Container>
-					<Navbar.Brand href="#">Sistema ERP</Navbar.Brand>
-					<Navbar.Toggle aria-controls="basic-navbar-nav" />
-					<Navbar.Collapse id="basic-navbar.nav">
-						<Nav className="me-auto">
-							<NavDropdown title="Financeiro" id="basic-nav-dropdown">
-								<NavDropdown.Item href="#">Caixa</NavDropdown.Item>
-								<NavDropdown.Item href="#">Fluxo de caixa</NavDropdown.Item>
-								<NavDropdown.Item href="#">Contas a receber</NavDropdown.Item>
-								<NavDropdown.Item href="#">Contas a pagar</NavDropdown.Item>
-								<NavDropdown.Item href="#">Recebimento avulso</NavDropdown.Item>
-								<NavDropdown.Item href="#">Relatórios</NavDropdown.Item>
-							</NavDropdown>
-							<Nav.Link href="#" onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
-							<Nav.Link href="#">Vendas</Nav.Link>
-							<Nav.Link href="#" onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
-							<NavDropdown title="Produtos" id="basic-nav-dropdown">
-								<NavDropdown.Item href="#" onClick={ () => this.paraTelaProdutos() }>Produtos</NavDropdown.Item>
-								<NavDropdown.Item href="#" onClick={ () => this.paraTelaCategorias() }>Categorias</NavDropdown.Item>
-								<NavDropdown.Item href="#">Impostos</NavDropdown.Item>
-							</NavDropdown>
-							<Nav.Link href="#" onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>
-							<Nav.Link href="#">Clientes</Nav.Link>
-							{ ( sistema.usuario.tipo == 'ADMIN' || sistema.usuario.tipo == 'GERENTE' ) && (
-								<Nav.Link href="#" onClick={ () => this.paraTelaFornecedores() }>Fornecedores</Nav.Link>
-							) }
-						</Nav>
-					</Navbar.Collapse>
-				</Container>						
+				<Navbar.Brand className="mx-3">Sistema ERP</Navbar.Brand>
+				<Navbar.Toggle aria-controls="basic-navbar-nav" />
+				<Navbar.Collapse id="basic-navbar.nav">
+					<Nav className="me-auto">
+						<NavDropdown title="Financeiro" id="basic-nav-dropdown">
+							<NavDropdown.Item>Caixa</NavDropdown.Item>
+							<NavDropdown.Item>Fluxo de caixa</NavDropdown.Item>
+							<NavDropdown.Item>Contas a receber</NavDropdown.Item>
+							<NavDropdown.Item>Contas a pagar</NavDropdown.Item>
+							<NavDropdown.Item>Recebimento avulso</NavDropdown.Item>
+							<NavDropdown.Item>Relatórios</NavDropdown.Item>
+						</NavDropdown>
+						<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
+						<Nav.Link>Vendas</Nav.Link>
+						<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
+						<NavDropdown title="Produtos" id="basic-nav-dropdown">
+							<NavDropdown.Item onClick={ () => this.paraTelaProdutos() }>Produtos</NavDropdown.Item>
+							<NavDropdown.Item onClick={ () => this.paraTelaCategorias() }>Categorias</NavDropdown.Item>
+							<NavDropdown.Item>Impostos</NavDropdown.Item>
+						</NavDropdown>
+						<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>
+						<Nav.Link>Clientes</Nav.Link>
+						{ ( sistema.usuario.tipo === 'ADMIN' || sistema.usuario.tipo === 'GERENTE' ) && (
+							<Nav.Link onClick={ () => this.paraTelaFornecedores() }>Fornecedores</Nav.Link>
+						) }
+					</Nav>
+				</Navbar.Collapse>
 			</Navbar>
 		);
 	}

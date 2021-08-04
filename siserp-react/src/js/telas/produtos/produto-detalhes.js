@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { Container, Row, Col, Card } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -27,10 +28,9 @@ export default class ProdutoDetalhes extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {											
-					this.state.produto = dados;										
-					this.setState( this.state );				
+					this.setState( { produto : dados } );				
 				} );		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
@@ -45,6 +45,7 @@ export default class ProdutoDetalhes extends React.Component {
 			<ProdutoForm op="editar"
 				titulo="Altere a produto" 
 				produtoId={this.props.produtoId} 
+				codigoBarras={this.state.produto.codigoBarras}
 				descricao={this.state.produto.descricao} 
 				precoUnitCompra={this.state.produto.precoUnitCompra} 
 				precoUnitVenda={this.state.produto.precoUnitVenda} 
@@ -57,50 +58,51 @@ export default class ProdutoDetalhes extends React.Component {
 		const { produto, erroMsg, infoMsg } = this.state;
 		
 		return ( 
-			<div className="container">
-				<div className="row">
-					<div className="col-md-2"></div>
-					<div className="col-md-8">
+			<Container>
+				<Row>
+					<Col className="col-md-2"></Col>
+					<Col className="col-md-8">
 						<h4 className="text-center">Dados do produto</h4>																
 						
-						<div className="card border-1">								
-							<div className="card-body">
-								<h4 className="card-title">Dados gerais</h4>
-								
+						<Card className="p-3">								
+							<h4 className="card-title">Dados gerais</h4>
+							
+							<div className="display-inline">
 								<span className="text-dark font-weight-bold">Descrição: </span>
 								<span className="text-info">{produto.descricao}</span>
-								
-								<br />
+							</div>
+							
+							<div className="display-inline">
 								<span className="text-dark font-weight-bold">Codigo barras: </span>
 								<span className="text-info">{produto.codigoBarras}</span>
-								
-								<br />
+							</div>
+							
+							<div className="display-inline">
 								<span className="text-dark font-weight-bold">Preço compra: </span>
 								<span className="text-info">{produto.precoUnitCompra}</span>
-								
-								<br />
+							</div>
+							
+							<div className="display-inline">
 								<span className="text-dark font-weight-bold">Preço venda: </span>
 								<span className="text-info">{produto.precoUnitVenda}</span>
-								
-								<br />
+							</div>
+							
+							<div className="display-inline">
 								<span className="text-dark font-weight-bold">Unidade: </span>
 								<span className="text-info">{produto.unidade}</span>
-								
-								<br />
-								
-								<br />
-								<br />
-								<a href="#" onClick={(e) => this.editar( e )}>Editar produto</a>																																							
-							</div>																
-						</div>
-					</div>
-				</div>
+							</div>
+							
+							<br />
+							<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar produto</button>																																							
+						</Card>
+					</Col>
+				</Row>
 												
 				<br />
 				
-				<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-				<MensagemPainel color="info">{infoMsg}</MensagemPainel>																																									
-			</div>
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />																																									
+			</Container>
 		);
 	}
 

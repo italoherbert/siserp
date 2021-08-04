@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { Container, Row, Col, Card, Table, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -13,29 +14,27 @@ export default class Produtos extends React.Component {
 		super( props );
 		
 		this.state = { 
-			addErroMsg : null, 
-			addInfoMsg : null,
 			erroMsg : null,
 			infoMsg : null,
 			produtos : [] 
-		};			
+		};		
+		this.descricaoIni = React.createRef();
+		this.codigoBarras = React.createRef();
 	}
 	
 	componentDidMount() {
-		this.refs.descricaoIni.value = "*";
+		this.descricaoIni.current.value = "*";
 		
-		this.filtrarPorDescricaoIni( null );		
+		this.filtrar( null );		
 	}
 	
 	filtrar( e ) {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );
 
-		let descIni = this.refs.descricaoIni.value;
+		let descIni = this.descricaoIni.current.value;
 
 		fetch( "/api/produto/filtra/"+descIni, {
 			method : "GET",			
@@ -43,13 +42,12 @@ export default class Produtos extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.state.produtos = dados;						
-					if ( dados.length == 0 )
-						this.state.infoMsg = "Nenhuma produto encontrado!";
-						
-					this.setState( this.state );
+					this.setState( { produtos : dados } );
+					
+					if ( dados.length === 0 )
+						this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -60,12 +58,10 @@ export default class Produtos extends React.Component {
 	buscar( e ) {
 		if ( e != null )
 			e.preventDefault();
-					
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+							
+		this.setState( { erroMsg : null, infoMsg : null } );
 
-		let codBarras = this.refs.codigoBarras.value; 
+		let codBarras = this.codigoBarras.current.value; 
 
 		fetch( "/api/produto/busca/"+codBarras, {
 			method : "GET",			
@@ -73,15 +69,12 @@ export default class Produtos extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
-				resposta.json().then( (dados) => {
-					this.state.produtos = new Array();
+			if ( resposta.status === 200 ) {						
+				resposta.json().then( (dados) => {										
 					this.state.produtos.push( dados );
 											
-					if ( dados.length == 0 )
-						this.state.infoMsg = "Nenhuma produto encontrado!";
-						
-					this.setState( this.state );
+					if ( dados.length === 0 )
+						this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -104,9 +97,9 @@ export default class Produtos extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
-				this.state.infoMsg = "Produto removido com êxito!";
-				this.filtrarPorDescricaoIni( null );																	
+			if ( resposta.status === 200 ) {						
+				this.setState( { infoMsg : "Produto removido com êxito!" } );
+				this.filtrar( null );																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
 			}
@@ -125,85 +118,84 @@ export default class Produtos extends React.Component {
 		const { erroMsg, infoMsg, produtos } = this.state;
 		
 		return (
-			<div className="container">												
-				<div className="row card">
-					<div className="col-sm-12 card-body">
-						<h4 className="text-center">Lista de Produtos</h4>
-						<div className="tbl-pnl col-md-12">
-							<table id="tabela_funcionarios" className="table table-striped table-bordered col-md-12">
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Descrição</th>
-										<th>Código de barras</th>
-										<th>Preço compra</th>
-										<th>Preço venda</th>
-										<th>Unidade</th>
-										<th>Detalhes</th>
-										<th>Remover</th>
-									</tr>
-								</thead>
-								<tbody>
-									{produtos.map( ( produto, index ) => {
-										return (
-											<tr>
-												<td>{produto.id}</td>
-												<td>{produto.descricao}</td>
-												<td>{produto.codigoBarras}</td>
-												<td>{produto.precoUnitCompra}</td>
-												<td>{produto.precoUnitVenda}</td>
-												<td>{produto.unidade}</td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, produto.id )}>detalhes</button></td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, produto.id )}>remover</button></td>
-											</tr>
-										);
-									} ) }	
-								</tbody>							
-							</table>
-						</div>
-						
-						<br />
-				
-						<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-						<MensagemPainel color="info">{infoMsg}</MensagemPainel>
-						
-						<div className="row">
-							<div className="col-md-1"></div>
-							<div className="col-md-10">
-								<div className="row">
-									<div className="col-sm-6">
-										<form onSubmit={ (e) => this.filtrar( e ) }>
-											<div className="form-group">
-												<label className="control-label" for="descricaoIni">Descrição:</label>
-												<input type="text" ref="descricaoIni" name="descricaoIni" className="form-control" />						
-											</div>	
-											<div className="form-group">
-												<input type="submit" value="Filtrar" className="btn btn-primary" />				
-											</div>										
-										</form>
-									</div>
-									<div className="col-sm-6">
-										<form onSubmit={ (e) => this.buscar( e ) }>
-											<div className="form-group">
-												<label className="control-label" for="codigoBarras">Código de barras:</label>
-												<input type="text" ref="codigoBarras" name="codigoBarras" className="form-control" />						
-											</div>
-											<div className="form-group">
-												<input type="submit" value="Buscar" className="btn btn-primary" />				
-											</div>											
-										</form>
-									</div>
-								</div>
-								
-								<br />																
-																									
-								<a href="#" onClick={ (e) => this.paraCadastroForm( e ) } >Cadastre um novo produto</a>
+			<Container>												
+				<Card className="p-3">
+					<Row>
+						<Col>
+							<h4 className="text-center">Lista de Produtos</h4>
+							<div className="tbl-pnl">
+								<Table striped bordered hover>
+									<thead>
+										<tr>
+											<th>ID</th>
+											<th>Descrição</th>
+											<th>Código de barras</th>
+											<th>Preço compra</th>
+											<th>Preço venda</th>
+											<th>Unidade</th>
+											<th>Detalhes</th>
+											<th>Remover</th>
+										</tr>
+									</thead>
+									<tbody>
+										{produtos.map( ( produto, index ) => {
+											return (
+												<tr key={index}>
+													<td>{produto.id}</td>
+													<td>{produto.descricao}</td>
+													<td>{produto.codigoBarras}</td>
+													<td>{produto.precoUnitCompra}</td>
+													<td>{produto.precoUnitVenda}</td>
+													<td>{produto.unidade}</td>
+													<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, produto.id )}>detalhes</button></td>
+													<td><button className="btn btn-link p-0" onClick={(e) => this.remover( e, produto.id )}>remover</button></td>
+												</tr>
+											);
+										} ) }	
+									</tbody>							
+								</Table>
 							</div>
-						</div>
-					</div>
-				</div>
-																															
-			</div>					
+							
+							<br />
+					
+							<MensagemPainel cor="danger" msg={erroMsg} />
+							<MensagemPainel cor="primary" msg={infoMsg} />
+							
+							<Row>
+								<Col className="col-md-1"></Col>
+								<Col className="col-md-10">
+									<Row>
+										<Col className="col-sm-6">
+											<Form onSubmit={ (e) => this.filtrar( e ) }>
+												<Form.Group className="mb-2">
+													<Form.Label>Descrição:</Form.Label>
+													<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
+												</Form.Group>	
+												
+												<Button type="submit"variant="primary">Filtrar</Button>				
+											</Form>
+										</Col>
+										<Col className="col-sm-6">
+											<Form onSubmit={ (e) => this.buscar( e ) }>
+												<Form.Group className="mb-2">
+													<Form.Label>Codigo de barras:</Form.Label>
+													<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />						
+												</Form.Group>	
+												
+												<Button type="submit"variant="primary">Buscar</Button>				
+											</Form>
+										</Col>
+									</Row>
+									
+									<br />																
+																										
+									<button className="btn btn-link" onClick={ (e) => this.paraCadastroForm( e ) } >Cadastre um novo produto</button>
+								</Col>
+							</Row>
+						</Col>
+					</Row>
+				</Card>																															
+			</Container>					
 		);
 	}
 	

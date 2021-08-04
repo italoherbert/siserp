@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Login from './js/login.js';
 
 class App extends React.Component {

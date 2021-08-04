@@ -9,5 +9,17 @@ body {
 	overflow-y: scroll;
 	padding: 1em;
 	border: 1px solid #EEF;
+}
+
+.tbl-pnl-pequeno {
+	height: 12em;
+	display: block;
+	overflow-y: scroll;
+	padding: 1em;
+	border: 1px solid #EEF;
+}
+
+.tbl-pnl Table, .tbl-pnl-pequeno Table {
 	background-color: #FFF;
 }
+

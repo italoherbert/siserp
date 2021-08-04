@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -13,21 +13,22 @@ export default class SedeForm extends React.Component {
 			erroMsg : null, 
 			infoMsg : null
 		};
+		
+		this.cnpj = React.createRef();
+		this.inscricaoEstadual = React.createRef();
 	}
 	
 	componentDidMount() {			
-		if ( this.props.op == 'editar' ) {
-			this.refs.cnpj.value = this.props.cnpj;
-			this.refs.inscricaoEstadual.value = this.props.inscricaoEstadual;
+		if ( this.props.op === 'editar' ) {
+			this.cnpj.current.value = this.props.cnpj;
+			this.inscricaoEstadual.current.value = this.props.inscricaoEstadual;
 		}										
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );
 						
 		fetch( '/api/sede/salva', {
 			method : 'PUT',			
@@ -36,21 +37,14 @@ export default class SedeForm extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"cnpj" : this.refs.cnpj.value,	
-				"inscricaoEstadual" : this.refs.inscricaoEstadual.value				
+				"cnpj" : this.cnpj.current.value,	
+				"inscricaoEstadual" : this.inscricaoEstadual.current.value				
 			} )		
 		} ).then( (resposta) => {				
-			if ( resposta.status == 200 ) {
-				this.state.infoMsg = "Dados da sede salvos com sucesso.";		
-				this.setState( this.state );
-			} else if ( resposta.status == 400 ) {
-				resposta.json().then( (dados) => {
-					this.state.erroMsg = dados.mensagem;
-					this.setState( this.state );
-				} );
+			if ( resposta.status === 200 ) {
+				this.setState( { infoMsg : "Dados da sede salvos com sucesso." } );
 			} else {
-				this.state.erroMsg = sistema.getMensagemErro( resposta.status );
-				this.setState( this.state );
+				sistema.trataRespostaNaoOk( resposta, this );
 			}
 		} );				
 	}
@@ -59,47 +53,33 @@ export default class SedeForm extends React.Component {
 		const { erroMsg, infoMsg } = this.state;
 				
 		return(
-			<div className="container">
-				<div className="row">
-					<div className="col-md-2"></div>
-					<div className="col-md-8">
+			<Container>
+				<Row>
+					<Col className="col-md-2"></Col>
+					<Col className="col-md-8">
 						<h4 className="card-title text-center">Registro de sede</h4>
 																
-						<form onSubmit={(e) => this.salvar( e ) } className="container">
-							<div className="card border-1">								
-								<div className="card-body">
-									<h4 className="card-title">Dados gerais</h4>
+						<Card className="p-3">																		
+							<Form onSubmit={(e) => this.salvar( e ) } className="container">
+								<h4 className="card-title">Dados gerais</h4>
 									
-									<div className="row form-group">
-										<div className="col-sm-12">
-											<label className="control-label" for="cnpj">CNPJ: </label>
-											<input type="text" ref="cnpj" name="cnpj" className="form-control" />
-										</div>										
-									</div>	
-									<div className="row form-group">
-										<div className="col-sm-12">
-											<label className="control-label" for="inscricaoEstadual">Inscrição estadual: </label>
-											<input type="text" ref="inscricaoEstadual" name="inscricaoEstadual" className="form-control" />
-										</div>										
-									</div>								
-								</div>
-							</div>
-							
-							<br />
-														
-							<div className="card border-1">																
-								<div className="card-body">
-									<MensagemPainel cor="danger" msg={erroMsg} />
-									<MensagemPainel cor="info" msg={infoMsg} />
-									<div class="form-group">
-										<button type="submit" className="btn btn-primary">Salvar</button>
-									</div>																												
-								</div>
-							</div>									
-						</form>
-					</div>
-				</div>
-			</div>
+								<Form.Group className="mb-2">
+									<Form.Label>CNPJ: </Form.Label>
+									<Form.Control type="text" ref={this.cnpj} name="cnpj" />
+								</Form.Group>	
+								<Form.Group className="mb-2">
+									<Form.Label>Inscrição estadual: </Form.Label>
+									<Form.Control type="text" ref={this.inscricaoEstadual} name="cnpj" />
+								</Form.Group>
+
+								<MensagemPainel cor="danger" msg={erroMsg} />
+								<MensagemPainel cor="primary" msg={infoMsg} />
+								<Button type="submit" variant="primary" className="my-1">Salvar</Button>
+							</Form>															
+						</Card>
+					</Col>
+				</Row>
+			</Container>
 		);
 	}
 	

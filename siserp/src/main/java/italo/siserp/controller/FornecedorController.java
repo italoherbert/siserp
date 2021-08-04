@@ -3,6 +3,8 @@ package italo.siserp.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -66,13 +68,29 @@ public class FornecedorController {
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra")
-	public ResponseEntity<Object> buscaFornecedors( @RequestBody BuscaFornecedoresRequest request ) {		
+	public ResponseEntity<Object> buscaFornecedores( @RequestBody BuscaFornecedoresRequest request ) {		
 		if ( request.getEmpresaIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
 		if ( request.getEmpresaIni().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
 		
-		List<FornecedorResponse> fornecedors = fornecedorService.buscaFornecedorsPorEmpresaIni( request );
+		Pageable p = Pageable.unpaged();
+		
+		List<FornecedorResponse> fornecedors = fornecedorService.filtra( request, p );
+		return ResponseEntity.ok( fornecedors );		
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PostMapping("/filtra/limit/{limit}")
+	public ResponseEntity<Object> buscaFornecedores( @PathVariable int limit, @RequestBody BuscaFornecedoresRequest request ) {		
+		if ( request.getEmpresaIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+		if ( request.getEmpresaIni().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+		
+		Pageable p = PageRequest.of( 0, limit ); 
+		
+		List<FornecedorResponse> fornecedors = fornecedorService.filtra( request, p );
 		return ResponseEntity.ok( fornecedors );		
 	}
 

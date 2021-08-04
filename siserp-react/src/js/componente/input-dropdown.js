@@ -1,69 +1,89 @@
+import React from 'react';
 
-class InputDropdown extends React.Component {
+export default class InputDropdown extends React.Component {
 	
 	constructor( props ) {
 		super( props );
 		
-		this.state = { itemPadrao : "Nenhum item" }
+		this.state = { id : 'input-dropdown'+new Date().getTime()+Math.random() };
+		this.texto = React.createRef();
 	}
 	
-	componentDidMount() {		
-		if ( this.props.itemPadrao != null && this.props.itemPadrao != undefined )
-			this.state.itemPadrao = this.props.itemPadrao;
-		
-		$("#lista_dropdown").hide();
+	componentDidMount() {						
+		document.getElementById( this.state.id ).style.display = 'none';
+		document.getElementById( this.state.id ).style.visibility = 'hidden';				
 	}
 	
 	onChangeTexto( e ) {
 		e.preventDefault();
 
-		$("#lista_dropdown").show();
-			
-		let item = this.refs.texto.value;	
+		document.getElementById( this.state.id ).style.display = 'block';
+		document.getElementById( this.state.id ).style.visibility = 'visible';
+					
+		let item;
+		if ( this.props.referencia !== null && this.props.referencia !== undefined )
+			item = this.props.referencia.current.value;	
+		else item = this.texto.current.value;
 						
-		if ( typeof( this.props.carregaItens ) == "function" ) {
+		if ( typeof( this.props.carregaItens ) === "function" ) {
 			this.props.carregaItens.call( this, item );
-			this.setState( this.state );
+			this.setState( {} );
 		}
 	}
 	
-	escondeDropdown( e ) {
+	onClickMostraEscondeDropdown( e ) {
 		e.preventDefault();
-							
-		this.refs.texto.value = "";
-				
-		$("#lista_dropdown").hide();														
+		
+		var el = document.getElementById( this.state.id );
+		if ( el.style.visibility === 'visible' ) {
+			el.style.display = 'none';
+			el.style.visibility = 'hidden';																						
+		} else {
+			el.style.display = 'block';
+			el.style.visibility = 'visible';
+		}
 	}
 		
 	onClickItem( e, item ) {
 		e.preventDefault();
 							
-		$("#lista_dropdown").hide();							
+		document.getElementById( this.state.id ).style.display = 'none';
+		document.getElementById( this.state.id ).style.visibility = 'hidden';							
 							
-		this.refs.texto.value = item;		
-		this.setState( this.state );
-	}
-	
+		if ( this.props.referencia !== null && this.props.referencia !== undefined )
+			this.props.referencia.current.value = item;	
+		else this.texto.current.value = item;	
+		
+		if ( typeof( this.props.carregaItens ) === "function" ) {
+			this.props.carregaItens.call( this, item );
+			this.setState( {} );
+		}
+	}		
+		
 	render() {
+		const { id } = this.state;		
+				
+		let referencia;
+		if ( this.props.referencia !== null && this.props.referencia !== undefined )
+			referencia = this.props.referencia;	
+		else referencia = this.texto;	
+				
 		return (
 			<div className="dropdown">
-				<input id="texto" type="text" ref="texto" name="texto" 
-			  			onChange={ (e) => this.onChangeTexto( e ) }			  			
+				<input id="texto" type="text" ref={referencia} name="texto" 
+			  			onChange={ (e) => this.onChangeTexto( e ) } 
+						onClick={ (e) => this.onClickMostraEscondeDropdown( e ) }
 			  			className="form-control" />
 			  				
-			  	<div id="lista_dropdown" className="dropdown-menu" aria-labelledby="texto">			  					  			
+			  	<div id={id} className="dropdown-menu" aria-labelledby="texto">			  					  			
 			  		{this.props.itens.map( (item, index) => {
 						return( 
-							<a key={index} className="dropdown-item" href="#" 
+							<button key={index} className="dropdown-item"  
 								onClick={ (e) => this.onClickItem( e, item ) }>
 									{item}
-							</a> 
+							</button> 
 						)
-					} ) }		
-					<a href="#" className="dropdown-item" 
-			  			onClick={ (e) => this.escondeDropdown( e ) }>
-			  				{this.state.itemPadrao}
-			  		</a>	    	
+					} ) }		 	
 			  	</div>
 			</div>
 		);

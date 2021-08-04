@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.SubCategoriaBuilder;
@@ -31,22 +32,21 @@ public class SubCategoriaService {
 	@Autowired
 	private SubCategoriaBuilder subcategoriaBuilder;
 		
-	public IdResponse registraSubCategoria( Long categoriaId, SaveSubCategoriaRequest request ) 
+	public IdResponse registraSubCategoria( String categoriaDesc, SaveSubCategoriaRequest request ) 
 			throws SubCategoriaJaExisteException, CategoriaNaoEncontradaException {				
 
+		Categoria cat =	categoriaRepository.buscaPorDescricao( categoriaDesc ).orElseThrow( CategoriaNaoEncontradaException::new );				
 		String descricao = request.getDescricao();
-		if ( subcategoriaRepository.existePorDescricao( categoriaId, descricao ) )
-			throw new SubCategoriaJaExisteException();
-				
-		boolean existeCategoria = categoriaRepository.existsById( categoriaId );
-		if ( !existeCategoria )
-			throw new CategoriaNaoEncontradaException();
 		
+		List<SubCategoria> subcats = cat.getSubcategorias();
+		for( SubCategoria sc : subcats )
+			if ( sc.getDescricao().equalsIgnoreCase( descricao ) )		
+				throw new SubCategoriaJaExisteException();
+						
 		SubCategoria sc = subcategoriaBuilder.novoSubCategoria();
 		subcategoriaBuilder.carregaSubCategoria( sc, request );
 		
-		sc.setCategoria( new Categoria() );		
-		sc.getCategoria().setId( categoriaId ); 
+		sc.setCategoria( cat ); 
 		
 		subcategoriaRepository.save( sc );
 					
@@ -62,19 +62,22 @@ public class SubCategoriaService {
 		
 		String descricao = req.getDescricao();
 		
-		if ( !descricao.equalsIgnoreCase( sc.getDescricao() ) )
-			if ( subcategoriaRepository.existePorDescricao( c.getId(), descricao ) )
-				throw new SubCategoriaJaExisteException();
+		if ( !descricao.equalsIgnoreCase( sc.getDescricao() ) ) {
+			List<SubCategoria> subcats = c.getSubcategorias();
+			for( SubCategoria sc2 : subcats )
+				if ( sc2.getDescricao().equalsIgnoreCase( descricao ) )
+					throw new SubCategoriaJaExisteException();
+		}
 				
 		subcategoriaBuilder.carregaSubCategoria( sc, req );
 		
 		subcategoriaRepository.save( sc );
 	}
 		
-	public List<SubCategoriaResponse> buscaSubCategoriasPorDescricaoIni( Long categoriaId, BuscaSubCategoriasRequest request ) {
+	public List<SubCategoriaResponse> buscaSubCategoriasPorDescricaoIni( String categoriaDesc, BuscaSubCategoriasRequest request, Pageable p ) {
 		String descricaoIni = ( request.getDescricaoIni().equals( "*" ) ? "" : request.getDescricaoIni() );
 		
-		List<SubCategoria> subcategorias = subcategoriaRepository.filtra( categoriaId, descricaoIni+"%" );
+		List<SubCategoria> subcategorias = subcategoriaRepository.filtra( categoriaDesc, descricaoIni+"%", p );
 		
 		List<SubCategoriaResponse> responses = new ArrayList<>();
 		

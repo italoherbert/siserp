@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 import {Alert} from 'reactstrap';
 
 import sistema from './../logica/sistema';
@@ -22,7 +21,7 @@ export default class MensagemPainel extends React.Component {
 			return (<span></span>);
 		} else {
 			return (
-				<Alert color={this.props.cor}>{this.props.msg}</Alert>
+				<Alert id={msgId} color={this.props.cor}>{this.props.msg}</Alert>
 			);
 		}
 	}					

@@ -1,14 +1,7 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
-
-import sistema from './logica/sistema.js';
-
-export default class Layout extends React.Component {
+import React from 'react';
 	
-	constructor( props ) {
-		super( props );
-	}		
-				
+export default class Layout extends React.Component {
+					
 	render() {
 		return( 
 			<div>

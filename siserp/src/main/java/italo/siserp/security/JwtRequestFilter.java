@@ -1,6 +1,7 @@
 package italo.siserp.security;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import italo.siserp.util.JwtTokenUtil;
 
@@ -47,6 +49,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				} 
 			} catch ( SignatureException e ) {
 				
+			} catch ( ExpiredJwtException e ) {
+				String resp = "{ \"mensagem\" : \"Token expirado, por favor faça login novamente.\" }";
+				response.setContentType( "application/json" );
+				response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+				
+				PrintWriter writer = new PrintWriter( response.getOutputStream() );
+				writer.print( resp ); 
+				writer.flush();		
+				
+				return;
 			}
 		}		
 		doFilter( request, response, filterChain );

@@ -3,6 +3,8 @@ package italo.siserp.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -72,7 +74,23 @@ public class CategoriaController {
 		if ( request.getDescricaoIni().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
 		
-		List<CategoriaResponse> categorias = categoriaService.buscaCategoriasPorDescricaoIni( request );
+		Pageable p = Pageable.unpaged();
+		
+		List<CategoriaResponse> categorias = categoriaService.buscaCategoriasPorDescricaoIni( request, p );
+		return ResponseEntity.ok( categorias );		
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PostMapping("/filtra/limit/{limit}")
+	public ResponseEntity<Object> buscaCategorias( @PathVariable Integer limit, @RequestBody BuscaCategoriasRequest request ) {		
+		if ( request.getDescricaoIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
+		if ( request.getDescricaoIni().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
+		
+		Pageable p = PageRequest.of( 0, limit );
+				
+		List<CategoriaResponse> categorias = categoriaService.buscaCategoriasPorDescricaoIni( request, p );
 		return ResponseEntity.ok( categorias );		
 	}
 

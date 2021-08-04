@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.CategoriaBuilder;
@@ -56,10 +57,10 @@ public class CategoriaService {
 		categoriaRepository.save( c );
 	}
 		
-	public List<CategoriaResponse> buscaCategoriasPorDescricaoIni( BuscaCategoriasRequest request ) {
+	public List<CategoriaResponse> buscaCategoriasPorDescricaoIni( BuscaCategoriasRequest request, Pageable p ) {
 		String descricaoIni = ( request.getDescricaoIni().equals( "*" ) ? "" : request.getDescricaoIni() );
 		
-		List<Categoria> categorias = categoriaRepository.filtra( descricaoIni+"%" );
+		List<Categoria> categorias = categoriaRepository.filtra( descricaoIni+"%", p );
 		
 		List<CategoriaResponse> responses = new ArrayList<>();
 		

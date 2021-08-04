@@ -1,7 +1,5 @@
 package italo.siserp.model.request;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +18,5 @@ public class SaveProdutoRequest {
 	private String unidade;
 	
 	private String codigoBarras;
-	
-	private String quantidade;	
-	
-	private List<SaveItemProdutoRequest> itensProdutos;
-	
+			
 }

@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -13,23 +13,23 @@ export default class FornecedorForm extends React.Component {
 			erroMsg : null, 
 			infoMsg : null
 		};
+		
+		this.empresa = React.createRef();
 	}
 	
 	componentDidMount() {			
-		if ( this.props.op == 'editar' )
-			this.refs.empresa.value = this.props.empresa;					
+		if ( this.props.op === 'editar' )
+			this.empresa.current.value = this.props.empresa;					
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );
 		
 		let url;
 		let metodo;
-		if ( this.props.op == 'editar' ) {			
+		if ( this.props.op === 'editar' ) {			
 			url = "/api/fornecedor/atualiza/"+this.props.fornecedorId;
 			metodo = 'PUT';									
 		} else {
@@ -44,12 +44,11 @@ export default class FornecedorForm extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"empresa" : this.refs.empresa.value
+				"empresa" : this.empresa.current.value
 			} )		
 		} ).then( (resposta) => {				
-			if ( resposta.status == 200 ) {
-				this.state.infoMsg = "Fornecedor cadastrado com sucesso.";		
-				this.setState( this.state );
+			if ( resposta.status === 200 ) {
+				this.setState( { infoMsg : "Fornecedor salvo com sucesso." } );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -60,42 +59,30 @@ export default class FornecedorForm extends React.Component {
 		const { erroMsg, infoMsg } = this.state;
 				
 		return(
-			<div className="container">
-				<div className="row">
-					<div className="col-md-2"></div>
-					<div className="col-md-8">
-						<h4 className="card-title text-center">Registro de fornecedores</h4>
+			<Container>
+				<Row>
+					<Col className="col-md-2"></Col>
+					<Col className="col-md-8">
+						<h4 className="text-center">Registro de fornecedores</h4>
 																
-						<form onSubmit={(e) => this.salvar( e ) } className="container">
-							<div className="card border-1">								
-								<div className="card-body">
-									<h4 className="card-title">Dados gerais</h4>
-									
-									<div className="row">
-										<div className="form-group col-sm-12">
-											<label className="control-label" for="empresa">Empresa: </label>
-											<input type="text" ref="empresa" name="empresa" className="form-control" />
-										</div>
-									</div>
-								</div>
-							</div>
-							
-							<br />
-														
-							<div className="card border-1">																
-								<div className="card-body">
-									<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-									<MensagemPainel color="info">{infoMsg}</MensagemPainel>
-									
-									<div class="form-group">
-										<button type="submit" className="btn btn-primary">Salvar</button>
-									</div>																												
-								</div>
-							</div>									
-						</form>
-					</div>
-				</div>
-			</div>
+						<Card className="p-3">								
+							<Form onSubmit={(e) => this.salvar( e ) }>
+								<h4 className="card-title">Dados gerais</h4>
+								
+								<Form.Group className="mb-2">
+									<Form.Label>Empresa: </Form.Label>
+									<Form.Control type="text" ref={this.empresa} name="empresa" />
+								</Form.Group>
+																						
+								<MensagemPainel cor="danger" msg={erroMsg} />
+								<MensagemPainel cor="primary" msg={infoMsg} />
+								
+								<Button type="submit" variant="primary">Salvar</Button>
+							</Form>
+						</Card>									
+					</Col>
+				</Row>
+			</Container>
 		);
 	}
 	

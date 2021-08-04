@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 
 class Sistema {
 
@@ -26,7 +27,7 @@ class Sistema {
 
 	showHide( strEl ) {
 		let el = document.getElementById( strEl );
-		if ( el.style.visibility == 'hidden' ) {
+		if ( el.style.visibility === 'hidden' ) {
 			el.style.display = "block";
 			el.style.visibility = "visible";
 		} else {
@@ -34,17 +35,31 @@ class Sistema {
 			el.style.visibility = "hidden";
 		}
 	}
+	
+	formataData( date ) {
+		return moment( date ).format( "DD/MM/YYYY" );
+	}
 
 	trataRespostaNaoOk( resposta, compRef ) {
-		if ( resposta.status == 400 ) {
+		if ( resposta.status === 400 ) {
 			resposta.json().then( (dados) => {											
-				compRef.state.erroMsg = dados.mensagem;	
-				compRef.setState( compRef.state );				
+				compRef.setState( { erroMsg : dados.mensagem } );				
 			} );
 		} else {
-			compRef.state.erroMsg = this.getMensagemErro( resposta.status );
-			compRef.setState( compRef.state );				
+			compRef.setState( { erroMsg : this.getMensagemErro( resposta.status ) } );				
 		}
+	}
+	
+	trataRespostaNaoOkCBK( resposta, callback ) {
+		if ( resposta.status === 400 ) {
+			resposta.json().then( (dados) => {			
+				if ( typeof( callback ) == 'function' )
+					callback.call( this, dados.mensagem );
+			} );
+		} else {
+			if ( typeof( callback ) == 'function' )
+				callback.call( this, this.getMensagemErro( resposta.status ) );				
+		}	
 	}
 
 	getMensagemErro( status ) {						
@@ -66,5 +81,5 @@ class Sistema {
 	
 }
 
-let sistema;
-export default sistema = new Sistema();
+let sistema = new Sistema();
+export default sistema;

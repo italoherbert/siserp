@@ -15,7 +15,7 @@ public class SaveCompraRequest {
 
 	private SaveFornecedorRequest fornecedor;
 	
-	private List<SaveItemCompraRequest> itens;	
+	private List<SaveItemCompraRequest> itensCompra;	
 
 	private List<SaveCompraParcelaRequest> parcelas;
 

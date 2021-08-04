@@ -1,4 +1,4 @@
-import React, {Component, createRef} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
@@ -11,8 +11,8 @@ import Inicial from './telas/inicial/inicial.js';
 
 export default class Login extends React.Component {
 
-	constructor(props) {
-		super(props);
+	constructor( props ) {
+		super( props );
 		this.state = { erroMsg : null };
 		
 		this.username = React.createRef();
@@ -22,8 +22,7 @@ export default class Login extends React.Component {
 	entrar(e) {			
 		e.preventDefault();	
 												
-		this.state.erroMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null } );
 
 		fetch( "/api/login/entrar", {
 			method : "POST",			
@@ -36,7 +35,7 @@ export default class Login extends React.Component {
 				password : this.password.current.value
 			} )
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
 					sistema.token = dados.token;
 					sistema.usuario = dados.usuario;

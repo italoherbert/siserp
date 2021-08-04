@@ -4,13 +4,21 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import pt from "date-fns/locale/pt";
+import { registerLocale } from 'react-datepicker';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'react-tabs/style/react-tabs.css';
+
 import './css/estilo.css';
 
+registerLocale( 'pt', pt );
+
 ReactDOM.render(
-  <React.StrictMode>
+  <React.Fragment>
     <App />
-  </React.StrictMode>,
+  </React.Fragment>,
   document.getElementById('root')
 );
 

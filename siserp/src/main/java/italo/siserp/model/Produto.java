@@ -35,7 +35,7 @@ public class Produto {
 	@Column
 	private double precoUnitarioVenda;
 
-	@Column
+	@Column(unique = true)
 	private String codigoBarras;
 
 	@Column

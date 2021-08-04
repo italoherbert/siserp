@@ -3,6 +3,8 @@ package italo.siserp.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,15 +34,15 @@ public class SubCategoriaController {
 	private SubCategoriaService subcategoriaService;
 	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
-	@PostMapping("/registra/{categoriaId}")
-	public ResponseEntity<Object> registra( @PathVariable Long categoriaId, @RequestBody SaveSubCategoriaRequest request ) {						
+	@PostMapping("/registra/{categoria}")
+	public ResponseEntity<Object> registra( @PathVariable String categoria, @RequestBody SaveSubCategoriaRequest request ) {						
 		if ( request.getDescricao() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );		
 		if ( request.getDescricao().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );		
 		
 		try {
-			IdResponse resp = subcategoriaService.registraSubCategoria( categoriaId, request );
+			IdResponse resp = subcategoriaService.registraSubCategoria( categoria, request );
 			return ResponseEntity.ok( resp );
 		} catch (SubCategoriaJaExisteException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_JA_EXISTE ) );		
@@ -68,19 +70,39 @@ public class SubCategoriaController {
 	}
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
-	@PostMapping("/filtra/{categoriaId}")
+	@PostMapping("/filtra/{categoria}")
 	public ResponseEntity<Object> buscaSubCategorias( 
-			@PathVariable Long categoriaId, @RequestBody BuscaSubCategoriasRequest request ) {
+			@PathVariable String categoria, @RequestBody BuscaSubCategoriasRequest request ) {
 		
 		if ( request.getDescricaoIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
 		if ( request.getDescricaoIni().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
 		
-		List<SubCategoriaResponse> subcategorias = subcategoriaService.buscaSubCategoriasPorDescricaoIni( categoriaId, request );
+		Pageable p = Pageable.unpaged();
+		
+		List<SubCategoriaResponse> subcategorias = subcategoriaService.buscaSubCategoriasPorDescricaoIni( categoria, request, p );
 		return ResponseEntity.ok( subcategorias );		
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PostMapping("/filtra/limit/{categoria}/{limit}")
+	public ResponseEntity<Object> buscaSubCategorias( 
+			@PathVariable String categoria, 
+			@PathVariable Integer limit, 
+			@RequestBody BuscaSubCategoriasRequest request ) {
+		
+		if ( request.getDescricaoIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
+		if ( request.getDescricaoIni().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
+		
+		Pageable p = PageRequest.of( 0, limit );
+		
+		List<SubCategoriaResponse> subcategorias = subcategoriaService.buscaSubCategoriasPorDescricaoIni( categoria, request, p );
+		return ResponseEntity.ok( subcategorias );		
+	}
+	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaSubCategoriaPorId( @PathVariable Long id ) {		

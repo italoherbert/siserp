@@ -1,5 +1,6 @@
-import React, {Component} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -15,24 +16,27 @@ export default class ProdutoForm extends React.Component {
 			erroMsg : null, 
 			infoMsg : null
 		};
+		this.descricao = React.createRef();
+		this.codigoBarras = React.createRef();
+		this.precoUnitCompra = React.createRef();
+		this.precoUnitVenda = React.createRef();
+		this.unidade = React.createRef();
 	}
 	
 	componentDidMount() {			
-		if ( this.props.op == 'editar' ) {
-			this.refs.descricao.value = this.props.descricao;
-			this.refs.codigoBarras.value = this.props.codigoBarras;
-			this.refs.precoUnitCompra.value = this.props.precoUnitCompra;
-			this.refs.precoUnitVenda.value = this.props.precoUnitVenda;
-			this.refs.unidade.value = this.props.unidade;
+		if ( this.props.op === 'editar' ) {
+			this.descricao.current.value = this.props.descricao;
+			this.codigoBarras.current.value = this.props.codigoBarras;
+			this.precoUnitCompra.current.value = this.props.precoUnitCompra;
+			this.precoUnitVenda.current.value = this.props.precoUnitVenda;
+			this.unidade.current.value = this.props.unidade;
 		}					
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );		
 						
 		fetch( "/api/produto/salva", {
 			method : "POST",			
@@ -41,18 +45,17 @@ export default class ProdutoForm extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"descricao" : this.refs.descricao.value,
-				"codigoBarras" : this.refs.codigoBarras.value,
-				"precoUnitCompra" : this.refs.precoUnitCompra.value,
-				"precoUnitVenda" : this.refs.precoUnitVenda.value,
-				"unidade" : this.refs.unidade.value
+				"descricao" : this.descricao.current.value,
+				"codigoBarras" : this.codigoBarras.current.value,
+				"precoUnitCompra" : this.precoUnitCompra.current.value,
+				"precoUnitVenda" : this.precoUnitVenda.current.value,
+				"unidade" : this.unidade.current.value
 			} )		
 		} ).then( (resposta) => {				
-			if ( resposta.status == 200 ) {
-				this.state.infoMsg = "Produto cadastrado com sucesso.";		
-				this.setState( this.state );
+			if ( resposta.status === 200 ) {
+				this.setState( { infoMsg : "Produto cadastrado com sucesso." } );
 				
-				if ( typeof( this.props.registrou ) == "function" )
+				if ( typeof( this.props.registrou ) === "function" )
 					this.props.registrou.call( this );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -64,11 +67,9 @@ export default class ProdutoForm extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.state.erroMsg = null;
-		this.state.infoMsg = null;
-		this.setState( this.state );
+		this.setState( { erroMsg : null, infoMsg : null } );		
 
-		let codBarras = this.refs.codigoBarras.value; 
+		let codBarras = this.codigoBarras.value; 
 
 		fetch( "/api/produto/busca/"+codBarras, {
 			method : "GET",			
@@ -76,15 +77,15 @@ export default class ProdutoForm extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
-			if ( resposta.status == 200 ) {						
+			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.refs.descricao.value = dados.descricao;
-					this.refs.codigoBarras.value = dados.codigoBarras;
-					this.refs.precoUnitCompra.value = dados.precoUnitCompra;
-					this.refs.precoUnitVenda.value = dados.precoUnitVenda;
-					this.refs.unidade.value = dados.unidade;
+					this.descricao.current.value = dados.descricao;
+					this.codigoBarras.current.value = dados.codigoBarras;
+					this.precoUnitCompra.current.value = dados.precoUnitCompra;
+					this.precoUnitVenda.current.value = dados.precoUnitVenda;
+					this.unidade.current.value = dados.unidade;
 														
-					this.setState( this.state );
+					this.setState({});
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -102,53 +103,55 @@ export default class ProdutoForm extends React.Component {
 		const { erroMsg, infoMsg } = this.state;
 				
 		return(	
-			<div className="container-fluid">
-				<div className="row">
-					<div className="col-sm-2"></div>	
-					<div className="col-sm-8">															
-						<form onSubmit={(e) => this.salvar( e ) }>
-							<div className="card border-1">								
-								<div className="card-body">
-									<h4 className="card-title">Salvar produto</h4>
-									
-									<div className="form-group">
-										<label className="control-label" for="descricao">Descrição: </label>
-										<input type="text" ref="descricao" name="descricao" className="form-control" />
-									</div>
-									<div className="form-group">
-										<label className="control-label" for="codigoBarras">Codigo barras: </label>
-										<div className="row">
-											<input type="text" ref="codigoBarras" name="codigoBarras" className="form-control" />
-											<button type="button" className="btn btn-primary" onClick={ (e) => this.buscar( e ) }>Buscar</button>
-										</div>
-									</div>
-									<div className="form-group">
-										<label className="control-label" for="precoUnitCompra">Preço Compra (Unidade): </label>
-										<input type="text" ref="precoUnitCompra" name="precoUnitCompra" className="form-control" />
-									</div>
-									<div className="form-group">
-										<label className="control-label" for="precoUnitVenda">Preço Venda (Unidade): </label>
-										<input type="text" ref="precoUnitVenda" name="precoUnitVenda" className="form-control" />
-									</div>
-									<div className="form-group">
-										<label className="control-label" for="unidade">Unidade: </label>
-										<input type="text" ref="unidade" name="unidade" className="form-control" />
-									</div>
+			<Container>
+				<Row>
+					<Col className="col-sm-2"></Col>	
+					<Col className="col-sm-8">															
+						<Card className="p-3">
+							<Form onSubmit={(e) => this.salvar( e ) }>																							
+								<h4 className="card-title">Salvar produto</h4>
 								
-									<MensagemPainel color="danger">{erroMsg}</MensagemPainel>
-									<MensagemPainel color="info">{infoMsg}</MensagemPainel>
-									
-									<div class="form-group">
-										<button type="submit" className="btn btn-primary">Salvar</button>
-									</div>	
-									
-									<a href="#" onClick={ (e) => this.paraTelaProdutos( e ) }>Para tela de produtos</a>																											
-								</div>
-							</div>									
-						</form>
-					</div>
-				</div>					
-			</div>
+								<Form.Group className="mb-2">
+									<Form.Label>Descrição: </Form.Label>
+									<Form.Control type="text" ref={this.descricao} name="descricao" />
+								</Form.Group>
+								<Form.Group className="mb-2">
+									<Form.Label>Codigo de barras: </Form.Label>
+									<Row className="display-inline">
+										<Col className="col-sm-10">
+											<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
+										</Col>
+										<Col className="col-sm-2">
+											<Button type="button" variant="primary" onClick={ (e) => this.buscar( e ) }>Buscar</Button>
+										</Col>
+									</Row>
+								</Form.Group>
+								<Form.Group className="mb-2">
+									<Form.Label>Preço Compra por Unidade: </Form.Label>
+									<Form.Control type="text" ref={this.precoUnitCompra} name="precoUnitCompra" />
+								</Form.Group>
+								<Form.Group className="mb-2">
+									<Form.Label>Preço Venda por Unidade: </Form.Label>
+									<Form.Control type="text" ref={this.precoUnitVenda} name="precoUnitVenda" />
+								</Form.Group>
+								<Form.Group className="mb-2">
+									<Form.Label>Unidade: </Form.Label>
+									<Form.Control type="text" ref={this.unidade} name="unidade" />
+								</Form.Group>
+							
+								<MensagemPainel cor="danger" msg={erroMsg} />
+								<MensagemPainel cor="primary" msg={infoMsg} />
+								
+								<Button type="submit" variant="primary">Salvar</Button>
+								
+								<br />
+								<br />
+								<button className="btn btn-link" onClick={ (e) => this.paraTelaProdutos( e ) }>Para tela de produtos</button>																											
+							</Form>
+						</Card>
+					</Col>
+				</Row>					
+			</Container>
 		);
 	}
 	

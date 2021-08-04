@@ -42,8 +42,12 @@ public class ErroResponse {
 	public final static int PRODUTO_UNIDADE_OBRIGATORIA = 312;
 	public final static int PRODUTO_CODIGO_BARRAS_OBRIGATORIO = 313;
 	public final static int PRODUTO_DESCRICAO_OU_CODIGO_BARRAS_OBRIGATORIO = 314;
-	public final static int COMPRA_DATA_INI_OBRIGATORIA = 315;
-	public final static int COMPRA_DATA_FIM_OBRIGATORIA = 316;
+	public final static int PRODUTO_QUANTIDADE_OBRIGATORIA = 315;
+	public final static int COMPRA_DATA_INI_OBRIGATORIA = 316;
+	public final static int COMPRA_DATA_FIM_OBRIGATORIA = 317;
+	public final static int PARCELA_VALOR_OBRIGATORIO = 318;
+	public final static int DATA_PAGAMENTO_OBRIGATORIA = 319;
+	public final static int DATA_VENCIMENTO_OBRIGATORIA = 320;
 
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
@@ -57,6 +61,7 @@ public class ErroResponse {
 	public final static int DATA_INI_INVALIDA = 509;
 	public final static int DATA_FIM_INVALIDA = 510;
 	public final static int DATA_INI_APOS_DATA_FIM = 511;
+	public final static int NENHUM_PRODUTO_INFORMADO = 512;
 		
 	private int codigo;
 	private String mensagem;
@@ -154,11 +159,20 @@ public class ErroResponse {
 			case PRODUTO_DESCRICAO_OU_CODIGO_BARRAS_OBRIGATORIO:
 				mensagem = "É necessário informar as iniciais da descrição ou codigo de barras do produto.";
 				break;
+			case PRODUTO_QUANTIDADE_OBRIGATORIA:
+				mensagem = "A quantidade de unidades do produto é um campo de preenchimento obrigatório.";
+				break;
 			case COMPRA_DATA_INI_OBRIGATORIA:
 				mensagem = "A data de início para filtro de compras é um campo de preenchimento obrigatório.";
 				break;
 			case COMPRA_DATA_FIM_OBRIGATORIA:
 				mensagem = "A data de fim para filtro de compras é um campo de preenchimento obrigatório.";
+				break;
+			case DATA_PAGAMENTO_OBRIGATORIA:
+				mensagem = "A data de pagamento é um campo de preenchimento obrigatório.";
+				break;
+			case DATA_VENCIMENTO_OBRIGATORIA:
+				mensagem = "A data de vencimento é um campo de preenchimento obrigatório.";
 				break;
 				
 			case USUARIO_TIPO_INVALIDO:
@@ -196,6 +210,9 @@ public class ErroResponse {
 				break;
 			case DATA_INI_APOS_DATA_FIM:
 				mensagem = "A data de início tem valor de antes da data de fim";
+				break;
+			case NENHUM_PRODUTO_INFORMADO:
+				mensagem = "É necessário informar os dados de ao menos um produto.";
 				break;
 		}
 	}

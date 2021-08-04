@@ -1,5 +1,4 @@
-import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -20,7 +19,7 @@ export default class Inicial extends React.Component {
 				
 				<p>Olá {sistema.usuario.username}, seja bem vindo</p>
 																			
-				<MensagemPainel color="danger">{erroMsg}</MensagemPainel>					
+				<MensagemPainel cor="danger" msg={erroMsg} />					
 			</div>															
 		);
 	}
