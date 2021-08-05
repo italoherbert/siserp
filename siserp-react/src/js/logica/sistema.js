@@ -41,6 +41,9 @@ class Sistema {
 	}
 	
 	formataReal( valor ) {
+		if ( valor === 0 ) 
+			return "R$ 0,00";
+		
 		let n = parseInt( parseFloat( valor ) * 100 );
 		let s = ""+n;
 		return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		

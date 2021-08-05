@@ -4,15 +4,14 @@ import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-export default class FuncionarioForm extends React.Component {
+export default class ClienteForm extends React.Component {
 	
 	constructor( props ) {
 		super( props );
 				
 		this.state = { 
 			erroMsg : null, 
-			infoMsg : null, 
-			uTipos : []
+			infoMsg : null
 		};
 		
 		this.nome = React.createRef();
@@ -24,23 +23,16 @@ export default class FuncionarioForm extends React.Component {
 		this.logradouro = React.createRef();
 		this.bairro = React.createRef();
 		this.cidade = React.createRef();
-		this.uf = React.createRef();		
-		
-		this.tipo = React.createRef();
-		this.username = React.createRef();		
-		this.password = React.createRef();		
-		this.password2 = React.createRef();
+		this.uf = React.createRef();				
 	}
 	
 	componentDidMount() {			
-		this.carregaTipos();
-		
 		if ( this.props.op === 'editar' )
-			this.carregaFuncionario();		
+			this.carregaCliente();		
 	}
 	
-	carregaFuncionario() {
-		fetch( '/api/funcionario/get/'+this.props.funcId, {
+	carregaCliente() {
+		fetch( '/api/cliente/get/'+this.props.clienteId, {
 			method : 'GET',
 			headers : {
 				'Authorization' : 'Bearer '+sistema.token
@@ -58,10 +50,7 @@ export default class FuncionarioForm extends React.Component {
 					this.bairro.current.value = dados.pessoa.endereco.bairro;
 					this.cidade.current.value = dados.pessoa.endereco.cidade;
 					this.uf.current.value = dados.pessoa.endereco.uf;
-					
-					this.username.current.value = dados.usuario.username;
-					this.tipo.current.value = dados.usuario.tipo;
-					
+										
 					this.setState( {} );
 				} );
 			} else {
@@ -69,20 +58,7 @@ export default class FuncionarioForm extends React.Component {
 			}
 		} );
 	}
-		
-	carregaTipos() {
-		fetch( "/api/usuario/tipos", {
-			method : "GET",			
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			resposta.json().then( (dados) => {
-				this.setState( { uTipos : dados } );										
-			} );			 
-		} );
-	}
-	
+			
 	salvar( e ) {
 		e.preventDefault();
 		
@@ -91,10 +67,10 @@ export default class FuncionarioForm extends React.Component {
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
-			url = "/api/funcionario/atualiza/"+this.props.funcId;
+			url = "/api/cliente/atualiza/"+this.props.clienteId;
 			metodo = 'PUT';									
 		} else {
-			url = "/api/funcionario/registra";
+			url = "/api/cliente/registra";
 			metodo = 'POST';
 		}
 				
@@ -118,17 +94,11 @@ export default class FuncionarioForm extends React.Component {
 						"uf" : this.uf.current.value,
 						"logradouro" : this.logradouro.current.value				
 					}
-				},
-				
-				"usuario" : {
-					"username" : this.username.current.value,
-					"password" : this.password.current.value,
-					"tipo" : this.tipo.current.value	
-				}
+				}				
 			} )		
 		} ).then( (resposta) => {						
 			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Funcionario salvo com sucesso." } );
+				this.setState( { infoMsg : "Cliente salvo com sucesso." } );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -136,7 +106,7 @@ export default class FuncionarioForm extends React.Component {
 	}
 	
 	render() {
-		const { erroMsg, infoMsg, uTipos } = this.state;
+		const { erroMsg, infoMsg } = this.state;
 				
 		return(
 			<Container>
@@ -182,7 +152,7 @@ export default class FuncionarioForm extends React.Component {
 									<Col>
 										<Form.Group>
 											<Form.Label>Ender:</Form.Label>
-											<Form.Control type="text" ref={this.ender} name="ender" />
+											<Form.Control type="texto" ref={this.ender} name="ender" />
 										</Form.Group>
 									</Col>
 								</Row>
@@ -191,19 +161,19 @@ export default class FuncionarioForm extends React.Component {
 									<Col>
 										<Form.Group>
 											<Form.Label>Numero:</Form.Label>
-											<Form.Control type="text" ref={this.numero} name="numero" />
+											<Form.Control type="texto" ref={this.numero} name="numero" />
 										</Form.Group>
 									</Col>
 									<Col>
 										<Form.Group>
 											<Form.Label>Logradouro:</Form.Label>
-											<Form.Control type="text" ref={this.logradouro} name="logradouro" />
+											<Form.Control type="texto" ref={this.logradouro} name="logradouro" />
 										</Form.Group>
 									</Col>
 									<Col>
 										<Form.Group>
 											<Form.Label>Bairro:</Form.Label>
-											<Form.Control type="text" ref={this.bairro} name="bairro" />
+											<Form.Control type="texto" ref={this.bairro} name="bairro" />
 										</Form.Group>
 									</Col>
 								</Row>
@@ -212,56 +182,20 @@ export default class FuncionarioForm extends React.Component {
 									<Col>
 										<Form.Group>
 											<Form.Label>Cidade:</Form.Label>
-											<Form.Control type="text" ref={this.cidade} name="cidade" />
+											<Form.Control type="texto" ref={this.cidade} name="cidade" size="30" />
 										</Form.Group>
 									</Col>
 									<Col>
 										<Form.Group>
 											<Form.Label>UF:</Form.Label>
-											<Form.Control type="text" ref={this.uf} name="uf" />							
+											<Form.Control type="texto" ref={this.uf} name="uf" size="10" />							
 										</Form.Group>
 									</Col>
 								</Row>
 							</Card>
 							
 							<br />
-							
-							<Card className="p-3">
-								<h4 className="card-title">Usuario:</h4>
-								
-								<Row className="mb-2">
-									<Col>
-										<Form.Group>
-											<Form.Label>Nome de usuário:</Form.Label>
-											<Form.Control type="text" ref={this.username} name="username" />
-										</Form.Group>
-									</Col>									
-									<Col>
-										<Form.Group>
-											<Form.Label>Tipos:</Form.Label>
-											<select name="tipo" ref={this.tipo}>
-												<option key="0" value="NONE">Selecione um tipo!</option>
-												{ uTipos.map( (item, i) => {
-													return <option key={i} value={item}>{item}</option>
-												} )	}
-											</select>
-										</Form.Group>
-									</Col>																				
-								</Row>
-								<Row className="mb-2">
-									<Col>																			
-										<Form.Label>Senha:</Form.Label>
-										<Form.Control type="password" ref={this.password} name="password" />
-									</Col>
-									<Col>
-										<Form.Label>Repita a senha:</Form.Label>
-										<Form.Control type="password" ref={this.password2} name="password2" />							
-									</Col>
-								</Row>																		
-							</Card>
-							
-							<br />
-							
+																
 							<Card className="p-3">																
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />

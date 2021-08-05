@@ -19,6 +19,7 @@ public class ErroResponse {
 	public final static int SUBCATEGORIA_NAO_ENCONTRADA = 104;
 	public final static int PRODUTO_NAO_ENCONTRADO = 105;
 	public final static int COMPRA_NAO_ENCONTRADA = 106;
+	public final static int CLIENTE_NAO_ENCONTRADO = 107;
 		
 	public final static int PESSOA_JA_EXISTE = 200;
 	public final static int USUARIO_JA_EXISTE = 201;
@@ -97,6 +98,9 @@ public class ErroResponse {
 			case COMPRA_NAO_ENCONTRADA:
 				mensagem = "Compra não encontrada.";
 				break;
+			case CLIENTE_NAO_ENCONTRADO:
+				mensagem = "Cliente não encontrado.";
+				break;
 				
 			case USUARIO_JA_EXISTE:
 				mensagem = "Já existe outro usuário para o username informado.";
@@ -116,7 +120,7 @@ public class ErroResponse {
 			case PRODUTO_JA_EXISTE:
 				mensagem = "Já existe um produto cadastrado com descrição ou código de barras informado.";
 				break;
-				
+							
 			case USERNAME_OBRIGATORIO:
 				mensagem = "O username é um campo de preenchimento obrigatório.";
 				break;

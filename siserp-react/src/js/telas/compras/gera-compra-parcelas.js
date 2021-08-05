@@ -11,13 +11,10 @@ export default class GeraCompraParcelas extends React.Component {
 		super( props );
 		
 		this.state = {
-			valorTotal : 0,
 			vencimento : 10
-		};
-			
-		this.quantParcelas = React.createRef();
+		};			
 	}		
-		
+				
 	calcularParcelas( e ) {
 		e.preventDefault();
 		
@@ -31,7 +28,7 @@ export default class GeraCompraParcelas extends React.Component {
 			total += parseFloat( p.precoUnitCompra ) * parseFloat( p.quantidade );
 		}
 		
-		let quantParcelas = this.quantParcelas.current.value;
+		let quantParcelas = this.props.quantParcelasRef.current.value;
 		let valorParcela = total / quantParcelas;
 		for( let i = 1; i <= quantParcelas; i++ ) {		
 			let dataPag = moment( new Date() ).add( i, 'M' );
@@ -40,12 +37,12 @@ export default class GeraCompraParcelas extends React.Component {
 			parcelas.push( { valor : valorParcela, dataPagamento : dataPag, dataVencimento : dataVenc } );
 		}
 		
-		this.setState( { valorTotal : total } );
+		this.props.config.valorTotal = total;
+		this.setState( {} );
 	}
 				
 	render() {				
-		const { parcelas } = this.props;
-		const { valorTotal } = this.state;
+		const { parcelas, config, quantParcelasRef } = this.props;
 			
 		return(											
 			<div className="p-3">
@@ -77,13 +74,13 @@ export default class GeraCompraParcelas extends React.Component {
 					<Form.Group className="my-2">		
 						<Form.Label>Valor total: &nbsp;
 							<span className="text-primary">
-								{valorTotal.toLocaleString( 'pt-br', { style : 'currency', currency : 'BRL' } )}
+								{ sistema.formataReal( config.valorTotal ) }
 							</span>
 						</Form.Label>							
 					</Form.Group>
 					<Form.Group className="my-2">
 						<Form.Label>Numero de parcelas</Form.Label>
-						<Form.Control type="number" ref={this.quantParcelas} name="quantParcelas" />	
+						<Form.Control type="number" ref={quantParcelasRef} name="quantParcelas" />	
 					</Form.Group>
 					
 					<Button type="submit" variant="primary">Calcular parcelas</Button>						

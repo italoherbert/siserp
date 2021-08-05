@@ -5,9 +5,9 @@ import { Container, Row, Col, Card } from 'react-bootstrap';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import FuncionarioForm from './funcionario-form';
+import ClienteForm from './cliente-form';
 
-export default class FuncionarioDetalhes extends React.Component {
+export default class ClienteDetalhes extends React.Component {
 
 	constructor( props ) {
 		super( props );
@@ -15,17 +15,16 @@ export default class FuncionarioDetalhes extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			funcionario : {
+			cliente : {
 				pessoa : {
 					endereco : {}
-				},
-				usuario : {}
+				}
 			} 
 		};
 	}
 	
 	componentDidMount() {		
-		fetch( "/api/funcionario/get/"+this.props.funcId, {
+		fetch( "/api/cliente/get/"+this.props.clienteId, {
 			method : "GET",			
 			headers : { 
 				"Authorization" : "Bearer "+sistema.token
@@ -33,7 +32,7 @@ export default class FuncionarioDetalhes extends React.Component {
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {											
-					this.setState( { funcionario : dados } );
+					this.setState( { cliente : dados } );
 				} );		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -45,38 +44,41 @@ export default class FuncionarioDetalhes extends React.Component {
 		e.preventDefault();
 					
 		ReactDOM.render( 
-			<FuncionarioForm op="editar" funcId={this.props.funcId} />,
+			<ClienteForm op="editar" clienteId={this.props.clienteId} />,
 				sistema.paginaElemento() );
 	}
 	
 	render() {
-		const { funcionario, erroMsg, infoMsg } = this.state;
+		const { cliente, erroMsg, infoMsg } = this.state;
 		
 		return( 
 			<Container>
 				<Row>
 					<Col className="col-md-2"></Col>
-					<Col className="col-md-8">						
-						<Card className="p-3">
-							<h4>Dados do funcionário</h4>																
+					<Col className="col-md-8">
+						<h4 className="text-center">Dados do cliente</h4>																
+						
+						<Card className="p-3">								
+							<h4>Dados gerais</h4>
+							
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Nome: </span>
-									<span className="text-info">{funcionario.pessoa.nome}</span>
+									<span className="text-info">{cliente.pessoa.nome}</span>
 								</Col>
 							</Row>
 							
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Telefone: </span>
-									<span className="text-info">{funcionario.pessoa.telefone}</span>
+									<span className="text-info">{cliente.pessoa.telefone}</span>
 								</Col>
 							</Row>
 							
-							<Row  className="mb-2">
+							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">E-Mail: </span>
-									<span className="text-info">{funcionario.pessoa.email}</span>
+									<span className="text-info">{cliente.pessoa.email}</span>
 								</Col>
 							</Row>
 						</Card>
@@ -84,68 +86,52 @@ export default class FuncionarioDetalhes extends React.Component {
 						<br />
 						
 						<Card className="p-3">								
-							<h4>Endereço</h4>
-							<Row  className="mb-2">
+							<h4 className="card-title">Endereço</h4>
+							
+							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Ender: </span>
-									<span className="text-info">{funcionario.pessoa.endereco.ender}</span>
+									<span className="text-info">{cliente.pessoa.endereco.ender}</span>
 								</Col>
 							</Row>
 							
-							<Row  className="mb-2">
+							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Numero: </span>
-									<span className="text-info">{funcionario.pessoa.endereco.numero}</span>
+									<span className="text-info">{cliente.pessoa.endereco.numero}</span>
 								</Col>
 								<Col>
 									<span className="text-dark font-weight-bold">Logradouro: </span>
-									<span className="text-info">{funcionario.pessoa.endereco.logradouro}</span>
+									<span className="text-info">{cliente.pessoa.endereco.logradouro}</span>
 								</Col>
 								<Col>
 									<span className="text-dark font-weight-bold">Bairro: </span>
-									<span className="text-info">{funcionario.pessoa.endereco.bairro}</span>
+									<span className="text-info">{cliente.pessoa.endereco.bairro}</span>
 								</Col>
 							</Row>
-							<Row  className="mb-2">
+							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Cidade: </span>
-									<span className="text-info">{funcionario.pessoa.endereco.cidade}</span>
+									<span className="text-info">{cliente.pessoa.endereco.cidade}</span>
 								</Col>
 								<Col>
 									<span className="text-dark font-weight-bold">UF: </span>
-									<span className="text-info">{funcionario.pessoa.endereco.uf}</span>
+									<span className="text-info">{cliente.pessoa.endereco.uf}</span>
 								</Col>																
 							</Row>
 						</Card>
-						
+												
 						<br />
 						
-						<Card className="p-3">
-							<h4>Dados usuario</h4>
-							
-							<Row  className="mb-2">
-								<Col>
-									<span className="text-dark font-weight-bold">Username: </span>
-									<span className="text-info">{funcionario.usuario.username}</span>
-								</Col>
-								<Col>														
-									<span className="text-dark font-weight-bold">Tipo: </span>
-									<span className="text-info">{funcionario.usuario.tipo}</span>
-								</Col>
-							</Row>																
-						</Card>
-						
-						<br />
-						
-						<Card className="p-3">											
+						<Card className="p-3">								
 							<MensagemPainel cor="danger" msg={erroMsg} />
 							<MensagemPainel cor="primary" msg={infoMsg} />
 						
 							<Row>
 								<Col>
-									<button className="btn btn-link p-0" onClick={(e) => this.editar( e )}>Editar funcionario</button>
+									<button className="btn btn-link p-0" onClick={(e) => this.editar( e )}>Editar cliente</button>
 								</Col>
-							</Row>																																																		
+							</Row>																																								
 						</Card>												
 					</Col>
 				</Row>															

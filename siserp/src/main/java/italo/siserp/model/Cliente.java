@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Getter;
@@ -17,22 +17,15 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "categoria_map")
-public class CategoriaMap {
+@Table(name = "cliente")
+public class Cliente {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-		
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinColumn(name="categoria_id")
-	private Categoria categoria;
 	
-	@ManyToOne(cascade= {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinColumn(name="subcategoria_id")
-	private SubCategoria subcategoria;
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="pessoa_id")
+	private Pessoa pessoa;	
 	
-	@ManyToOne
-	@JoinColumn(name="produto_id") 
-	private Produto produto;
 }

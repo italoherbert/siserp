@@ -25,14 +25,11 @@ public class Categoria {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	
+		
 	@Column
 	private String descricao;
 	
 	@OneToMany(mappedBy="categoria", cascade=CascadeType.ALL)
 	private List<SubCategoria> subcategorias;
-	
-	@OneToMany(mappedBy="categoria", cascade = CascadeType.ALL)
-	private List<CategoriaMap> categoriaMaps;
-	
+
 }

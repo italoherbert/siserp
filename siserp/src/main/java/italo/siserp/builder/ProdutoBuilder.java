@@ -10,11 +10,14 @@ import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
+import italo.siserp.model.Categoria;
 import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
+import italo.siserp.model.SubCategoria;
 import italo.siserp.model.request.SaveProdutoRequest;
 import italo.siserp.model.response.CategoriaResponse;
 import italo.siserp.model.response.ProdutoResponse;
+import italo.siserp.model.response.SubCategoriaResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component
@@ -73,10 +76,36 @@ public class ProdutoBuilder {
 				
 		List<CategoriaResponse> categorias = new ArrayList<>();
 		for( CategoriaMap map : p.getCategoriaMaps() ) {
-			CategoriaResponse cresp = categoriaBuilder.novoCategoriaResponse();
-			categoriaBuilder.carregaCategoriaResponse( cresp, map.getCategoria() );
-			categorias.add( cresp );
+			Categoria c = map.getCategoria();
+			SubCategoria sc = map.getSubcategoria();
+			
+			String catDesc = c.getDescricao();
+			String subcatDesc = sc.getDescricao();
+			
+			CategoriaResponse cresp = null;
+			int size = categorias.size();
+			for( int i = 0; resp == null && i < size; i++ ) {
+				CategoriaResponse cresp2 = categorias.get( i );
+				if ( cresp2.getDescricao().equalsIgnoreCase( catDesc ) )
+					cresp = cresp2;
+			}
+			
+			if ( cresp == null ) {
+				cresp = categoriaBuilder.novoCategoriaResponse();												
+				cresp.setId( c.getId() );
+				cresp.setDescricao( catDesc );
+				cresp.setSubcategorias( new ArrayList<>() );
+				
+				categorias.add( cresp );
+			}
+			
+			SubCategoriaResponse scResp = new SubCategoriaResponse();
+			scResp.setId( sc.getId() );
+			scResp.setDescricao( subcatDesc );
+			
+			cresp.getSubcategorias().add( scResp );
 		}
+		
 		resp.setCategorias( categorias );
 	}	
 	

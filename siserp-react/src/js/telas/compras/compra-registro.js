@@ -20,11 +20,17 @@ export default class CompraRegistro extends React.Component {
 			produtos : [],
 			parcelas : [],
 			fornecedor : { 
-				empresa : null
+				empresa : ''
+			},
+			geraParcelasConfig : {
+				valorTotal : 0,
+				quantParcelas : ''
 			}
-		};								
+		};	
+		
+		this.quantParcelasRef = React.createRef();
 	}				
-
+	
 	produtoAdicionado( produto ) {
 		this.state.produtos.push( produto );
 		this.setState( { parcelas : [] } );
@@ -91,7 +97,18 @@ export default class CompraRegistro extends React.Component {
 			} )
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : 'Compra registrada com êxito' } );
+				this.quantParcelasRef.current.value = '';
+				this.setState( { 
+					infoMsg : 'Compra registrada com êxito',
+					produtos : [],
+					parcelas : [],
+					fornecedor : { 
+						empresa : ''
+					},
+					geraParcelasConfig : {
+						valorTotal : 0
+					}
+				} );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -99,7 +116,7 @@ export default class CompraRegistro extends React.Component {
 	}
 		
 	render() {
-		const { infoMsg, erroMsg, produtos, parcelas, fornecedor } = this.state;
+		const { infoMsg, erroMsg, produtos, parcelas, fornecedor, geraParcelasConfig } = this.state;
 				
 		return(	
 			<div>
@@ -131,11 +148,11 @@ export default class CompraRegistro extends React.Component {
 												<td>{p.codigoBarras}</td>
 												<td>
 													<select>
-														{p.categorias.map( (cat, index) => {
+														{p.categorias.map( (cat, index2) => {
 															return (
-																cat.subcategorias.map( ( subcat, index ) => {
+																cat.subcategorias.map( ( subcat, index3 ) => {
 																	return (
-																		<option>{subcat.descricao}</option>
+																		<option key={produtos.length + index2 * cat.subcategorias.length + index3}>{subcat.descricao}</option>
 																	)
 																} )
 															)
@@ -158,7 +175,7 @@ export default class CompraRegistro extends React.Component {
 						<SetCompraFornecedor fornecedor={fornecedor} />
 					</TabPanel>
 					<TabPanel>
-						<GeraCompraParcelas produtos={produtos} parcelas={parcelas} />
+						<GeraCompraParcelas produtos={produtos} parcelas={parcelas} config={geraParcelasConfig} quantParcelasRef={this.quantParcelasRef} />
 					</TabPanel>
 				</Tabs>
 				

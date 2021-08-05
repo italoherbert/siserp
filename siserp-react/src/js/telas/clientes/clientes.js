@@ -5,10 +5,10 @@ import { Container, Row, Col, Form, Table, Button } from 'react-bootstrap';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import FuncionarioDetalhes from './funcionario-detalhes';
-import FuncionarioForm from './funcionario-form';
+import ClienteDetalhes from './cliente-detalhes';
+import ClienteForm from './cliente-form';
 
-export default class Funcionarios extends React.Component {
+export default class Clientes extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -16,16 +16,14 @@ export default class Funcionarios extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			funcionarios : []
+			clientes : []
 		};
 
 		this.nomeIni = React.createRef();
-		this.usernameIni = React.createRef();
 	}
 	
 	componentDidMount() {
 		this.nomeIni.current.value = "*";
-		this.usernameIni.current.value = "*";
 		
 		this.filtrar( null );		
 	}
@@ -36,22 +34,21 @@ export default class Funcionarios extends React.Component {
 					
 		this.setState( { erroMsg : null, infoMsg : null } );
 
-		fetch( "/api/funcionario/filtra", {
+		fetch( "/api/cliente/filtra", {
 			method : "POST",			
 			headers : { 
 				"Content-Type" : "application/json; charset=UTF-8",
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
-				nomeIni : this.nomeIni.current.value,
-				usernameIni : this.usernameIni.current.value
+				nomeIni : this.nomeIni.current.value
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.setState( { funcionarios : dados } );						
+					this.setState( { clientes : dados } );						
 					if ( dados.length === 0 )
-						this.setState( { infoMsg : "Nenhum funcionário encontrado!" } );												
+						this.setState( { infoMsg : "Nenhum cliente encontrado!" } );												
 				} );							
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -59,23 +56,23 @@ export default class Funcionarios extends React.Component {
 		} );
 	}
 		
-	detalhes( e, funcId ) {
+	detalhes( e, clienteId ) {
 		e.preventDefault();
 		
-		ReactDOM.render( <FuncionarioDetalhes funcId={funcId}/>, sistema.paginaElemento() );
+		ReactDOM.render( <ClienteDetalhes clienteId={clienteId} />, sistema.paginaElemento() );
 	}
 	
-	remover( e, funcId ) {
+	remover( e, clienteId ) {
 		e.preventDefault();
 		
-		fetch( "/api/funcionario/deleta/"+funcId, {
+		fetch( "/api/cliente/deleta/"+clienteId, {
 			method : "DELETE",			
 			headers : { 
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {				
 			if ( resposta.status === 200 ) {						
-				this.setState( { infoMsg : "Funcionario removido com êxito!" } );
+				this.setState( { infoMsg : "Cliente removido com êxito!" } );
 				this.filtrar();																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -84,39 +81,36 @@ export default class Funcionarios extends React.Component {
 	}
 	
 	paraTelaRegistro() {
-		ReactDOM.render( <FuncionarioForm op="cadastrar" />, sistema.paginaElemento() );
+		ReactDOM.render( <ClienteForm op="cadastrar" />, sistema.paginaElemento() );
 	}
 	
 	render() {
-		const { erroMsg, infoMsg, funcionarios } = this.state;
+		const { erroMsg, infoMsg, clientes } = this.state;
 		
 		return (
 			<Container>
 				<Row>
 					<Col>
-						<h4 className="text-center col-md-12">Lista de Funcionarios</h4>
+						<h4 className="text-center col-md-12">Lista de Clientes</h4>
+						
 						<div className="tbl-pnl">
 							<Table striped bordered hover>
 								<thead>
 									<tr>
 										<th>ID</th>
 										<th>Nome</th>
-										<th>Nome de usuário</th>
-										<th>Tipo</th>
 										<th>Detalhes</th>
 										<th>Remover</th>
 									</tr>
 								</thead>
 								<tbody>
-									{funcionarios.map( ( func, index ) => {
+									{clientes.map( ( cliente, index ) => {
 										return (
 											<tr key={index}>
-												<td>{func.id}</td>
-												<td>{func.pessoa.nome}</td>
-												<td>{func.usuario.username}</td>
-												<td>{func.usuario.tipo}</td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, func.id )}>detalhes</button></td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, func.id )}>remover</button></td>
+												<td>{cliente.id}</td>
+												<td>{cliente.pessoa.nome}</td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, cliente.id )}>detalhes</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.remover( e, cliente.id )}>remover</button></td>
 											</tr>
 										);
 									} ) }	
@@ -139,17 +133,13 @@ export default class Funcionarios extends React.Component {
 								<Form.Label>Nome:</Form.Label>
 								<Form.Control type="text" ref={this.nomeIni} name="nomeIni" />						
 							</Form.Group>
-							<Form.Group className="mb-3">
-								<Form.Label>Nome de usuário:</Form.Label>
-								<Form.Control type="text" ref={this.usernameIni} name="usernameIni" />						
-							</Form.Group>
-								
+															
 							<Button type="submit" variant="primary">Filtrar</Button>							
 							
 							<br />
 							<br />
 							
-							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo funcionário</button>
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo cliente</button>
 						</Form>	
 					</Col>
 				</Row>									 

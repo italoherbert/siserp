@@ -8,6 +8,7 @@ import Fornecedores from './telas/fornecedores/fornecedores';
 import Produtos from './telas/produtos/produtos';
 import Categorias from './telas/categorias/categorias';
 import Compras from './telas/compras/compras';
+import Clientes from './telas/clientes/clientes';
 
 import sistema from './logica/sistema.js';
 
@@ -42,6 +43,10 @@ export default class NavegBar extends React.Component {
 		ReactDOM.render( <Compras />, sistema.paginaElemento() );
 	}
 	
+	paraTelaClientes() {
+		ReactDOM.render( <Clientes />, sistema.paginaElemento() );
+	}
+	
 	render() {
 		return(
 			<Navbar bg="dark" variant="dark">
@@ -66,7 +71,7 @@ export default class NavegBar extends React.Component {
 							<NavDropdown.Item>Impostos</NavDropdown.Item>
 						</NavDropdown>
 						<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>
-						<Nav.Link>Clientes</Nav.Link>
+						<Nav.Link onClick={ () => this.paraTelaClientes() }>Clientes</Nav.Link>
 						{ ( sistema.usuario.tipo === 'ADMIN' || sistema.usuario.tipo === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFornecedores() }>Fornecedores</Nav.Link>
 						) }

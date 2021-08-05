@@ -70,7 +70,7 @@ export default class InputDropdown extends React.Component {
 				
 		return (
 			<div className="dropdown">
-				<input id="texto" type="text" ref={referencia} name="texto" 
+				<input type="text" ref={referencia} name="texto" 
 			  			onChange={ (e) => this.onChangeTexto( e ) } 
 						onClick={ (e) => this.onClickMostraEscondeDropdown( e ) }
 			  			className="form-control" />

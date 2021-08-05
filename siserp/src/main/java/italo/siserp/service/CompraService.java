@@ -46,10 +46,12 @@ import italo.siserp.model.request.SaveProdutoRequest;
 import italo.siserp.model.request.SaveSubCategoriaRequest;
 import italo.siserp.model.response.CompraResponse;
 import italo.siserp.model.response.TotalCompraResponse;
+import italo.siserp.repository.CategoriaMapRepository;
 import italo.siserp.repository.CategoriaRepository;
 import italo.siserp.repository.CompraRepository;
 import italo.siserp.repository.FornecedorRepository;
 import italo.siserp.repository.ProdutoRepository;
+import italo.siserp.repository.SubCategoriaRepository;
 import italo.siserp.util.DataUtil;
 
 @Service
@@ -65,7 +67,13 @@ public class CompraService {
 	private FornecedorRepository fornecedorRepository;	
 	
 	@Autowired
-	private CategoriaRepository categoriaRepository;		
+	private CategoriaRepository categoriaRepository;
+	
+	@Autowired
+	private CategoriaMapRepository categoriaMapRepository;
+	
+	@Autowired
+	private SubCategoriaRepository subcategoriaRepository;
 		
 	@Autowired
 	private CompraBuilder compraBuilder;
@@ -103,8 +111,10 @@ public class CompraService {
 				DataPagamentoInvalidaException, 
 				DataVencimentoInvalidaException { 
 	
+		List<CategoriaMap> cmapsParaRemover = new ArrayList<>();
+		
 		Compra compra = compraBuilder.novoCompra();
-		compraBuilder.carregaCompra( compra, request );
+		compraBuilder.carregaCompra( compra, request );				
 		
 		List<ItemCompra> compraItens = new ArrayList<>();
 				
@@ -121,7 +131,13 @@ public class CompraService {
 				p = op.get();
 				
 				this.addProdutoQuantidade( p, preq );
-				p.getCategoriaMaps().clear();				
+				List<CategoriaMap> maps = p.getCategoriaMaps();
+				for( CategoriaMap map : maps ) {
+					map.setProduto( null );
+					map.setCategoria( null );
+					map.setSubcategoria( null );					
+				}
+				cmapsParaRemover.addAll( maps );
 			} else {
 				p = produtoBuilder.novoProduto();					
 				produtoBuilder.carregaProduto( p, preq );
@@ -150,7 +166,7 @@ public class CompraService {
 		Optional<Fornecedor> fop = fornecedorRepository.buscaPorEmpresa( femp );
 		Fornecedor f;
 		if ( fop.isPresent() ) {
-			f = fop.get();
+			f = fop.get();					
 		} else {
 			f = fornecedorBuilder.novoFornecedor();
 		}
@@ -160,56 +176,62 @@ public class CompraService {
 		compra.setFornecedor( f ); 
 		
 		compraRepository.save( compra );
-	}
-			
-				
+		for( CategoriaMap map : cmapsParaRemover )
+			categoriaMapRepository.delete( map ); 
+	}							
 		
-	private void carregaCategorias( Produto p, SaveProdutoRequest request ) {						
+	private void carregaCategorias( Produto p, SaveProdutoRequest request ) {		
 		if ( request.getCategorias() == null )
-			return;
-
+			return;					
+		
 		List<CategoriaMap> categoriasMap = new ArrayList<>();
 		for( SaveCategoriaRequest catreq : request.getCategorias() ) {
+			Optional<Categoria> cop = categoriaRepository.buscaPorDescricao( catreq.getDescricao() );
+			
+			List<SubCategoria> subcategorias = null;
+			int scsize = 0;
+
 			Categoria c;
-			Optional<Categoria> opc = categoriaRepository.buscaPorDescricao( catreq.getDescricao() );
-			if ( opc.isPresent() ) {
-				c = opc.get();
+			if ( cop.isPresent() ) {
+				c = cop.get();
+
+				subcategorias = c.getSubcategorias();
+				scsize = subcategorias.size();
 			} else {
 				c = categoriaBuilder.novoCategoria();
 			}
-							
+			
 			categoriaBuilder.carregaCategoria( c, catreq );
-							
-			for( SaveSubCategoriaRequest subcatreq : catreq.getSubcategorias() ) {
+			
+			for( SaveSubCategoriaRequest subcatreq : catreq.getSubcategorias() ) {				
 				SubCategoria sc = null;
-				if ( opc.isPresent() ) {
-					int subcategoriasSize = c.getSubcategorias().size();
-					for( int i = 0; sc == null && i < subcategoriasSize; i++ ) {
-						SubCategoria sc2 = c.getSubcategorias().get( i ); 
-						if ( sc2.getDescricao().equalsIgnoreCase( subcatreq.getDescricao() ) )
+				if ( subcategorias != null ) {
+					for( int i = 0; sc == null && i < scsize; i++ ) {
+						SubCategoria sc2 = subcategorias.get( i );
+						if( sc2.getDescricao().equalsIgnoreCase( subcatreq.getDescricao() ) )
 							sc = sc2;
-					}
+					}										
 				}
 				
 				if ( sc == null )
-					sc = subcategoriaBuilder.novoSubCategoria();
+					sc = subcategoriaBuilder.novoSubCategoria();				
 				
 				subcategoriaBuilder.carregaSubCategoria( sc, subcatreq );
-				
+
 				CategoriaMap map = new CategoriaMap();
 				map.setProduto( p ); 
 				map.setCategoria( c );
 				map.setSubcategoria( sc );
-				
+			
 				sc.setCategoria( c ); 
-				
-				categoriasMap.add( map );
+			
+				categoriasMap.add( map );																			
 			}
 		}						
 		
 		p.setCategoriaMaps( categoriasMap );
 	}
-	
+		
 	private void addProdutoQuantidade( Produto p, SaveProdutoRequest request ) throws QuantidadeInvalidaException {
 		try {
 			p.setQuantidade( p.getQuantidade() + Double.parseDouble( request.getQuantidade() ) );
