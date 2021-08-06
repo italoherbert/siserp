@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Table, Form, Button } from 'react-bootstrap';
+import { Row, Col, Card, Table, Form, Button } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -162,7 +162,7 @@ export default class AddCompraProdutoCategorias extends React.Component {
 		const { erroMsg, categoriasLista, subcategoriasLista } = this.state;
 				
 		return(											
-			<div className="p-3">
+			<div>
 				<h4 className="text-center">Lista de categorias</h4>
 				<div className="tbl-pnl-pequeno">
 					<Table striped bordered hover>
@@ -191,26 +191,27 @@ export default class AddCompraProdutoCategorias extends React.Component {
 					</Table>
 				</div>		
 				
-				<br />
-				<MensagemPainel cor="danger" msg={erroMsg} />
-				
-				<Form.Group className="my-2">
-					<Row>
-						<Col className="col-sm-4">
-							<Form.Label>Categoria</Form.Label>
-							<InputDropdown referencia={this.categoria} itens={categoriasLista} carregaItens={ (item) => this.categoriaOnChange( item ) } />																	
-						</Col>
-						<Col className="col-sm-4">
-							<Form.Label>Subcategoria (Valor)</Form.Label>
-							<InputDropdown referencia={this.subcategoria} itens={subcategoriasLista} carregaItens={ (item) => this.subcategoriaOnChange( item ) } />						
-						</Col>
-						<Col className="col-sm-4">
-							<Form.Label>+</Form.Label>
-							<br />
-							<Button variant="primary" onClick={ (item) => this.addCategoria( item ) }>Adicionar categoria</Button>
-						</Col>
-					</Row>
-				</Form.Group>									
+				<Card className="p-3 my-2">
+					<MensagemPainel cor="danger" msg={erroMsg} />
+					
+					<Form.Group className="my-2">
+						<Row>
+							<Col className="col-sm-4">
+								<Form.Label>Categoria</Form.Label>
+								<InputDropdown referencia={this.categoria} itens={categoriasLista} carregaItens={ (item) => this.categoriaOnChange( item ) } />																	
+							</Col>
+							<Col className="col-sm-4">
+								<Form.Label>Subcategoria (Valor)</Form.Label>
+								<InputDropdown referencia={this.subcategoria} itens={subcategoriasLista} carregaItens={ (item) => this.subcategoriaOnChange( item ) } />						
+							</Col>
+							<Col className="col-sm-4">
+								<Form.Label>+</Form.Label>
+								<br />
+								<Button variant="primary" onClick={ (item) => this.addCategoria( item ) }>Adicionar categoria</Button>
+							</Col>
+						</Row>
+					</Form.Group>									
+				</Card>	
 			</div>
 		);
 	}

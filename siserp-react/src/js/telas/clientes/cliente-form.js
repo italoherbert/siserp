@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
+
+import Clientes from './clientes';
 
 export default class ClienteForm extends React.Component {
 	
@@ -32,6 +35,8 @@ export default class ClienteForm extends React.Component {
 	}
 	
 	carregaCliente() {
+		sistema.showLoadingSpinner();
+		
 		fetch( '/api/cliente/get/'+this.props.clienteId, {
 			method : 'GET',
 			headers : {
@@ -56,6 +61,7 @@ export default class ClienteForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );
 	}
 			
@@ -73,7 +79,9 @@ export default class ClienteForm extends React.Component {
 			url = "/api/cliente/registra";
 			metodo = 'POST';
 		}
-				
+		
+		sistema.showLoadingSpinner();
+		
 		fetch( url, {
 			method : metodo,			
 			headers : {
@@ -102,7 +110,13 @@ export default class ClienteForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );				
+	}
+	
+	
+	paraTelaClientes() {
+		ReactDOM.render( <Clientes />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -200,11 +214,26 @@ export default class ClienteForm extends React.Component {
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />
 								
-								<Button type="submit" variant="primary">Salvar</Button>
+								<Row>
+									<Col>
+										<Button type="submit" variant="primary">Salvar</Button>
+									</Col>
+								</Row>
 							</Card>									
 						</Form>
 					</Col>
 				</Row>
+								
+				<br />
+				
+				<Card className="p-3">
+					<Row>
+						<Col>
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaClientes( e ) }>Ir para clientes</button>
+						</Col>
+					</Row>
+				</Card>
+					
 			</Container>
 		);
 	}

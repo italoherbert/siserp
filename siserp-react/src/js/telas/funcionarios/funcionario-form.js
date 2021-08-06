@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
+
+import Funcionarios from './funcionarios';
 
 export default class FuncionarioForm extends React.Component {
 	
@@ -98,6 +101,8 @@ export default class FuncionarioForm extends React.Component {
 			metodo = 'POST';
 		}
 				
+		sistema.showLoadingSpinner();
+		
 		fetch( url, {
 			method : metodo,			
 			headers : {
@@ -132,7 +137,12 @@ export default class FuncionarioForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );				
+	}
+	
+	paraTelaFuncionarios() {
+		ReactDOM.render( <Funcionarios />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -265,8 +275,15 @@ export default class FuncionarioForm extends React.Component {
 							<Card className="p-3">																
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />
-								
-								<Button type="submit" variant="primary">Salvar</Button>
+									
+								<Row>
+									<Col>
+										<Button type="submit" variant="primary">Salvar</Button>
+										<br />
+										<br />
+										<button className="btn btn-link p-0" onClick={(e) => this.paraTelaFuncionarios(e) }>Ir para funcionarios</button>
+									</Col>
+								</Row>																
 							</Card>									
 						</Form>
 					</Col>

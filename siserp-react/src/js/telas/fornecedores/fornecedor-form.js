@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
+
+import Fornecedores from './fornecedores';
 
 export default class FornecedorForm extends React.Component {
 	
@@ -36,7 +39,9 @@ export default class FornecedorForm extends React.Component {
 			url = "/api/fornecedor/registra";
 			metodo = 'POST';
 		}
-				
+			
+		sistema.showLoadingSpinner();
+		
 		fetch( url, {
 			method : metodo,			
 			headers : {
@@ -52,7 +57,12 @@ export default class FornecedorForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );				
+	}
+	
+	paraTelaFornecedores() {
+		ReactDOM.render( <Fornecedores />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -80,6 +90,17 @@ export default class FornecedorForm extends React.Component {
 								<Button type="submit" variant="primary">Salvar</Button>
 							</Form>
 						</Card>									
+						
+						<br />						
+						
+						<Card className="p-3">
+							<Row>
+								<Col>
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaFornecedores( e ) }>Ir para fornecedores</button>
+								</Col>
+							</Row>
+						</Card>
+							
 					</Col>
 				</Row>
 			</Container>

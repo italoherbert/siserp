@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Table, Form, Button } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -16,7 +17,11 @@ export default class Produtos extends React.Component {
 		this.state = { 
 			erroMsg : null,
 			infoMsg : null,
-			produtos : [] 
+			produtos : [],
+			
+			remocaoModalVisivel : false,
+			remocaoModalOkFunc : () => {},
+			remocaoModalCancelaFunc : () => {}
 		};		
 		this.descricaoIni = React.createRef();
 		this.codigoBarras = React.createRef();
@@ -25,10 +30,10 @@ export default class Produtos extends React.Component {
 	componentDidMount() {
 		this.descricaoIni.current.value = "*";
 		
-		this.filtrar( null );		
+		this.filtrar( null, true );		
 	}
 	
-	filtrar( e ) {
+	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
 					
@@ -36,6 +41,8 @@ export default class Produtos extends React.Component {
 
 		let descIni = this.descricaoIni.current.value;
 
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/produto/filtra/"+descIni, {
 			method : "GET",			
 			headers : { 
@@ -46,12 +53,13 @@ export default class Produtos extends React.Component {
 				resposta.json().then( (dados) => {
 					this.setState( { produtos : dados } );
 					
-					if ( dados.length === 0 )
+					if ( dados.length === 0 && filtrarBTClicado === true )
 						this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -63,6 +71,8 @@ export default class Produtos extends React.Component {
 
 		let codBarras = this.codigoBarras.current.value; 
 
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/produto/busca/"+codBarras, {
 			method : "GET",			
 			headers : { 
@@ -79,6 +89,7 @@ export default class Produtos extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -88,8 +99,23 @@ export default class Produtos extends React.Component {
 		ReactDOM.render( <ProdutoDetalhes produtoId={id}/>, sistema.paginaElemento() );
 	}
 	
+	removerSeConfirmado( e, id ) {
+		this.setState( { 
+			remocaoModalVisivel : true, 
+			remocaoModalOkFunc : () => { 
+				this.setState( { remocaoModalVisivel : false } );
+				this.remover( e, id );
+			},
+			remocaoModalCancelaFunc : () => {
+				this.setState( { remocaoModalVisivel : false } );
+			} 
+		} )
+	}
+	
 	remover( e, id ) {
 		e.preventDefault();
+		
+		sistema.showLoadingSpinner();
 		
 		fetch( "/api/produto/deleta/"+id, {
 			method : "DELETE",			
@@ -98,11 +124,12 @@ export default class Produtos extends React.Component {
 			}
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
+				this.filtrar( null, false );																	
 				this.setState( { infoMsg : "Produto removido com êxito!" } );
-				this.filtrar( null );																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
 			}
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -115,60 +142,81 @@ export default class Produtos extends React.Component {
 	}
 		
 	render() {
-		const { erroMsg, infoMsg, produtos } = this.state;
+		const { erroMsg, infoMsg, produtos, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 		
 		return (
-			<Container>												
-				<Card className="p-3">
-					<Row>
-						<Col>
-							<h4 className="text-center">Lista de Produtos</h4>
-							<div className="tbl-pnl">
-								<Table className="table-responsive" style={{width: '60em'}} striped bordered hover>
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>Descrição</th>
-											<th>Código de barras</th>
-											<th>Preço compra</th>
-											<th>Preço venda</th>
-											<th>Unidade</th>
-											<th>Quantidade</th>											
-											<th>Detalhes</th>
-											<th>Remover</th>
-										</tr>
-									</thead>
-									<tbody>
-										{produtos.map( ( item, index ) => {
-											return (
-												<tr key={index}>
-													<td>{item.id}</td>
-													<td>{item.descricao}</td>
-													<td>{item.codigoBarras}</td>
-													<td>{item.precoUnitCompra}</td>
-													<td>{item.precoUnitVenda}</td>
-													<td>{item.unidade}</td>
-													<td>{item.quantidade}</td>
-													<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, item.id )}>detalhes</button></td>
-													<td><button className="btn btn-link p-0" onClick={(e) => this.remover( e, item.id )}>remover</button></td>
-												</tr>
-											);
-										} ) }	
-									</tbody>							
-								</Table>
-							</div>
-							
-							<br />
-					
-							<MensagemPainel cor="danger" msg={erroMsg} />
-							<MensagemPainel cor="primary" msg={infoMsg} />
-							
-							<Row>
-								<Col className="col-md-1"></Col>
-								<Col className="col-md-10">
+			<Container>			
+				<Modal show={remocaoModalVisivel}>
+					<Modal.Header>
+						<Modal.Title>Remoção de produto</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Tem certeza que deseja remover o produto selecionado?</Modal.Body>
+					<Modal.Footer>
+						<Form>
+							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
+							<Button variant="primary" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
+						</Form>
+					</Modal.Footer>
+				</Modal>
+				
+				<Row>
+					<Col>
+						<Form className="float-end">
+							<Button variant="primary" onClick={ (e) => this.paraCadastroForm( e ) } >Cadastre um novo produto</Button>
+						</Form>
+					</Col>
+				</Row>
+				
+				<Row>
+					<Col>
+						<h4 className="text-center">Lista de Produtos</h4>
+						<div className="tbl-pnl">
+							<Table className="table-responsive" style={{width: '60em'}} striped bordered hover>
+								<thead>
+									<tr>
+										<th>ID</th>
+										<th>Descrição</th>
+										<th>Código de barras</th>
+										<th>Preço compra</th>
+										<th>Preço venda</th>
+										<th>Unidade</th>
+										<th>Quantidade</th>											
+										<th>Detalhes</th>
+										<th>Remover</th>
+									</tr>
+								</thead>
+								<tbody>
+									{produtos.map( ( item, index ) => {
+										return (
+											<tr key={index}>
+												<td>{item.id}</td>
+												<td>{item.descricao}</td>
+												<td>{item.codigoBarras}</td>
+												<td>{item.precoUnitCompra}</td>
+												<td>{item.precoUnitVenda}</td>
+												<td>{item.unidade}</td>
+												<td>{item.quantidade}</td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, item.id )}>detalhes</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, item.id )}>remover</button></td>
+											</tr>
+										);
+									} ) }	
+								</tbody>							
+							</Table>
+						</div>
+						
+						<br />
+				
+						<MensagemPainel cor="danger" msg={erroMsg} />
+						<MensagemPainel cor="primary" msg={infoMsg} />
+						
+						<Row>
+							<Col>
+								<Card className="p-3">
+									<h4>Filtrar produtos</h4>
 									<Row>
 										<Col className="col-sm-6">
-											<Form onSubmit={ (e) => this.filtrar( e ) }>
+											<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 												<Form.Group className="mb-2">
 													<Form.Label>Descrição:</Form.Label>
 													<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
@@ -187,16 +235,12 @@ export default class Produtos extends React.Component {
 												<Button type="submit"variant="primary">Buscar</Button>				
 											</Form>
 										</Col>
-									</Row>
-									
-									<br />																
-																										
-									<button className="btn btn-link" onClick={ (e) => this.paraCadastroForm( e ) } >Cadastre um novo produto</button>
-								</Col>
-							</Row>
-						</Col>
-					</Row>
-				</Card>																															
+									</Row>									
+								</Card>
+							</Col>
+						</Row>
+					</Col>
+				</Row>
 			</Container>					
 		);
 	}

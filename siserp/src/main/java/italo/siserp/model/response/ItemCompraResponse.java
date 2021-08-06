@@ -15,4 +15,6 @@ public class ItemCompraResponse {
 		
 	private String precoUnitario;
 	
+	private ProdutoResponse produto;
+	
 }

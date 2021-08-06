@@ -29,7 +29,7 @@ export default class SubCategoriaForm extends React.Component {
 		e.preventDefault();
 		
 		this.setState( { erroMsg : null, infoMsg : null } );		
-		
+				
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
@@ -40,6 +40,8 @@ export default class SubCategoriaForm extends React.Component {
 			metodo = 'POST';
 		}
 				
+		sistema.showLoadingSpinner();
+		
 		fetch( url, {
 			method : metodo,			
 			headers : {
@@ -58,6 +60,7 @@ export default class SubCategoriaForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );				
 	}
 	
@@ -91,7 +94,10 @@ export default class SubCategoriaForm extends React.Component {
 								<Button type="submit" variant="primary">Salvar</Button>									
 								
 								{(this.props.op === 'editar' ) && ( 
-									<button className="btn btn-link" onClick={(e) => this.paraTelaCategoria(e) }>Voltar para tela de categoria</button>
+									<div>
+										<br />
+										<button className="btn btn-link p-0" onClick={(e) => this.paraTelaCategoria(e) }>Ir para categoria</button>
+									</div>
 								) }																											
 							</Form>								
 						</Card>									

@@ -1,10 +1,11 @@
 import * as moment from 'moment';
+import $ from 'jquery';
 
 class Sistema {
 
 	constructor() {
 		this.token = null;
-		this.usuario = null;
+		this.usuario = null;		
 	}
 
 	paginaElemento() {
@@ -23,6 +24,14 @@ class Sistema {
 		let el = document.querySelector( "#"+strEL );
 		if ( el )
 			el.scrollIntoView();			
+	}
+	
+	showLoadingSpinner() {
+		$("#carregando").show();
+	}
+	
+	hideLoadingSpinner() {
+		$("#carregando").hide();
 	}
 
 	showHide( strEl ) {
@@ -47,6 +56,26 @@ class Sistema {
 		let n = parseInt( parseFloat( valor ) * 100 );
 		let s = ""+n;
 		return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		
+	}
+	
+	paraFloat( valor ) {
+		if ( (""+valor) === "0" ) 
+			return 0;
+		
+		return parseFloat( (""+valor).replace( ',', '.' ) );
+	}
+	
+	formataFloat( valor ) {
+		if ( (""+valor) === "0" ) 
+			return "0";
+		
+		let v = (""+valor).split( '.' );
+		
+		let frac = 0;
+		if ( v.length === 2 )
+			frac = parseInt( v[1] );
+		
+		return ( frac === 0 ? v[0] : v );				
 	}
 
 	trataRespostaNaoOk( resposta, compRef ) {

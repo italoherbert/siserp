@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import ClienteForm from './cliente-form';
+import Clientes from './clientes';
 
 export default class ClienteDetalhes extends React.Component {
 
@@ -24,6 +25,8 @@ export default class ClienteDetalhes extends React.Component {
 	}
 	
 	componentDidMount() {		
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/cliente/get/"+this.props.clienteId, {
 			method : "GET",			
 			headers : { 
@@ -37,15 +40,20 @@ export default class ClienteDetalhes extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			 
+			sistema.hideLoadingSpinner();
 		} );
 	}
-	
+		
 	editar( e ) {
 		e.preventDefault();
 					
 		ReactDOM.render( 
 			<ClienteForm op="editar" clienteId={this.props.clienteId} />,
 				sistema.paginaElemento() );
+	}
+		
+	paraTelaClientes() {
+		ReactDOM.render( <Clientes />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -129,10 +137,15 @@ export default class ClienteDetalhes extends React.Component {
 						
 							<Row>
 								<Col>
-									<button className="btn btn-link p-0" onClick={(e) => this.editar( e )}>Editar cliente</button>
+									<Form>
+										<Button variant="primary" onClick={(e) => this.editar( e )}>Editar cliente</Button>
+									</Form>
+									<br />
+									<br />
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaClientes( e ) }>Ir para clientes</button>
 								</Col>
 							</Row>																																								
-						</Card>												
+						</Card>	
 					</Col>
 				</Row>															
 			</Container>

@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Form, Table, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -16,7 +17,11 @@ export default class Funcionarios extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			funcionarios : []
+			funcionarios : [],
+			
+			remocaoModalVisivel : false,
+			remocaoModalOkFunc : () => {},
+			remocaoModalCancelaFunc : () => {}
 		};
 
 		this.nomeIni = React.createRef();
@@ -27,15 +32,17 @@ export default class Funcionarios extends React.Component {
 		this.nomeIni.current.value = "*";
 		this.usernameIni.current.value = "*";
 		
-		this.filtrar( null );		
+		this.filtrar( null, true );		
 	}
 	
-	filtrar( e ) {
+	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
 					
 		this.setState( { erroMsg : null, infoMsg : null } );
 
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/funcionario/filtra", {
 			method : "POST",			
 			headers : { 
@@ -50,12 +57,13 @@ export default class Funcionarios extends React.Component {
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
 					this.setState( { funcionarios : dados } );						
-					if ( dados.length === 0 )
+					if ( dados.length === 0 && filtrarBTClicado === true )
 						this.setState( { infoMsg : "Nenhum funcionário encontrado!" } );												
 				} );							
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}										
+			sistema.hideLoadingSpinner();
 		} );
 	}
 		
@@ -65,8 +73,23 @@ export default class Funcionarios extends React.Component {
 		ReactDOM.render( <FuncionarioDetalhes funcId={funcId}/>, sistema.paginaElemento() );
 	}
 	
+	removerSeConfirmado( e, funcId ) {
+		this.setState( { 
+			remocaoModalVisivel : true, 
+			remocaoModalOkFunc : () => { 
+				this.setState( { remocaoModalVisivel : false } );
+				this.remover( e, funcId );
+			},
+			remocaoModalCancelaFunc : () => {
+				this.setState( { remocaoModalVisivel : false } );
+			} 
+		} )
+	}
+	
 	remover( e, funcId ) {
 		e.preventDefault();
+		
+		sistema.showLoadingSpinner();
 		
 		fetch( "/api/funcionario/deleta/"+funcId, {
 			method : "DELETE",			
@@ -75,11 +98,12 @@ export default class Funcionarios extends React.Component {
 			}
 		} ).then( (resposta) => {				
 			if ( resposta.status === 200 ) {						
+				this.filtrar( null, false );																	
 				this.setState( { infoMsg : "Funcionario removido com êxito!" } );
-				this.filtrar();																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
-			}						
+			}			
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -88,10 +112,31 @@ export default class Funcionarios extends React.Component {
 	}
 	
 	render() {
-		const { erroMsg, infoMsg, funcionarios } = this.state;
+		const { erroMsg, infoMsg, funcionarios, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 		
 		return (
 			<Container>
+				<Modal show={remocaoModalVisivel}>
+					<Modal.Header>
+						<Modal.Title>Remoção de funcionario</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Tem certeza que deseja remover o funcionario selecionado?</Modal.Body>
+					<Modal.Footer>
+						<Form>
+							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
+							<Button variant="primary" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
+						</Form>
+					</Modal.Footer>
+				</Modal>
+				
+				<Row>
+					<Col>
+						<Form className="float-end">
+							<Button variant="primary" onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo funcionário</Button>
+						</Form>
+					</Col>
+				</Row>
+				
 				<Row>
 					<Col>
 						<h4 className="text-center col-md-12">Lista de Funcionarios</h4>
@@ -115,8 +160,8 @@ export default class Funcionarios extends React.Component {
 												<td>{func.pessoa.nome}</td>
 												<td>{func.usuario.username}</td>
 												<td>{func.usuario.tipo}</td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, func.id )}>detalhes</button></td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, func.id )}>remover</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, func.id )}>detalhes</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, func.id )}>remover</button></td>
 											</tr>
 										);
 									} ) }	
@@ -134,23 +179,21 @@ export default class Funcionarios extends React.Component {
 				<Row>
 					<Col className="col-md-3"></Col>
 					<Col className="col-md-6">
-						<Form onSubmit={ (e) => this.filtrar( e ) }>
-							<Form.Group className="mb-3">
-								<Form.Label>Nome:</Form.Label>
-								<Form.Control type="text" ref={this.nomeIni} name="nomeIni" />						
-							</Form.Group>
-							<Form.Group className="mb-3">
-								<Form.Label>Nome de usuário:</Form.Label>
-								<Form.Control type="text" ref={this.usernameIni} name="usernameIni" />						
-							</Form.Group>
-								
-							<Button type="submit" variant="primary">Filtrar</Button>							
-							
-							<br />
-							<br />
-							
-							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaRegistro(e)}>Registrar novo funcionário</button>
-						</Form>	
+						<Card className="p-3">
+							<h4>Filtrar funcionarios</h4>
+							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
+								<Form.Group className="mb-3">
+									<Form.Label>Nome:</Form.Label>
+									<Form.Control type="text" ref={this.nomeIni} name="nomeIni" />						
+								</Form.Group>
+								<Form.Group className="mb-3">
+									<Form.Label>Nome de usuário:</Form.Label>
+									<Form.Control type="text" ref={this.usernameIni} name="usernameIni" />						
+								</Form.Group>
+									
+								<Button type="submit" variant="primary">Filtrar</Button>															
+							</Form>	
+						</Card>
 					</Col>
 				</Row>									 
 			</Container>					

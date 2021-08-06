@@ -34,15 +34,15 @@ public class SubCategoriaController {
 	private SubCategoriaService subcategoriaService;
 	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
-	@PostMapping("/registra/{categoria}")
-	public ResponseEntity<Object> registra( @PathVariable String categoria, @RequestBody SaveSubCategoriaRequest request ) {						
+	@PostMapping("/registra/{categoriaId}")
+	public ResponseEntity<Object> registra( @PathVariable Long categoriaId, @RequestBody SaveSubCategoriaRequest request ) {						
 		if ( request.getDescricao() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );		
 		if ( request.getDescricao().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );		
 		
 		try {
-			IdResponse resp = subcategoriaService.registraSubCategoria( categoria, request );
+			IdResponse resp = subcategoriaService.registraSubCategoria( categoriaId, request );
 			return ResponseEntity.ok( resp );
 		} catch (SubCategoriaJaExisteException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_JA_EXISTE ) );		
@@ -68,11 +68,11 @@ public class SubCategoriaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_JA_EXISTE ) );		
 		}				
 	}
-
+	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
-	@PostMapping("/filtra/{categoria}")
+	@PostMapping("/filtra/{categoriaId}")
 	public ResponseEntity<Object> buscaSubCategorias( 
-			@PathVariable String categoria, @RequestBody BuscaSubCategoriasRequest request ) {
+			@PathVariable Long categoriaId, @RequestBody BuscaSubCategoriasRequest request ) {
 		
 		if ( request.getDescricaoIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
@@ -81,7 +81,7 @@ public class SubCategoriaController {
 		
 		Pageable p = Pageable.unpaged();
 		
-		List<SubCategoriaResponse> subcategorias = subcategoriaService.buscaSubCategoriasPorDescricaoIni( categoria, request, p );
+		List<SubCategoriaResponse> subcategorias = subcategoriaService.buscaSubCategoriasPorDescricaoIni( categoriaId, request, p );
 		return ResponseEntity.ok( subcategorias );		
 	}
 

@@ -25,21 +25,42 @@ export default class ProdutoForm extends React.Component {
 	}
 	
 	componentDidMount() {			
-		if ( this.props.op === 'editar' ) {
-			this.descricao.current.value = this.props.descricao;
-			this.precoUnitCompra.current.value = this.props.precoUnitCompra;
-			this.precoUnitVenda.current.value = this.props.precoUnitVenda;
-			this.unidade.current.value = this.props.unidade;
+		if ( this.props.op === 'editar' )
+			this.carrega();		
+	}
+	
+	carrega() {
+		sistema.showLoadingSpinner();
+		
+		fetch( "/api/produto/get/"+this.props.produtoId, {
+			method : "GET",			
+			headers : {
+				"Authorization" : "Bearer "+sistema.token
+			}	
+		} ).then( (resposta) => {				
+			if ( resposta.status === 200 ) {
+				resposta.json().then( (dados) => {
+					this.descricao.current.value = dados.descricao;
+					this.precoUnitCompra.current.value = dados.precoUnitCompra;
+					this.precoUnitVenda.current.value = dados.precoUnitVenda;
+					this.unidade.current.value = dados.unidade;
 
-			this.codigoBarras.current.value = this.props.codigoBarras;
-		}					
+					this.codigoBarras.current.value = dados.codigoBarras;
+				} );
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}
+			sistema.hideLoadingSpinner();
+		} );		
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
 		this.setState( { erroMsg : null, infoMsg : null } );		
-						
+				
+		sistema.showLoadingSpinner();				
+		
 		fetch( "/api/produto/salva", {
 			method : "POST",			
 			headers : {
@@ -49,8 +70,8 @@ export default class ProdutoForm extends React.Component {
 			body : JSON.stringify( {
 				"codigoBarras" : this.codigoBarras.current.value,
 				"descricao" : this.descricao.current.value,
-				"precoUnitCompra" : this.precoUnitCompra.current.value,
-				"precoUnitVenda" : this.precoUnitVenda.current.value,
+				"precoUnitCompra" : sistema.paraFloat( this.precoUnitCompra.current.value ),
+				"precoUnitVenda" : sistema.paraFloat( this.precoUnitVenda.current.value ),
 				"unidade" : this.unidade.current.value
 			} )		
 		} ).then( (resposta) => {				
@@ -62,6 +83,7 @@ export default class ProdutoForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );				
 	}		
 	
@@ -73,6 +95,8 @@ export default class ProdutoForm extends React.Component {
 
 		let codBarras = this.codigoBarras.value; 
 
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/produto/busca/"+codBarras, {
 			method : "GET",			
 			headers : { 
@@ -92,6 +116,7 @@ export default class ProdutoForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -148,7 +173,7 @@ export default class ProdutoForm extends React.Component {
 								
 								<br />
 								<br />
-								<button className="btn btn-link" onClick={ (e) => this.paraTelaProdutos( e ) }>Para tela de produtos</button>																											
+								<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaProdutos( e ) }>Para tela de produtos</button>																											
 							</Form>
 						</Card>
 					</Col>

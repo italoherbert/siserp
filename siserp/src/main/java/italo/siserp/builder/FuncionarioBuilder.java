@@ -3,15 +3,9 @@ package italo.siserp.builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import italo.siserp.model.Endereco;
 import italo.siserp.model.Funcionario;
-import italo.siserp.model.Pessoa;
-import italo.siserp.model.Usuario;
 import italo.siserp.model.request.SaveFuncionarioRequest;
-import italo.siserp.model.response.EnderecoResponse;
 import italo.siserp.model.response.FuncionarioResponse;
-import italo.siserp.model.response.PessoaResponse;
-import italo.siserp.model.response.UsuarioResponse;
 
 @Component
 public class FuncionarioBuilder {
@@ -21,7 +15,7 @@ public class FuncionarioBuilder {
 	
 	@Autowired
 	private UsuarioBuilder usuarioBuilder;
-		
+			
 	public void carregaFuncionario( Funcionario f, SaveFuncionarioRequest req ) {
 		pessoaBuilder.carregaPessoa( f.getPessoa(), req.getPessoa() );
 		usuarioBuilder.carregaUsuario( f.getUsuario(), req.getUsuario() );
@@ -35,18 +29,15 @@ public class FuncionarioBuilder {
 	
 	public FuncionarioResponse novoFuncionarioResponse() {		
 		FuncionarioResponse resp = new FuncionarioResponse();
-		resp.setUsuario( new UsuarioResponse() );
-		resp.setPessoa( new PessoaResponse() );
-		resp.getPessoa().setEndereco( new EnderecoResponse() );
+		resp.setUsuario( usuarioBuilder.novoUsuarioResponse() );
+		resp.setPessoa( pessoaBuilder.novoPessoaResponse() );
 		return resp;
 	}
 	
 	public Funcionario novoFuncionario() {
 		Funcionario f = new Funcionario();
-		f.setPessoa( new Pessoa() );
-		f.setUsuario( new Usuario() );
-		
-		f.getPessoa().setEndereco( new Endereco() );
+		f.setPessoa( pessoaBuilder.novoPessoa() );
+		f.setUsuario( usuarioBuilder.novoUsuario() );		
 		return f;
 	}
 			

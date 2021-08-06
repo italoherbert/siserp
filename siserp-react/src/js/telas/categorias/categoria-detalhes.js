@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 
 import CategoriaForm from './categoria-form';
 import SubCategoriaForm from './subcategoria-form';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
+
+import Categorias from './categorias';
 
 export default class CategoriaDetalhes extends React.Component {
 
@@ -16,7 +19,11 @@ export default class CategoriaDetalhes extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			categoria : { subcategorias : [] } 
+			categoria : { subcategorias : [] },
+			
+			remocaoModalVisivel : false,
+			remocaoModalOkFunc : () => {},
+			remocaoModalCancelaFunc : () => {} 
 		};
 		
 		this.subcatDescricaoIni = React.createRef();
@@ -34,6 +41,8 @@ export default class CategoriaDetalhes extends React.Component {
 			
 		let categoriaId = this.props.categoriaId;
 		
+		sistema.showLoadingSpinner();
+				
 		fetch( "/api/categoria/get/"+categoriaId, {
 			method : "GET",			
 			headers : { 
@@ -49,7 +58,8 @@ export default class CategoriaDetalhes extends React.Component {
 				} );		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
-			}			
+			}
+			sistema.hideLoadingSpinner();
 		} );	
 	}
 			
@@ -65,12 +75,16 @@ export default class CategoriaDetalhes extends React.Component {
 			sistema.paginaElemento() );
 	}
 	
-	filtrarSubcategorias( e ) {
+	filtrarSubcategorias( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
 			
 		let categoriaId = this.props.categoriaId;
 		
+		this.setState( { erroMsg : null, infoMsg : null } );		
+		
+		sistema.showLoadingSpinner();
+				
 		fetch( "/api/subcategoria/filtra/"+categoriaId, {
 			method : "POST",			
 			headers : { 
@@ -78,19 +92,20 @@ export default class CategoriaDetalhes extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},
 			body : JSON.stringify( {
-				"descricaoIni" : this.refs.subcatDescricaoIni.value
+				"descricaoIni" : this.subcatDescricaoIni.current.value
 			} )
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {					
 					this.setState( { categoria : { subcategorias : dados } } );
 					
-					if ( dados.length === 0 )
+					if ( dados.length === 0 && filtrarBTClicado === true )
 						this.setState( { infoMsg : "Nenhuma subcategoria encontrada pelos critérios de busca informados." } );					
 				} );		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
 			}			
+			sistema.hideLoadingSpinner();
 		} );		
 		
 	}
@@ -108,8 +123,23 @@ export default class CategoriaDetalhes extends React.Component {
 			/>, sistema.paginaElemento() ); 
 	}
 	
+	removerSubcategoriaSeConfirmado( e, subcatId ) {
+		this.setState( { 
+			remocaoModalVisivel : true, 
+			remocaoModalOkFunc : () => { 
+				this.setState( { remocaoModalVisivel : false } );
+				this.removerSubcategoria( e, subcatId );
+			},
+			remocaoModalCancelaFunc : () => {
+				this.setState( { remocaoModalVisivel : false } );
+			} 
+		} )
+	}
+	
 	removerSubcategoria( e, subcatId ) {
 		e.preventDefault();
+
+		sistema.showLoadingSpinner();
 
 		fetch( "/api/subcategoria/deleta/"+subcatId, {
 			method : "DELETE",			
@@ -119,18 +149,36 @@ export default class CategoriaDetalhes extends React.Component {
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {	
 				this.setState( { infoMsg : "Subcategoria removida com êxito!" } );
-				this.filtrarSubcategorias( e );																	
+				this.filtrarSubcategorias( e, null );																	
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
 			}
+			sistema.hideLoadingSpinner();
 		} );		
+	}
+	
+	paraTelaCategorias() {
+		ReactDOM.render( <Categorias />, sistema.paginaElemento() );
 	}
 		
 	render() {
-		const { categoria, erroMsg, infoMsg } = this.state;
+		const { categoria, erroMsg, infoMsg, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 		
 		return( 
 			<Container>
+				<Modal show={remocaoModalVisivel}>
+					<Modal.Header>
+						<Modal.Title>Remoção de subcategoria</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Tem certeza que deseja remover a subcategoria selecionada?</Modal.Body>
+					<Modal.Footer>
+						<Form>
+							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
+							<Button variant="primary" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
+						</Form>
+					</Modal.Footer>
+				</Modal>
+				
 				<Row>
 					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
@@ -142,10 +190,12 @@ export default class CategoriaDetalhes extends React.Component {
 							<div className="inline-block">	
 								<span className="text-dark font-weight-bold">Descrição: </span>
 								<span className="text-info">{categoria.descricao}</span>
-							</div>
+							</div>							
 							
 							<br />
-							<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar categoria</button>																																							
+							<Form>
+								<Button variant="primary" onClick={(e) => this.editar( e )}>Editar categoria</Button>																																																						
+							</Form>
 						</Card>
 					</Col>
 				</Row>
@@ -171,8 +221,8 @@ export default class CategoriaDetalhes extends React.Component {
 											<tr key={index}>
 												<td>{subcategoria.id}</td>
 												<td>{subcategoria.descricao}</td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.editarSubcategoria( e, subcategoria )}>editar</button></td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.removerSubcategoria( e, subcategoria.id )}>remover</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.editarSubcategoria( e, subcategoria )}>editar</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSubcategoriaSeConfirmado( e, subcategoria.id )}>remover</button></td>
 											</tr>
 										);
 									} ) }	
@@ -188,7 +238,7 @@ export default class CategoriaDetalhes extends React.Component {
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />
 								
-								<Form onSubmit={ (e) => this.filtrarSubcategorias( e ) }>
+								<Form onSubmit={ (e) => this.filtrarSubcategorias( e, true ) }>
 									<Form.Group className="mb-2">
 										<Form.Label>Descrição:</Form.Label>
 										<Form.Control type="text" ref={this.subcatDescricaoIni} name="subcatDescricaoIni" />						
@@ -207,8 +257,17 @@ export default class CategoriaDetalhes extends React.Component {
 					op="cadastrar" 
 					titulo="Registre nova subcategoria"
 					categoriaId={this.props.categoriaId} 
-					registrou={ () => this.filtrarSubcategorias(null) } />
-																																												
+					registrou={ () => this.filtrarSubcategorias( null, false ) } />
+				
+				<br />
+				
+				<Card className="p-3">
+					<Row>
+						<Col>
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategorias( e ) }>Ir para categorias</button>
+						</Col>
+					</Row>
+				</Card>
 			</Container>
 		);
 	}

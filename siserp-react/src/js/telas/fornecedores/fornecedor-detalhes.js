@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import FornecedorForm from './fornecedor-form';
+import Fornecedores from './fornecedores';
 
 export default class FornecedorDetalhes extends React.Component {
 
@@ -22,6 +23,8 @@ export default class FornecedorDetalhes extends React.Component {
 	componentDidMount() {
 		let fornecedorId = this.props.fornecedorId;
 		
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/fornecedor/get/"+fornecedorId, {
 			method : "GET",			
 			headers : { 
@@ -35,6 +38,7 @@ export default class FornecedorDetalhes extends React.Component {
 			} else {				
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			 
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -47,6 +51,10 @@ export default class FornecedorDetalhes extends React.Component {
 				empresa={this.state.fornecedor.empresa} 
 			/>,
 			sistema.paginaElemento() );
+	}
+		
+	paraTelaFornecedores() {
+		ReactDOM.render( <Fornecedores />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -74,9 +82,13 @@ export default class FornecedorDetalhes extends React.Component {
 							<MensagemPainel cor="danger" msg={erroMsg} />
 							<MensagemPainel cor="primary" msg={infoMsg} />	
 							
-							<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar fornecedor</button>							
-						</Card>
-												
+							<Form>
+								<Button variant="primary" onClick={(e) => this.editar( e )}>Editar fornecedor</Button>
+							</Form>
+							<br />
+							<br />
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaFornecedores( e ) }>Ir para fornecedores</button>
+						</Card>																		
 					</Col>
 				</Row>															
 			</Container>

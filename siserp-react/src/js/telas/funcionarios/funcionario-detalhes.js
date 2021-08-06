@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import FuncionarioForm from './funcionario-form';
+import Funcionarios from './funcionarios';
 
 export default class FuncionarioDetalhes extends React.Component {
 
@@ -25,6 +26,8 @@ export default class FuncionarioDetalhes extends React.Component {
 	}
 	
 	componentDidMount() {		
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/funcionario/get/"+this.props.funcId, {
 			method : "GET",			
 			headers : { 
@@ -38,6 +41,7 @@ export default class FuncionarioDetalhes extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			 
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -47,6 +51,10 @@ export default class FuncionarioDetalhes extends React.Component {
 		ReactDOM.render( 
 			<FuncionarioForm op="editar" funcId={this.props.funcId} />,
 				sistema.paginaElemento() );
+	}
+	
+	paraTelaFuncionarios() {
+		ReactDOM.render( <Funcionarios />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -141,11 +149,13 @@ export default class FuncionarioDetalhes extends React.Component {
 							<MensagemPainel cor="danger" msg={erroMsg} />
 							<MensagemPainel cor="primary" msg={infoMsg} />
 						
-							<Row>
-								<Col>
-									<button className="btn btn-link p-0" onClick={(e) => this.editar( e )}>Editar funcionario</button>
-								</Col>
-							</Row>																																																		
+							<Form>
+								<Button variant="primary" onClick={(e) => this.editar( e )}>Editar funcionario</Button>
+							
+								<br />
+								<br />
+								<button className="btn btn-link p-0" onClick={(e) => this.paraTelaFuncionarios(e) }>Ir para funcionarios</button>
+							</Form>	
 						</Card>												
 					</Col>
 				</Row>															

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
@@ -20,6 +20,8 @@ export default class SedeDetalhes extends React.Component {
 	}
 	
 	componentDidMount() {		
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/sede/get", {
 			method : "GET",			
 			headers : { 
@@ -33,6 +35,7 @@ export default class SedeDetalhes extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}				
+			sistema.hideLoadingSpinner();
 		} );
 	}
 	
@@ -72,9 +75,11 @@ export default class SedeDetalhes extends React.Component {
 						
 						<br />
 						
-						<Card>								
-							<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar sede</button>
-												
+						<Card className="p-3">			
+							<Form>
+								<Button variant="primary" onClick={(e) => this.editar( e )}>Editar sede</Button>
+							</Form>						
+							
 							<MensagemPainel cor="danger" msg={erroMsg} />
 							<MensagemPainel cor="primary" msg={infoMsg} />																																							
 						</Card>

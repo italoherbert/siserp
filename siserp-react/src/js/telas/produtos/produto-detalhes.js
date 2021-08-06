@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
 
 import ProdutoForm from './produto-form';
+import Produtos from './produtos';
 
 export default class ProdutoDetalhes extends React.Component {
 
@@ -22,6 +23,8 @@ export default class ProdutoDetalhes extends React.Component {
 	componentDidMount() {					
 		let produtoId = this.props.produtoId;
 		
+		sistema.showLoadingSpinner();
+		
 		fetch( "/api/produto/get/"+produtoId, {
 			method : "GET",			
 			headers : { 
@@ -35,6 +38,7 @@ export default class ProdutoDetalhes extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
 			}			
+			sistema.hideLoadingSpinner();
 		} );	
 	}
 			
@@ -44,14 +48,12 @@ export default class ProdutoDetalhes extends React.Component {
 		ReactDOM.render( 
 			<ProdutoForm op="editar"
 				titulo="Altere a produto" 
-				produtoId={this.props.produtoId} 
-				codigoBarras={this.state.produto.codigoBarras}
-				descricao={this.state.produto.descricao} 
-				precoUnitCompra={this.state.produto.precoUnitCompra} 
-				precoUnitVenda={this.state.produto.precoUnitVenda} 
-				unidade={this.state.produto.unidade} 
-			/>,
+				produtoId={this.props.produtoId} />,
 			sistema.paginaElemento() );
+	}
+	
+	paraTelaProdutos() {
+		ReactDOM.render( <Produtos />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -93,7 +95,16 @@ export default class ProdutoDetalhes extends React.Component {
 							</div>
 							
 							<br />
-							<button className="btn btn-link" onClick={(e) => this.editar( e )}>Editar produto</button>																																							
+							<Row>
+								<Col>
+									<Form>
+										<Button type="submit" variant="primary" onClick={(e) => this.editar( e )}>Editar produto</Button>
+										<br />
+										<br />
+										<button className="btn btn-link p-0" onClick={(e) => this.paraTelaProdutos( e ) }>Ir para produtos</button>																																							
+									</Form>
+								</Col>
+							</Row>
 						</Card>
 					</Col>
 				</Row>

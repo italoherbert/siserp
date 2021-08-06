@@ -15,12 +15,9 @@ export default class SetCompraFornecedor extends React.Component {
 			infoMsg : null,
 			fornecedoresLista : []		
 		};		
-		this.fornecedorEmpresa = React.createRef();								
 	}
 		
 	fornecedorOnChange( item ) {
-		this.props.fornecedor.empresa = item;		
-
 		if ( item.length === 0 )
 			return;
 								
@@ -49,6 +46,7 @@ export default class SetCompraFornecedor extends React.Component {
 			
 	render() {
 		const { erroMsg, infoMsg, fornecedoresLista } = this.state;
+		const { fornecedorEmpresaRef } = this.props;
 				
 		return(									
 			<Form onSubmit={(e) => this.addFornecedor( e ) }>																							
@@ -58,7 +56,7 @@ export default class SetCompraFornecedor extends React.Component {
 					
 					<Form.Group className="mb-2">
 						<Form.Label>Fornecedor: </Form.Label>
-						<InputDropdown referencia={this.fornecedorEmpresa} itens={fornecedoresLista} carregaItens={ (item) => this.fornecedorOnChange( item ) } />						
+						<InputDropdown referencia={fornecedorEmpresaRef} itens={fornecedoresLista} carregaItens={ (item) => this.fornecedorOnChange( item ) } />						
 					</Form.Group>
 					
 				</Card>

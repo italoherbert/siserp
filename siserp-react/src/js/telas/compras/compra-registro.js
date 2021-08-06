@@ -1,5 +1,6 @@
 import React from 'react';
-import { Card, Table } from 'react-bootstrap';
+import ReactDOM from 'react-dom';
+import { Card, Table, Form, Button } from 'react-bootstrap';
 import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 
 import sistema from './../../logica/sistema';
@@ -8,6 +9,8 @@ import MensagemPainel from './../../componente/mensagem-painel';
 import AddCompraProduto from './add-compra-produto';
 import SetCompraFornecedor from './set-compra-fornecedor';
 import GeraCompraParcelas from './gera-compra-parcelas';
+
+import Compras from './compras';
 
 export default class CompraRegistro extends React.Component {
 	
@@ -19,16 +22,13 @@ export default class CompraRegistro extends React.Component {
 			erroMsg : null,
 			produtos : [],
 			parcelas : [],
-			fornecedor : { 
-				empresa : ''
-			},
 			geraParcelasConfig : {
 				valorTotal : 0,
-				quantParcelas : ''
 			}
 		};	
 		
 		this.quantParcelasRef = React.createRef();
+		this.fornecedorEmpresaRef = React.createRef();
 	}				
 	
 	produtoAdicionado( produto ) {
@@ -46,7 +46,7 @@ export default class CompraRegistro extends React.Component {
 	}
 	
 	registrarCompra( e ) {
-		const { fornecedor, produtos, parcelas } = this.state;
+		const { produtos, parcelas } = this.state;
 		
 		e.preventDefault();
 		
@@ -57,7 +57,7 @@ export default class CompraRegistro extends React.Component {
 			let p = produtos[ i ];
 			itensCompra.push( {				
 				precoUnitario : p.precoUnitCompra,
-				quantidade : p.quantidade,
+				quantidade : p.paraAddQuantidade,
 				produto : {
 					descricao : p.descricao,
 					codigoBarras : p.codigoBarras,
@@ -66,7 +66,7 @@ export default class CompraRegistro extends React.Component {
 					unidade : p.unidade,
 					
 					categorias : p.categorias,
-					quantidade : p.quantidade
+					quantidade : p.paraAddQuantidade
 				}
 			} );
 		}
@@ -81,6 +81,8 @@ export default class CompraRegistro extends React.Component {
 			} );
 		}
 				
+		sistema.showLoadingSpinner();				
+				
 		fetch( '/api/compra/registra', {
 			method : 'POST',
 			headers : {
@@ -90,21 +92,19 @@ export default class CompraRegistro extends React.Component {
 			body : JSON.stringify( {
 				dataCompra : sistema.formataData( new Date() ),
 				fornecedor : {
-					empresa : fornecedor.empresa
+					empresa : this.fornecedorEmpresaRef.current.value
 				},
 				itensCompra : itensCompra,
 				parcelas : parcelasList
 			} )
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {
+				this.fornecedorEmpresaRef.current.value = '';
 				this.quantParcelasRef.current.value = '';
 				this.setState( { 
 					infoMsg : 'Compra registrada com êxito',
 					produtos : [],
 					parcelas : [],
-					fornecedor : { 
-						empresa : ''
-					},
 					geraParcelasConfig : {
 						valorTotal : 0
 					}
@@ -112,11 +112,16 @@ export default class CompraRegistro extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );
 	}
+			
+	paraTelaCompras() {
+		ReactDOM.render( <Compras />, sistema.paginaElemento() ); 
+	}	
 		
 	render() {
-		const { infoMsg, erroMsg, produtos, parcelas, fornecedor, geraParcelasConfig } = this.state;
+		const { infoMsg, erroMsg, produtos, parcelas, geraParcelasConfig } = this.state;
 				
 		return(	
 			<div>
@@ -132,9 +137,9 @@ export default class CompraRegistro extends React.Component {
 							<Table striped bordered hover>
 								<thead>
 									<tr>
-										<th>ID</th>
 										<th>Descrição</th>
 										<th>Codigo de Barras</th>
+										<th>Quantidade</th>
 										<th>Categorias</th>
 										<th>Remover</th>
 									</tr>
@@ -143,9 +148,9 @@ export default class CompraRegistro extends React.Component {
 									{produtos.map( ( p, index ) => {
 										return (
 											<tr key={index}>
-												<td>{p.id}</td>
 												<td>{p.descricao}</td>
 												<td>{p.codigoBarras}</td>
+												<td>{ sistema.formataFloat( p.paraAddQuantidade ) } {p.unidade}</td>
 												<td>
 													<select>
 														{p.categorias.map( (cat, index2) => {
@@ -172,22 +177,32 @@ export default class CompraRegistro extends React.Component {
 						</div>					
 					</TabPanel>		
 					<TabPanel>
-						<SetCompraFornecedor fornecedor={fornecedor} />
+						<SetCompraFornecedor fornecedorEmpresaRef={this.fornecedorEmpresaRef} />
 					</TabPanel>
 					<TabPanel>
 						<GeraCompraParcelas produtos={produtos} parcelas={parcelas} config={geraParcelasConfig} quantParcelasRef={this.quantParcelasRef} />
 					</TabPanel>
 				</Tabs>
 				
-				<br />
-				<MensagemPainel cor="danger" msg={erroMsg} />
-				<MensagemPainel cor="primary" msg={infoMsg} />
+				<hr />
+												
+				<Card className="p-3">
+					<MensagemPainel cor="danger" msg={erroMsg} />
+					<MensagemPainel cor="primary" msg={infoMsg} />
+					
+					<Form className="text-center">						
+						<Button variant="primary" onClick={ (e) => this.registrarCompra( e ) }>Registrar compra</Button>
+					</Form>						
+				</Card>		
 				
-				<Card className="text-right p-3">
-					<button type="button" variant="primary" className="btn btn-primary" onClick={ (e) => this.registrarCompra( e ) }>
-						Registrar compra
-					</button>																																										
+				<br />
+				
+				<Card className="p-3">					
+					<Form>
+						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCompras( e ) }>Ir para tela de compras</button>
+					</Form>
 				</Card>
+				
 			</div>
 		);
 	}

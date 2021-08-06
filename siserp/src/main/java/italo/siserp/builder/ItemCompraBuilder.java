@@ -20,6 +20,9 @@ public class ItemCompraBuilder {
 	@Autowired
 	private NumeroUtil numeroUtil;
 	
+	@Autowired
+	private ProdutoBuilder produtoBuilder;
+	
 	public void carregaItemCompra( ItemCompra item, SaveItemCompraRequest req ) 
 			throws PrecoUnitCompraInvalidoException,
 				PrecoUnitVendaInvalidoException,
@@ -44,11 +47,15 @@ public class ItemCompraBuilder {
 	public void carregaItemCompraResponse( ItemCompraResponse resp, ItemCompra item ) {
 		resp.setId( item.getId() ); 
 		resp.setPrecoUnitario( numeroUtil.doubleParaString( item.getPrecoUnitario() ) );
-		resp.setQuantidade( numeroUtil.doubleParaString( item.getQuantidade() ) );		
+		resp.setQuantidade( numeroUtil.doubleParaString( item.getQuantidade() ) );
+		
+		produtoBuilder.carregaProdutoResponse( resp.getProduto(), item.getProduto() ); 
 	}	
 	
 	public ItemCompraResponse novoItemCompraResponse() {
-		return new ItemCompraResponse();
+		ItemCompraResponse resp = new ItemCompraResponse();
+		resp.setProduto( produtoBuilder.novoProdutoResponse() );
+		return resp;
 	}
 	
 	public ItemCompra novoItemCompra() {

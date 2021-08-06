@@ -1,9 +1,13 @@
 import React from 'react';
-import { Container, Card, Table } from 'react-bootstrap';
+import ReactDOM from 'react-dom';
+
+import { Container, Row, Col, Card, Table } from 'react-bootstrap';
 import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
+
+import Compras from './compras';
 
 export default class CompraRegistro extends React.Component {
 	
@@ -17,7 +21,9 @@ export default class CompraRegistro extends React.Component {
 		};								
 	}				
 	
-	componentDidMount() {		
+	componentDidMount() {	
+		sistema.showLoadingSpinner();
+	
 		fetch( '/api/compra/get/'+this.props.compraId, {
 			method : 'GET',
 			headers : {
@@ -31,7 +37,12 @@ export default class CompraRegistro extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();			
 		} );
+	}
+	
+	paraTelaCompras() {
+		ReactDOM.render( <Compras />, sistema.paginaElemento() ); 
 	}
 		
 	render() {
@@ -57,8 +68,10 @@ export default class CompraRegistro extends React.Component {
 									<thead>
 										<tr>
 											<th>ID</th>
+											<th>Descrição</th>
+											<th>Codigo de barras</th>
 											<th>Valor Unitário</th>
-											<th>Quantidade</th>
+											<th>Quantidade comprada</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -66,8 +79,10 @@ export default class CompraRegistro extends React.Component {
 											return (
 												<tr key={index}>
 													<td>{ item.id }</td>
+													<td>{ item.produto.descricao }</td>
+													<td>{ item.produto.codigoBarras }</td>
 													<td>{ sistema.formataReal( item.precoUnitario ) }</td>
-													<td>{ item.quantidade }</td>
+													<td>{ sistema.formataFloat( item.quantidade ) }</td>
 												</tr>
 											)
 										} ) }
@@ -108,6 +123,17 @@ export default class CompraRegistro extends React.Component {
 					
 					<MensagemPainel cor="danger" msg={erroMsg} />
 					<MensagemPainel cor="primary" msg={infoMsg} />
+					<br />										
+				</Card>
+				
+				<br />
+				
+				<Card className="p-3">
+					<Row>
+						<Col>
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCompras( e ) }>Ir para tela de compras</button>
+						</Col>
+					</Row>
 				</Card>
 			</Container>
 		);

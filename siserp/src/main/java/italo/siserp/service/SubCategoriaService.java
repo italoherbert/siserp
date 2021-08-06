@@ -32,11 +32,11 @@ public class SubCategoriaService {
 	@Autowired
 	private SubCategoriaBuilder subcategoriaBuilder;
 		
-	public IdResponse registraSubCategoria( String categoriaDesc, SaveSubCategoriaRequest request ) 
+	public IdResponse registraSubCategoria( Long categoriaId, SaveSubCategoriaRequest request ) 
 			throws SubCategoriaJaExisteException, CategoriaNaoEncontradaException {				
 
-		Categoria cat =	categoriaRepository.buscaPorDescricao( categoriaDesc ).orElseThrow( CategoriaNaoEncontradaException::new );				
 		String descricao = request.getDescricao();
+		Categoria cat =	categoriaRepository.findById( categoriaId ).orElseThrow( CategoriaNaoEncontradaException::new ); 				
 		
 		List<SubCategoria> subcats = cat.getSubcategorias();
 		for( SubCategoria sc : subcats )
@@ -78,6 +78,23 @@ public class SubCategoriaService {
 		String descricaoIni = ( request.getDescricaoIni().equals( "*" ) ? "" : request.getDescricaoIni() );
 		
 		List<SubCategoria> subcategorias = subcategoriaRepository.filtra( categoriaDesc, descricaoIni+"%", p );
+		
+		List<SubCategoriaResponse> responses = new ArrayList<>();
+		
+		for( SubCategoria sc : subcategorias ) {			
+			SubCategoriaResponse resp = subcategoriaBuilder.novoSubCategoriaResponse();
+			subcategoriaBuilder.carregaSubCategoriaResponse( resp, sc );
+			
+			responses.add( resp );
+		}
+		
+		return responses;
+	}
+	
+	public List<SubCategoriaResponse> buscaSubCategoriasPorDescricaoIni( Long categoriaId, BuscaSubCategoriasRequest request, Pageable p ) {
+		String descricaoIni = ( request.getDescricaoIni().equals( "*" ) ? "" : request.getDescricaoIni() );
+		
+		List<SubCategoria> subcategorias = subcategoriaRepository.filtra( categoriaId, descricaoIni+"%", p );
 		
 		List<SubCategoriaResponse> responses = new ArrayList<>();
 		

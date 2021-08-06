@@ -51,7 +51,6 @@ import italo.siserp.repository.CategoriaRepository;
 import italo.siserp.repository.CompraRepository;
 import italo.siserp.repository.FornecedorRepository;
 import italo.siserp.repository.ProdutoRepository;
-import italo.siserp.repository.SubCategoriaRepository;
 import italo.siserp.util.DataUtil;
 
 @Service
@@ -71,10 +70,7 @@ public class CompraService {
 	
 	@Autowired
 	private CategoriaMapRepository categoriaMapRepository;
-	
-	@Autowired
-	private SubCategoriaRepository subcategoriaRepository;
-		
+			
 	@Autowired
 	private CompraBuilder compraBuilder;
 

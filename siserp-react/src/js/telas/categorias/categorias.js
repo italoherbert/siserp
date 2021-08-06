@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -18,7 +19,11 @@ export default class Categorias extends React.Component {
 			addInfoMsg : null,
 			erroMsg : null,
 			infoMsg : null,
-			categorias : [] 
+			categorias : [],			
+			
+			remocaoModalVisivel : false,
+			remocaoModalOkFunc : () => {},
+			remocaoModalCancelaFunc : () => {}
 		};			
 		
 		this.descricaoIni = React.createRef();
@@ -27,14 +32,16 @@ export default class Categorias extends React.Component {
 	componentDidMount() {
 		this.descricaoIni.current.value = "*";
 		
-		this.filtrar( null );		
+		this.filtrar( null, true );		
 	}
 	
-	filtrar( e ) {
+	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
 					
 		this.setState( { erroMsg : null, infoMsg : null } );
+
+		sistema.showLoadingSpinner();
 
 		fetch( "/api/categoria/filtra", {
 			method : "POST",			
@@ -50,12 +57,13 @@ export default class Categorias extends React.Component {
 				resposta.json().then( (dados) => {
 					this.setState( { categorias : dados } );
 					
-					if ( dados.length === 0 )
-						this.setState( { infoMsg : "Nenhuma categoria registrado!" } );						
+					if ( dados.length === 0 && filtrarBTClicado === true )
+						this.setState( { infoMsg : "Nenhuma categoria registrada!" } );						
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}			
+			sistema.hideLoadingSpinner();	
 		} );
 	}
 	
@@ -65,8 +73,23 @@ export default class Categorias extends React.Component {
 		ReactDOM.render( <CategoriaDetalhes categoriaId={id}/>, sistema.paginaElemento() );
 	}
 	
+	removerSeConfirmado( e, id ) {
+		this.setState( { 
+			remocaoModalVisivel : true, 
+			remocaoModalOkFunc : () => { 
+				this.setState( { remocaoModalVisivel : false } );
+				this.remover( e, id );
+			},
+			remocaoModalCancelaFunc : () => {
+				this.setState( { remocaoModalVisivel : false } );
+			} 
+		} )
+	}
+	
 	remover( e, id ) {
 		e.preventDefault();
+		
+		sistema.showLoadingSpinner();
 		
 		fetch( "/api/categoria/deleta/"+id, {
 			method : "DELETE",			
@@ -75,26 +98,39 @@ export default class Categorias extends React.Component {
 			}
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
-				this.setState( { infoMsg : "Categoria removido com êxito!" } );
-				this.filtrar();																	
+				this.filtrar( null, false );																	
+				this.setState( { infoMsg : "Categoria removida com êxito!" } );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
 			}
+			sistema.hideLoadingSpinner();
 		} );
 	}
 		
 	render() {
-		const { erroMsg, infoMsg, categorias } = this.state;
+		const { erroMsg, infoMsg, categorias, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 		
 		return (
 			<Container>				
-			
+				<Modal show={remocaoModalVisivel}>
+					<Modal.Header>
+						<Modal.Title>Remoção de categoria</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>Tem certeza que deseja remover a categoria selecionada?</Modal.Body>
+					<Modal.Footer>
+						<Form>
+							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
+							<Button variant="primary" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
+						</Form>
+					</Modal.Footer>
+				</Modal>
+				
 				<Row>
 					<Col>
 						<CategoriaForm 
 							op="cadastrar"
 							titulo="Cadastre nova categoria" 
-							registrou={ () => this.filtrar(null) } />
+							registrou={ () => this.filtrar( null, false) } />
 					</Col>
 				</Row>
 				
@@ -109,7 +145,7 @@ export default class Categorias extends React.Component {
 									<thead>
 										<tr>
 											<th>ID</th>
-											<th>Nome da empresa</th>
+											<th>Descrição</th>
 											<th>Detalhes</th>
 											<th>Remover</th>
 										</tr>
@@ -120,8 +156,8 @@ export default class Categorias extends React.Component {
 												<tr key={index}>
 													<td>{categoria.id}</td>
 													<td>{categoria.descricao}</td>
-													<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
-													<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.remover( e, categoria.id )}>remover</button></td>
+													<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
+													<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, categoria.id )}>remover</button></td>
 												</tr>
 											)
 										} ) }	
@@ -137,7 +173,7 @@ export default class Categorias extends React.Component {
 							<Row>
 								<Col className="col-md-3"></Col>
 								<Col className="col-md-6">
-									<Form onSubmit={ (e) => this.filtrar( e ) }>
+									<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 										<Form.Group className="mb-2">
 											<Form.Label>Descrição:</Form.Label>
 											<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						

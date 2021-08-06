@@ -23,7 +23,8 @@ export default class AddCompraProduto extends React.Component {
 		this.precoUnitCompra = React.createRef();
 		this.precoUnitVenda = React.createRef();
 		this.unidade = React.createRef();
-		this.quantidade = React.createRef();								
+		this.estoqueQuantidade = React.createRef();								
+		this.paraAddQuantidade = React.createRef();								
 	}			
 	
 	addProduto( e ) {
@@ -51,7 +52,7 @@ export default class AddCompraProduto extends React.Component {
 			return;
 		}
 				
-		if ( this.quantidade.current.value.trim().length === 0 ) {
+		if ( this.paraAddQuantidade.current.value.trim().length === 0 ) {
 			this.setState( { erroMsg : "A quantidade é um campo de preenchiento obrigatório." } );
 			return;
 		}
@@ -59,10 +60,10 @@ export default class AddCompraProduto extends React.Component {
 		let produto = {
 			descricao : this.descricao.current.value,
 			codigoBarras : this.codigoBarras.current.value,
-			precoUnitCompra : this.precoUnitCompra.current.value,
-			precoUnitVenda : this.precoUnitVenda.current.value,
+			precoUnitCompra : sistema.paraFloat( this.precoUnitCompra.current.value ),
+			precoUnitVenda : sistema.paraFloat( this.precoUnitVenda.current.value ),
 			unidade : this.unidade.current.value,
-			quantidade : this.quantidade.current.value,
+			paraAddQuantidade : sistema.paraFloat( this.paraAddQuantidade.current.value ),
 			categorias : this.state.categorias
 		};	
 		
@@ -78,7 +79,7 @@ export default class AddCompraProduto extends React.Component {
 		this.precoUnitCompra.current.value = "";
 		this.precoUnitVenda.current.value = "";
 		this.unidade.current.value = "";
-		this.quantidade.current.value = "";
+		this.paraAddQuantidade.current.value = "";
 		
 		this.setState( { categorias : [] } );
 	}
@@ -99,9 +100,10 @@ export default class AddCompraProduto extends React.Component {
 			if ( resposta.status === 200 ) {
 				resposta.json().then( (dados) => {
 					this.descricao.current.value = dados.descricao;
-					this.precoUnitCompra.current.value = dados.precoUnitCompra;
-					this.precoUnitVenda.current.value = dados.precoUnitVenda;
+					this.precoUnitCompra.current.value = sistema.formataFloat( dados.precoUnitCompra );
+					this.precoUnitVenda.current.value = sistema.formataFloat( dados.precoUnitVenda );
 					this.unidade.current.value = dados.unidade;
+					this.estoqueQuantidade.current.value = sistema.formataFloat( dados.quantidade );
 										
 					this.setState( { categorias : dados.categorias } );
 				} );
@@ -126,7 +128,7 @@ export default class AddCompraProduto extends React.Component {
 					</TabList>
 					<TabPanel>
 						<Card className="p-3">
-							<h4 className="card-title">Adicionar produto</h4>
+							<h4 className="card-title">Dados do produto</h4>
 							
 							<Form.Group className="mb-2">
 								<Form.Label>Descrição: </Form.Label>
@@ -160,9 +162,13 @@ export default class AddCompraProduto extends React.Component {
 									</Col>
 								</Row>
 							</Form.Group>
-							<Form.Group className="mb-2">
-								<Form.Label>Quantidade: </Form.Label>
-								<Form.Control type="text" ref={this.quantidade} name="quantidade" />
+							<Form.Group className="mb-2">						
+								<Form.Label>Quantidade em estoque: </Form.Label>
+								<Form.Control type="text" disabled={true} ref={this.estoqueQuantidade} name="estoqueQuantidade" />							
+							</Form.Group>
+							<Form.Group className="mb-2">						
+								<Form.Label>Quantidade para adicionar: </Form.Label>
+								<Form.Control type="text" ref={this.paraAddQuantidade} name="paraAddQuantidade" />							
 							</Form.Group>
 						</Card>
 					</TabPanel>
@@ -175,7 +181,7 @@ export default class AddCompraProduto extends React.Component {
 				
 				<MensagemPainel cor="danger" msg={erroMsg} />
 				<MensagemPainel cor="primary" msg={infoMsg} />
-				
+
 				<Button type="submit" variant="primary" className="my-3">Adicionar produto</Button>																																										
 			</Form>
 				

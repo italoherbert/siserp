@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {Container, Row, Col, Card, Form, Button} from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
+
+import Categorias from './categorias';
 
 export default class CategoriaForm extends React.Component {
 	
@@ -36,6 +39,8 @@ export default class CategoriaForm extends React.Component {
 			url = "/api/categoria/registra";
 			metodo = 'POST';
 		}
+	
+		sistema.showLoadingSpinner();
 				
 		fetch( url, {
 			method : metodo,			
@@ -55,7 +60,12 @@ export default class CategoriaForm extends React.Component {
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
+			sistema.hideLoadingSpinner();
 		} );				
+	}
+		
+	paraTelaCategorias() {
+		ReactDOM.render( <Categorias />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -82,7 +92,21 @@ export default class CategoriaForm extends React.Component {
 							</Form>
 						</Card>													
 					</Col>
-				</Row>					
+				</Row>		
+				
+				
+				{ this.props.op === 'editar' && (
+					<div>
+						<br />
+						<Card className="p-3">
+							<Row>
+								<Col>
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategorias( e ) }>Ir para categorias</button>
+								</Col>
+							</Row>
+						</Card>
+					</div>
+				) }
 			</Container>
 		);
 	}
