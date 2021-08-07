@@ -88,7 +88,7 @@ public class ProdutoController {
 	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@GetMapping("/busca/{codigoBarras}")
-	public ResponseEntity<Object> filtraPorCodBarras( @PathVariable String codigoBarras ) {
+	public ResponseEntity<Object> buscaPorCodBarras( @PathVariable String codigoBarras ) {
 		if ( codigoBarras == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
 		if ( codigoBarras.trim().isEmpty() )
@@ -97,6 +97,22 @@ public class ProdutoController {
 		try {
 			ProdutoResponse produto = produtoService.buscaProdutoPorCodBarra( codigoBarras );
 			return ResponseEntity.ok( produto );		
+		} catch (ProdutoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_NAO_ENCONTRADO ) );		
+		}
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@GetMapping("/existe/{codigoBarras}")
+	public ResponseEntity<Object> existePorCodBarras( @PathVariable String codigoBarras ) {
+		if ( codigoBarras == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
+		if ( codigoBarras.trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
+				
+		try {
+			produtoService.verificaSeExisteCodBarra( codigoBarras );
+			return ResponseEntity.ok().build();				
 		} catch (ProdutoNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_NAO_ENCONTRADO ) );		
 		}

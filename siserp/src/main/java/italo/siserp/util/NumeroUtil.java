@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.InteiroInvalidoException;
+import italo.siserp.exception.LongInvalidoException;
 
 @Component
 public class NumeroUtil {
@@ -29,6 +30,18 @@ public class NumeroUtil {
 			return Integer.parseInt( numero );
 		} catch ( NumberFormatException e ) {
 			throw new InteiroInvalidoException();
+		}
+	}
+	
+	public String longParaString( int numero ) {
+		return String.valueOf( numero );
+	}
+	
+	public Long stringParaLong( String numero ) throws LongInvalidoException {
+		try {
+			return Long.parseLong( numero );
+		} catch ( NumberFormatException e ) {
+			throw new LongInvalidoException();
 		}
 	}
 	

@@ -1,16 +1,19 @@
 package italo.siserp.model;
 
+import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,18 +23,28 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "cliente")
-public class Cliente {
+@Table(name="caixa") 
+public class Caixa {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="pessoa_id")
-	private Pessoa pessoa;	
+	@Column
+	@Temporal(TemporalType.DATE)
+	private Date dataAbertura;
 	
-	@OneToMany(mappedBy="cliente", cascade=CascadeType.REMOVE)
+	@Column
+	private double valorInicial;
+	
+	@Column
+	private double valor;
+	
+	@ManyToOne(optional=true)
+	@JoinColumn(name="funcionario_id")
+	private Funcionario funcionario;
+	
+	@OneToMany(mappedBy="caixa")
 	private List<Venda> vendas;
 	
 }

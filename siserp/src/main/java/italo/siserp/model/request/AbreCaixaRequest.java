@@ -7,10 +7,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class BuscaCompraRequest {
+public class AbreCaixaRequest {
 
-	private String dataIni;
-	
-	private String dataFim;
+	private String valorInicial;
 	
 }

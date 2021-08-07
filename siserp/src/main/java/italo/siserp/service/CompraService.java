@@ -19,7 +19,7 @@ import italo.siserp.builder.ProdutoBuilder;
 import italo.siserp.builder.SubCategoriaBuilder;
 import italo.siserp.builder.TotalCompraBuilder;
 import italo.siserp.exception.CompraNaoEncontradaException;
-import italo.siserp.exception.DataCompraException;
+import italo.siserp.exception.DataCompraInvalidaException;
 import italo.siserp.exception.DataFimAposDataIniException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
@@ -37,7 +37,7 @@ import italo.siserp.model.Fornecedor;
 import italo.siserp.model.ItemCompra;
 import italo.siserp.model.Produto;
 import italo.siserp.model.SubCategoria;
-import italo.siserp.model.request.BuscaCompraRequest;
+import italo.siserp.model.request.BuscaComprasRequest;
 import italo.siserp.model.request.SaveCategoriaRequest;
 import italo.siserp.model.request.SaveCompraParcelaRequest;
 import italo.siserp.model.request.SaveCompraRequest;
@@ -99,7 +99,7 @@ public class CompraService {
 	private DataUtil dataUtil;
 		
 	public void salvaCompra( SaveCompraRequest request ) 
-			throws DataCompraException, 
+			throws DataCompraInvalidaException, 
 				PrecoUnitCompraInvalidoException, 
 				PrecoUnitVendaInvalidoException,
 				QuantidadeInvalidaException,
@@ -238,7 +238,7 @@ public class CompraService {
 		}
 	}
 	
-	public List<TotalCompraResponse> filtra( BuscaCompraRequest request ) 
+	public List<TotalCompraResponse> filtra( BuscaComprasRequest request ) 
 			throws DataIniInvalidaException, 
 					DataFimInvalidaException, 
 					DataFimAposDataIniException {
@@ -283,44 +283,19 @@ public class CompraService {
 	}
 	
 	public void delete( Long id ) throws CompraNaoEncontradaException {
-		if ( !compraRepository.existsById( id ) )
-			throw new CompraNaoEncontradaException();
+		Compra c = compraRepository.findById( id ).orElseThrow( CompraNaoEncontradaException::new );
+		List<ItemCompra> itens = c.getItensCompra();
+		for( ItemCompra ic : itens ) {
+			Produto p = ic.getProduto();
+			if ( ic.getQuantidade() > p.getQuantidade() ) {
+				p.setQuantidade( 0 );
+			} else {
+				p.setQuantidade( p.getQuantidade() - ic.getQuantidade() );
+			}
+			produtoRepository.save( p );
+		}
 		
-		compraRepository.deleteById( id );
+		compraRepository.delete( c );
 	}
 	
 }
-
-/*
-	private Produto buscaProduto( String codigoBarras, List<SaveCategoriaRequest> categorias ) {		
-		Optional<Produto> op = produtoRepository.findByCodigoBarras( codigoBarras );
-		if ( op.isPresent() ) {
-			Produto p = op.get();
-			if( categorias == null )								
-				return p;										
-			if ( categorias.isEmpty() )								
-				return p;
-						
-			boolean existe = true;					
-			int csize = categorias.size();
-			for( int i = 0; existe && i < csize; i++ ) {
-				SaveCategoriaRequest creq = categorias.get( i );
-				String categ = creq.getDescricao();
-				
-				int scsize = creq.getSubcategorias().size();
-				for( int j = 0; existe && j < scsize; j++ ) {
-					SaveSubCategoriaRequest screq = creq.getSubcategorias().get( j );
-					String subcateg = screq.getDescricao();
-					
-					Optional<CategoriaMap> map = categoriaMapRepository.temCategoria( codigoBarras, categ, subcateg );
-					existe = map.isPresent();															
-				}
-			}		
-			
-			if ( existe )
-				return p;					
-		}			
-		
-		return null;
-	}
-*/

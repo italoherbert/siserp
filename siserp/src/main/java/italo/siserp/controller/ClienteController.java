@@ -3,6 +3,8 @@ package italo.siserp.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -77,10 +79,26 @@ public class ClienteController {
 		if ( request.getNomeIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NOME_OBRIGATORIO ) );
 		
-		List<ClienteResponse> funcs = clienteService.buscaClientesPorNomeIni( request );
-		return ResponseEntity.ok( funcs );		
+		Pageable p = Pageable.unpaged();
+		
+		List<ClienteResponse> clientes = clienteService.buscaClientesPorNomeIni( request, p );
+		return ResponseEntity.ok( clientes );		
 	}
 
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PostMapping("/filtra/limit/{limit}")
+	public ResponseEntity<Object> buscaCategorias( @PathVariable Integer limit, @RequestBody BuscaClientesRequest request ) {		
+		if ( request.getNomeIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NOME_OBRIGATORIO ) );
+		if ( request.getNomeIni().trim().isEmpty() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NOME_OBRIGATORIO ) );
+		
+		Pageable p = PageRequest.of( 0, limit );
+				
+		List<ClienteResponse> clientes = clienteService.buscaClientesPorNomeIni( request, p );
+		return ResponseEntity.ok( clientes );		
+	}
+	
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaClientePorId( @PathVariable Long id ) {		
@@ -102,6 +120,6 @@ public class ClienteController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );		
 		}
 	}
-	
+		
 }
 

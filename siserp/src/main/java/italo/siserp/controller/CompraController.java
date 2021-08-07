@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CompraNaoEncontradaException;
-import italo.siserp.exception.DataCompraException;
+import italo.siserp.exception.DataCompraInvalidaException;
 import italo.siserp.exception.DataFimAposDataIniException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
@@ -23,7 +23,7 @@ import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
-import italo.siserp.model.request.BuscaCompraRequest;
+import italo.siserp.model.request.BuscaComprasRequest;
 import italo.siserp.model.request.SaveCategoriaRequest;
 import italo.siserp.model.request.SaveCompraParcelaRequest;
 import italo.siserp.model.request.SaveCompraRequest;
@@ -130,7 +130,7 @@ public class CompraController {
 		try {
 			compraService.salvaCompra( request );
 			return ResponseEntity.ok().build();
-		} catch (DataCompraException e) {
+		} catch (DataCompraInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA, e.getParams() ) );
 		} catch (PrecoUnitCompraInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_INVALIDO, e.getParams() ) );			
@@ -148,7 +148,7 @@ public class CompraController {
 	}
 	
 	@PostMapping(value="/filtra")
-	public ResponseEntity<Object> filtraCompras( @RequestBody BuscaCompraRequest request ) {
+	public ResponseEntity<Object> filtraCompras( @RequestBody BuscaComprasRequest request ) {
 		try {
 			List<TotalCompraResponse> resps = compraService.filtra( request );
 			return ResponseEntity.ok( resps );

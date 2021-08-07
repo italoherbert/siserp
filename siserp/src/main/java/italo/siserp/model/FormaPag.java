@@ -1,5 +1,5 @@
 package italo.siserp.model;
 
-public enum ModoPag {
+public enum FormaPag {
 	CARTAO, ESPECIE, DEBITO
 }

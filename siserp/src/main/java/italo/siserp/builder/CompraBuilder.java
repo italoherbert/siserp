@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import italo.siserp.exception.DataCompraException;
+import italo.siserp.exception.DataCompraInvalidaException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
@@ -17,7 +17,6 @@ import italo.siserp.model.ItemCompra;
 import italo.siserp.model.request.SaveCompraRequest;
 import italo.siserp.model.response.CompraParcelaResponse;
 import italo.siserp.model.response.CompraResponse;
-import italo.siserp.model.response.FornecedorResponse;
 import italo.siserp.model.response.ItemCompraResponse;
 import italo.siserp.util.DataUtil;
 
@@ -37,14 +36,14 @@ public class CompraBuilder {
 	private DataUtil dataUtil;
 	
 	public void carregaCompra( Compra c, SaveCompraRequest req ) 
-			throws DataCompraException, 
+			throws DataCompraInvalidaException, 
 				PrecoUnitCompraInvalidoException,
 				PrecoUnitVendaInvalidoException,
 				QuantidadeInvalidaException {
 		try {
 			c.setDataCompra( dataUtil.stringParaData( req.getDataCompra() ) );
 		} catch (ParseException e) {
-			DataCompraException ex = new DataCompraException();
+			DataCompraInvalidaException ex = new DataCompraInvalidaException();
 			ex.setParams( req.getDataCompra() );
 			throw ex;
 		}						
@@ -77,7 +76,7 @@ public class CompraBuilder {
 	
 	public CompraResponse novoCompraResponse() {		
 		CompraResponse resp = new CompraResponse();
-		resp.setFornecedor( new FornecedorResponse() );
+		resp.setFornecedor( fornecedorBuilder.novoFornecedorResponse() );
 		return resp;
 	}
 	

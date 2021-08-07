@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.ClienteBuilder;
@@ -32,7 +33,7 @@ public class ClienteService {
 				
 	@Autowired
 	private ClienteBuilder clienteBuilder;
-	
+		
 	public IdResponse registraCliente( SaveClienteRequest request ) 
 			throws PessoaJaExisteException, UsuarioJaExisteException {
 		
@@ -65,10 +66,10 @@ public class ClienteService {
 		clienteRepository.save( f );
 	}
 	
-	public List<ClienteResponse> buscaClientesPorNomeIni( BuscaClientesRequest request ) {
+	public List<ClienteResponse> buscaClientesPorNomeIni( BuscaClientesRequest request, Pageable p ) {
 		String nomeIni = (request.getNomeIni().equals( "*" ) ? "" : request.getNomeIni() );
 		
-		List<Cliente> clientes = clienteRepository.filtra( nomeIni+"%" );
+		List<Cliente> clientes = clienteRepository.filtra( nomeIni+"%", p );
 		
 		List<ClienteResponse> responses = new ArrayList<>();
 		
@@ -109,6 +110,6 @@ public class ClienteService {
 		
 		clienteRepository.deleteById( id ); 
 	}
-		
+				
 }
 

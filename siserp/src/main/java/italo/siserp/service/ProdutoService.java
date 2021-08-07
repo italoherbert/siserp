@@ -73,6 +73,10 @@ public class ProdutoService {
 		return resp;
 	}
 	
+	public void verificaSeExisteCodBarra( String codigoBarras ) throws ProdutoNaoEncontradoException {		
+		produtoRepository.findByCodigoBarras( codigoBarras ).orElseThrow( ProdutoNaoEncontradoException:: new );		
+	}
+	
 	public ProdutoResponse buscaProdutoPorId( Long id ) throws ProdutoNaoEncontradoException {
 		Produto p = produtoRepository.findById( id ).orElseThrow( ProdutoNaoEncontradoException::new );
 				

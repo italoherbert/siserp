@@ -7,10 +7,10 @@ import DatePicker from 'react-datepicker';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import CompraRegistro from './compra-registro';
-import CompraDetalhes from './compra-detalhes';
+import VendaRegistro from './venda-registro';
+//import VendaDetalhes from './venda-detalhes';
 
-export default class Compras extends React.Component {
+export default class Vendas extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -18,15 +18,22 @@ export default class Compras extends React.Component {
 		this.state = { 
 			erroMsg : null,
 			infoMsg : null,
-			compras : [],
+			vendas : [],
 			dataIni : new Date(),
 			dataFim : new Date(),
 			
 			remocaoModalVisivel : false,
 			remocaoModalOkFunc : () => {},
 			remocaoModalCancelaFunc : () => {}
-		};					
+		};		
+
+		this.incluirCliente = React.createRef();
+		this.clienteNomeIni = React.createRef();
 	}
+			
+	componentDidMount() {
+		this.incluirCliente.current.checked = true;
+	}		
 			
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
@@ -36,7 +43,7 @@ export default class Compras extends React.Component {
 		
 		sistema.showLoadingSpinner();
 
-		fetch( "/api/compra/filtra", {
+		fetch( "/api/venda/filtra", {
 			method : "POST",			
 			headers : {
 				"Content-Type" : "application/json; charset=UTF-8", 
@@ -44,15 +51,16 @@ export default class Compras extends React.Component {
 			}, 
 			body : JSON.stringify( {
 				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim )
+				"dataFim" : sistema.formataData( this.state.dataFim ),
+				"incluirCliente" : this.incluirCliente.current.checked,
+				"clienteNomeIni" : this.clienteNomeIni.current.value
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.setState( { compras : dados } );	
-					
+					this.setState( { vendas : dados } );	
 					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma compra encontrada pelos critérios de busca informados!" } );																							
+						this.setState( { infoMsg : "Nenhuma venda encontrada pelos critérios de busca informados!" } );																							
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -69,16 +77,16 @@ export default class Compras extends React.Component {
 		this.setState( { dataFim : date } );
 	}
 	
-	detalhes( e, compraId ) {
-		ReactDOM.render( <CompraDetalhes compraId={compraId} />, sistema.paginaElemento() );
+	detalhes( e, vendaId ) {
+		//ReactDOM.render( <VendaDetalhes vendaId={vendaId} />, sistema.paginaElemento() );
 	}
 	
-	removerSeConfirmado( e, compraId ) {
+	removerSeConfirmado( e, vendaId ) {
 		this.setState( { 
 			remocaoModalVisivel : true, 
 			remocaoModalOkFunc : () => { 
 				this.setState( { remocaoModalVisivel : false } );
-				this.remover( e, compraId );
+				this.remover( e, vendaId );
 			},
 			remocaoModalCancelaFunc : () => {
 				this.setState( { remocaoModalVisivel : false } );
@@ -86,12 +94,12 @@ export default class Compras extends React.Component {
 		} )
 	}
 	
-	remover( e, compraId, instance ) {
+	remover( e, vendaId, instance ) {
 		e.preventDefault();
 
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/compra/deleta/'+compraId, {
+		fetch( '/api/venda/deleta/'+vendaId, {
 			method : 'DELETE',
 			headers : {
 				'Authorization' : 'Bearer '+sistema.token
@@ -99,7 +107,7 @@ export default class Compras extends React.Component {
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {
 				this.filtrar( null, false );
-				this.setState( { infoMsg : 'Compra deletada com êxito.' } );
+				this.setState( { infoMsg : 'Venda deletada com êxito.' } );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -110,24 +118,24 @@ export default class Compras extends React.Component {
 	paraRegistroForm( e ) {
 		e.preventDefault();
 		
-		ReactDOM.render( <CompraRegistro />, sistema.paginaElemento() );
+		ReactDOM.render( <VendaRegistro />, sistema.paginaElemento() );
 	}
 	
 	render() {
-		const {	erroMsg, infoMsg, compras, dataIni, dataFim, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
+		const {	erroMsg, infoMsg, vendas, dataIni, dataFim, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 				
 		return (
 			<Container>	
 				<Modal show={remocaoModalVisivel}>
 					<Modal.Header>
-						<Modal.Title>Remoção de compra</Modal.Title>
+						<Modal.Title>Remoção de venda</Modal.Title>
 					</Modal.Header>
 					<Modal.Body>
-						Tem certeza que deseja remover a compra selecionada? <br />
+						Tem certeza que deseja remover a venda selecionada? <br />
 						<br />
-						<b>Atenção:</b> Ao escolher remover a compra, esteja ciente que será
-						atualizado o estoque com a subtração das unidades de produto componentes
-						da compra!						
+						<b>Atenção:</b> Ao escolher remover a venda, esteja ciente que será
+						atualizado o estoque com a adição das unidades de produto componentes
+						da venda!						
 					</Modal.Body>
 					<Modal.Footer>
 						<Form>
@@ -140,34 +148,38 @@ export default class Compras extends React.Component {
 				<Row>
 					<Col>
 						<Form className="float-end">
-							<Button variant="primary"  onClick={ (e) => this.paraRegistroForm(e)}>Registre uma nova compra</Button>
+							<Button variant="primary"  onClick={ (e) => this.paraRegistroForm(e) }>Registre uma nova venda</Button>
 						</Form>
 					</Col>
 				</Row>
 				
 				<Row>
 					<Col>
-						<h4 className="text-center">Lista de Compras</h4>
+						<h4 className="text-center">Lista de Vendas</h4>
 						<div className="tbl-pnl">
 							<Table striped bordered hover>
 								<thead>
 									<tr>
 										<th>ID</th>
-										<th>Data compra</th>
-										<th>Valor total</th>	
+										<th>Data venda</th>
+										<th>Cliente</th>
+										<th>Total</th>	
+										<th>Debito</th>	
 										<th>Detalhes</th>
 										<th>Remover</th>
 									</tr>
 								</thead>
 								<tbody>
-									{compras.map( ( compra, index ) => {
+									{vendas.map( ( venda, index ) => {
 										return (
 											<tr key={index}>
-												<td>{compra.id}</td>
-												<td>{compra.dataCompra}</td>
-												<td>{ sistema.formataReal( compra.debitoTotal ) }</td>														
-												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, compra.id )}>detalhes</button></td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, compra.id )}>remover</button></td>
+												<td>{venda.id}</td>
+												<td>{venda.dataVenda}</td>
+												<td>{venda.cliente.pessoa.nome}</td>
+												<td>{ sistema.formataReal( venda.subtotal * venda.desconto ) }</td>														
+												<td>{ sistema.formataReal( venda.debito ) }</td>														
+												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, venda.id )}>detalhes</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, venda.id )}>remover</button></td>
 											</tr>
 										)
 									} ) }	
@@ -184,11 +196,11 @@ export default class Compras extends React.Component {
 				<Row>
 					<Col>
 						<Card className="p-3">
-							<h4>Filtrar compras</h4>
+							<h4>Filtrar vendas</h4>
 							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 								<Row>
 									<Col className="col-sm-4">										
-										<Form.Group className="pb-2">													
+										<Form.Group className="mb-2">													
 											<Form.Label>Data de início: </Form.Label>
 											<br />
 											<DatePicker selected={dataIni} 
@@ -199,7 +211,7 @@ export default class Compras extends React.Component {
 										</Form.Group>									
 									</Col>
 									<Col className="col-sm-4">										
-										<Form.Group className="pb-2">													
+										<Form.Group className="mb-2">													
 											<Form.Label>Data de fim: </Form.Label>
 											<br />
 											<DatePicker selected={dataFim} 
@@ -209,13 +221,27 @@ export default class Compras extends React.Component {
 													minDate={dataIni}
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
-									</Col>							
-									<Col className="col-md-4">
-										<div className="mb-2">&nbsp;</div>
-										<Button type="submit" variant="primary">Filtrar</Button>				
-										<br />
+									</Col>										
+								</Row>						
+								<Row>
+									<Col className="col-md-6">										
+										<Form.Group className="mb-2">													
+											<Row>
+												<Col>
+													<Form.Label>Cliente: </Form.Label>
+													<Form.Control type="text" ref={this.clienteNomeIni} name="clienteNomeIni" />
+													
+													<input className="my-2" type="checkbox" ref={this.incluirCliente} />Incluir cliente no filtro
+												</Col>
+											</Row>
+										</Form.Group>
+									</Col>									
+								</Row>
+								<Row>
+									<Col>
+										<Button type="submit" variant="primary">Filtrar</Button>														
 									</Col>
-								</Row>								
+								</Row>
 							</Form>						
 						</Card>						
 					</Col>

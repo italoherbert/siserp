@@ -9,6 +9,7 @@ import Produtos from './telas/produtos/produtos';
 import Categorias from './telas/categorias/categorias';
 import Compras from './telas/compras/compras';
 import Clientes from './telas/clientes/clientes';
+import Vendas from './telas/vendas/vendas';
 
 import sistema from './logica/sistema.js';
 
@@ -47,6 +48,10 @@ export default class NavegBar extends React.Component {
 		ReactDOM.render( <Clientes />, sistema.paginaElemento() );
 	}
 	
+	paraTelaVendas() {
+		ReactDOM.render( <Vendas />, sistema.paginaElemento() );
+	}
+	
 	render() {
 		return(
 			<Navbar bg="dark" variant="dark">
@@ -63,7 +68,7 @@ export default class NavegBar extends React.Component {
 							<NavDropdown.Item>Relatórios</NavDropdown.Item>
 						</NavDropdown>
 						<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
-						<Nav.Link>Vendas</Nav.Link>
+						<Nav.Link onClick={ () => this.paraTelaVendas() }>Vendas</Nav.Link>
 						<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
 						<NavDropdown title="Produtos" id="basic-nav-dropdown">
 							<NavDropdown.Item onClick={ () => this.paraTelaProdutos() }>Produtos</NavDropdown.Item>

@@ -148,8 +148,8 @@ export default class CompraRegistro extends React.Component {
 									{produtos.map( ( p, index ) => {
 										return (
 											<tr key={index}>
-												<td>{p.descricao}</td>
-												<td>{p.codigoBarras}</td>
+												<td>{ p.descricao }</td>
+												<td>{ p.codigoBarras }</td>
 												<td>{ sistema.formataFloat( p.paraAddQuantidade ) } {p.unidade}</td>
 												<td>
 													<select>

@@ -44,7 +44,7 @@ export default class InputDropdown extends React.Component {
 		}
 	}
 		
-	onClickItem( e, item ) {
+	onClickItem( e, item, index ) {
 		e.preventDefault();
 							
 		document.getElementById( this.state.id ).style.display = 'none';
@@ -56,6 +56,11 @@ export default class InputDropdown extends React.Component {
 		
 		if ( typeof( this.props.carregaItens ) === "function" ) {
 			this.props.carregaItens.call( this, item );
+			this.setState( {} );
+		}
+		
+		if ( typeof( this.props.itemClicado ) === "function" ) {
+			this.props.itemClicado.call( this, item, index );
 			this.setState( {} );
 		}
 	}		
@@ -79,7 +84,7 @@ export default class InputDropdown extends React.Component {
 			  		{this.props.itens.map( (item, index) => {
 						return( 
 							<button key={index} className="dropdown-item"  
-								onClick={ (e) => this.onClickItem( e, item ) }>
+								onClick={ (e) => this.onClickItem( e, item, index ) }>
 									{item}
 							</button> 
 						)

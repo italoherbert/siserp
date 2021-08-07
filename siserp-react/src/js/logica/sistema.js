@@ -75,12 +75,12 @@ class Sistema {
 		if ( v.length === 2 )
 			frac = parseInt( v[1] );
 		
-		return ( frac === 0 ? v[0] : v );				
+		return ( frac === 0 ? v[0] : v[0]+','+v[1] );				
 	}
 
 	trataRespostaNaoOk( resposta, compRef ) {
 		if ( resposta.status === 400 ) {
-			resposta.json().then( (dados) => {											
+			resposta.json().then( (dados) => {								
 				compRef.setState( { erroMsg : dados.mensagem } );				
 			} );
 		} else {

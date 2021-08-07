@@ -8,8 +8,6 @@ import italo.siserp.model.Endereco;
 import italo.siserp.model.Pessoa;
 import italo.siserp.model.request.SaveClienteRequest;
 import italo.siserp.model.response.ClienteResponse;
-import italo.siserp.model.response.EnderecoResponse;
-import italo.siserp.model.response.PessoaResponse;
 
 @Component
 public class ClienteBuilder {
@@ -17,28 +15,27 @@ public class ClienteBuilder {
 	@Autowired
 	private PessoaBuilder pessoaBuilder;
 			
-	public void carregaCliente( Cliente f, SaveClienteRequest req ) {
-		pessoaBuilder.carregaPessoa( f.getPessoa(), req.getPessoa() );
+	public void carregaCliente( Cliente c, SaveClienteRequest req ) {
+		pessoaBuilder.carregaPessoa( c.getPessoa(), req.getPessoa() );
 	}
 	
-	public void carregaClienteResponse( ClienteResponse resp, Cliente f ) {
-		resp.setId( f.getId() );		
-		pessoaBuilder.carregaPessoaResponse( resp.getPessoa(), f.getPessoa() );
+	public void carregaClienteResponse( ClienteResponse resp, Cliente c ) {
+		resp.setId( c.getId() );		
+		pessoaBuilder.carregaPessoaResponse( resp.getPessoa(), c.getPessoa() );
 	}
 	
 	public ClienteResponse novoClienteResponse() {		
 		ClienteResponse resp = new ClienteResponse();
-		resp.setPessoa( new PessoaResponse() );
-		resp.getPessoa().setEndereco( new EnderecoResponse() );
+		resp.setPessoa( pessoaBuilder.novoPessoaResponse() );
 		return resp;
 	}
 	
 	public Cliente novoCliente() {
-		Cliente f = new Cliente();
-		f.setPessoa( new Pessoa() );
+		Cliente c = new Cliente();
+		c.setPessoa( new Pessoa() );
 		
-		f.getPessoa().setEndereco( new Endereco() );
-		return f;
+		c.getPessoa().setEndereco( new Endereco() );
+		return c;
 	}
 			
 }

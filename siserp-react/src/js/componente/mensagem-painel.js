@@ -10,19 +10,21 @@ export default class MensagemPainel extends React.Component {
 		this.state = { msgId : "msg-"+new Date().getTime() };
 	}		
 	
-	componentDidMount() {
+	componentDidUpdate() {
 		sistema.scrollTo( this.state.msgId );
 	}
-			
+				
 	render () {				
 		const {msgId} = this.state;
-				
+								
 		if ( this.props.msg == null ) {
 			return (<span></span>);
 		} else {
 			return (
-				<Alert id={msgId} color={this.props.cor}>{this.props.msg}</Alert>
-			);
+				<div>
+					<Alert id={msgId} color={this.props.cor}>{this.props.msg}</Alert>
+				</div>
+			)
 		}
 	}					
 		

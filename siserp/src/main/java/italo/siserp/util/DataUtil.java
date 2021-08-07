@@ -2,6 +2,7 @@ package italo.siserp.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -17,6 +18,18 @@ public class DataUtil {
 	
 	public Date stringParaData( String data ) throws ParseException {
 		return sdf.parse( data );		
+	}
+	
+	public Date apenasData( Date data ) {
+		Calendar c = Calendar.getInstance();
+		c.setTime( data );
+		
+		c.set( Calendar.HOUR, 0 );
+		c.set( Calendar.MINUTE, 0 );
+		c.set( Calendar.SECOND, 0 );
+		c.set( Calendar.MILLISECOND, 0); 
+		
+		return c.getTime();
 	}
 	
 }

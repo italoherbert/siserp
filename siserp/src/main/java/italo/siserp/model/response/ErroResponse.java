@@ -20,6 +20,9 @@ public class ErroResponse {
 	public final static int PRODUTO_NAO_ENCONTRADO = 105;
 	public final static int COMPRA_NAO_ENCONTRADA = 106;
 	public final static int CLIENTE_NAO_ENCONTRADO = 107;
+	public final static int VENDA_NAO_ENCONTRADA = 108;
+	
+	public final static int CODIGO_BARRAS_NAO_REGISTRADO = 150;
 		
 	public final static int PESSOA_JA_EXISTE = 200;
 	public final static int USUARIO_JA_EXISTE = 201;
@@ -49,6 +52,9 @@ public class ErroResponse {
 	public final static int PARCELA_VALOR_OBRIGATORIO = 318;
 	public final static int DATA_PAGAMENTO_OBRIGATORIA = 319;
 	public final static int DATA_VENCIMENTO_OBRIGATORIA = 320;
+	public final static int FLAG_INCLUIR_CLIENTE_OBRIGATORIO = 321;
+	public final static int CLIENTE_NOME_OBRIGATORIO = 322;
+	public final static int CAIXA_VALOR_INICIAL_OBRIGATORIO = 323;
 
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
@@ -63,7 +69,17 @@ public class ErroResponse {
 	public final static int DATA_FIM_INVALIDA = 510;
 	public final static int DATA_INI_APOS_DATA_FIM = 511;
 	public final static int NENHUM_PRODUTO_INFORMADO = 512;
-		
+	public final static int INCLUIR_CLIENTE_VALOR_INVALIDO = 513;
+	public final static int DATA_VENDA_INVALIDA = 514;
+	public final static int SUBTOTAL_INVALIDO = 515;
+	public final static int DESCONTO_INVALIDO = 516;
+	public final static int DEBITO_INVALIDO = 517;
+	public final static int PERFIL_DE_CAIXA_REQUEERIDO = 518;
+	public final static int CAIXA_VALOR_INICIAL_INVALIDO = 519;
+	public final static int CAIXA_NAO_ABERTO = 520;
+	public final static int CAIXA_JA_ABERTO = 521;
+	public final static int VALOR_PAGO_INVALIDO = 522;	
+	
 	private int codigo;
 	private String mensagem;
 	
@@ -101,7 +117,10 @@ public class ErroResponse {
 			case CLIENTE_NAO_ENCONTRADO:
 				mensagem = "Cliente não encontrado.";
 				break;
-				
+			case VENDA_NAO_ENCONTRADA:
+				mensagem = "Venda não encontrada.";
+				break;
+								
 			case USUARIO_JA_EXISTE:
 				mensagem = "Já existe outro usuário para o username informado.";
 				break;
@@ -178,6 +197,15 @@ public class ErroResponse {
 			case DATA_VENCIMENTO_OBRIGATORIA:
 				mensagem = "A data de vencimento é um campo de preenchimento obrigatório.";
 				break;
+			case FLAG_INCLUIR_CLIENTE_OBRIGATORIO:
+				mensagem = "Flag de inclusão de clientes no filtro é um campo de preenchimento obrigatório.";
+				break;
+			case CLIENTE_NOME_OBRIGATORIO:
+				mensagem = "O nome do cliente é um campo de preenchimento obrigatório.";
+				break;
+			case CAIXA_VALOR_INICIAL_OBRIGATORIO:
+				mensagem = "O valor de início para abertura do caixa é um campo de preenchimento obrigatório.";
+				break;
 				
 			case USUARIO_TIPO_INVALIDO:
 				mensagem = "Tipo de usuário inválido.";
@@ -218,7 +246,37 @@ public class ErroResponse {
 			case NENHUM_PRODUTO_INFORMADO:
 				mensagem = "É necessário informar os dados de ao menos um produto.";
 				break;
-		}
+			case DATA_VENDA_INVALIDA:
+				mensagem = "A data de venda está em formato inválido.";
+				break;
+			case INCLUIR_CLIENTE_VALOR_INVALIDO:
+				mensagem = "O campo de incluir cliente ativado está em formato inválido.";
+				break;				
+			case SUBTOTAL_INVALIDO:
+				mensagem = "O campo subtotal está em formato inválido";
+				break;
+			case DESCONTO_INVALIDO:
+				mensagem = "O campo desconto está em formato inválido";
+				break;
+			case DEBITO_INVALIDO:
+				mensagem = "O campo débito está em formato inválido.";
+				break;
+			case PERFIL_DE_CAIXA_REQUEERIDO:
+				mensagem = "Perfil de caixa requerido.";
+				break;
+			case CAIXA_VALOR_INICIAL_INVALIDO:
+				mensagem = "Valor inicial para abertura do caixa inválido.";
+				break;
+			case CAIXA_NAO_ABERTO:
+				mensagem = "Caixa não aberto.";
+				break;
+			case CAIXA_JA_ABERTO:
+				mensagem = "Caixa já aberto";
+				break;
+			case VALOR_PAGO_INVALIDO:
+				mensagem = "O valor pago está em formato inválido.";
+				break;
+		}		
 	}
 	
 }

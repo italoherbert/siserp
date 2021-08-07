@@ -2,7 +2,7 @@ package italo.siserp.util;
 
 import org.springframework.stereotype.Component;
 
-import italo.siserp.model.ModoPag;
+import italo.siserp.model.FormaPag;
 import italo.siserp.model.UsuarioTipo;
 
 @Component
@@ -28,8 +28,8 @@ public class EnumConversor {
 		return null;
 	}
 	
-	public String getModoPagString( ModoPag modoPag ) {
-		switch( modoPag ) {
+	public String getFormaPagString( FormaPag formaPag ) {
+		switch( formaPag ) {
 			case CARTAO: return "CARTAO";
 			case ESPECIE: return "ESPECIE";
 			case DEBITO: return "DEBITO";
@@ -37,13 +37,13 @@ public class EnumConversor {
 		return null;
 	}
 	
-	public ModoPag getModoPag( String modoPag ) {
-		if ( modoPag.equalsIgnoreCase( "CARTAO" ) ) {
-			return ModoPag.CARTAO;			
-		} else if ( modoPag.equalsIgnoreCase( "ESPECIE") ) {
-			return ModoPag.ESPECIE;
-		} else if ( modoPag.equalsIgnoreCase( "DEBITO" ) ) {
-			return ModoPag.DEBITO;
+	public FormaPag getFormaPag( String formaPag ) {
+		if ( formaPag.equalsIgnoreCase( "CARTAO" ) ) {
+			return FormaPag.CARTAO;			
+		} else if ( formaPag.equalsIgnoreCase( "ESPECIE") ) {
+			return FormaPag.ESPECIE;
+		} else if ( formaPag.equalsIgnoreCase( "DEBITO" ) ) {
+			return FormaPag.DEBITO;
 		}
 		return null;
 	}
@@ -56,8 +56,8 @@ public class EnumConversor {
 		return tipos;
 	}
 	
-	public String[] getModosPags() {
-		ModoPag[] valores = ModoPag.values();
+	public String[] getFormasPags() {
+		FormaPag[] valores = FormaPag.values();
 		String[] modos = new String[ valores.length ];
 		for( int i = 0; i < valores.length; i++ )
 			modos[ i ] = String.valueOf( valores[ i ] );
