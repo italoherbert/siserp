@@ -14,9 +14,7 @@ public class SaveVendaRequest {
 	private String clienteId;
 	
 	private String incluirCliente;
-	
-	private String dataVenda;
-	
+		
 	private String subtotal;
 	
 	private String desconto;

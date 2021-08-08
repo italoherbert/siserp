@@ -27,12 +27,12 @@ public class LoginController {
 	public ResponseEntity<Object> entrar( @RequestBody LoginRequest request ) {
 		if ( request.getUsername() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USERNAME_OBRIGATORIO ) );
-		if ( request.getUsername().trim().isEmpty() )
+		if ( request.getUsername().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USERNAME_OBRIGATORIO ) );
 		
 		if ( request.getPassword() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PASSWORD_OBRIGATORIO ) );
-		if ( request.getPassword().trim().isEmpty() )
+		if ( request.getPassword().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PASSWORD_OBRIGATORIO ) );
 		
 		try {

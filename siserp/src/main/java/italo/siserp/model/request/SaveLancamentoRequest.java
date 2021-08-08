@@ -7,8 +7,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AbreCaixaRequest {
+public class SaveLancamentoRequest {
 
-	private SaveLancamentoRequest lancamento;
+	private String tipo;
+	
+	private String valor;
 	
 }

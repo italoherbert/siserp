@@ -1,7 +1,5 @@
 package italo.siserp.model.response;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,16 +7,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CaixaResponse {
+public class LancamentoResponse {
 
 	private Long id;
 	
-	private String dataAbertura;
-		
+	private String tipo;
+	
 	private String valor;
 	
-	private FuncionarioResponse funcionario;
+	private String dataOperacao;
 	
-	private List<LancamentoResponse> lancamentos;
-		
 }

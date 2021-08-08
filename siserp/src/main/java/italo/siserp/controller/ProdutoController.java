@@ -35,29 +35,25 @@ public class ProdutoController {
 	public ResponseEntity<Object> registra( @RequestBody SaveProdutoRequest request ) {
 		if ( request.getQuantidade() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );		
-		if ( request.getQuantidade().trim().isEmpty() )
+		if ( request.getQuantidade().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );		
 		if ( request.getCodigoBarras() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
-		if ( request.getCodigoBarras().trim().isEmpty() )
+		if ( request.getCodigoBarras().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
 	
 		
 		if ( request.getDescricao() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
-		if ( request.getDescricao().trim().isEmpty() )
+		if ( request.getDescricao().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
-		if ( request.getUnidade() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_UNIDADE_OBRIGATORIA ) );		
-		if ( request.getUnidade().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_UNIDADE_OBRIGATORIA ) );		
 		if ( request.getPrecoUnitCompra() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );		
-		if ( request.getPrecoUnitCompra().trim().isEmpty() )
+		if ( request.getPrecoUnitCompra().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );		
 		if ( request.getPrecoUnitVenda() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_VENDA_OBRIGATORIO ) );		
-		if ( request.getPrecoUnitVenda().trim().isEmpty() )
+		if ( request.getPrecoUnitVenda().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_VENDA_OBRIGATORIO ) );		
 				
 		try {
@@ -79,7 +75,7 @@ public class ProdutoController {
 	public ResponseEntity<Object> filtraPorDescIni( @PathVariable String descricaoIni ) {
 		if ( descricaoIni == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
-		if ( descricaoIni.trim().isEmpty() )
+		if ( descricaoIni.isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
 				
 		List<ProdutoResponse> produtos = produtoService.buscaProdutosPorDescIni( descricaoIni );
@@ -91,7 +87,7 @@ public class ProdutoController {
 	public ResponseEntity<Object> buscaPorCodBarras( @PathVariable String codigoBarras ) {
 		if ( codigoBarras == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
-		if ( codigoBarras.trim().isEmpty() )
+		if ( codigoBarras.isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
 				
 		try {
@@ -107,7 +103,7 @@ public class ProdutoController {
 	public ResponseEntity<Object> existePorCodBarras( @PathVariable String codigoBarras ) {
 		if ( codigoBarras == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
-		if ( codigoBarras.trim().isEmpty() )
+		if ( codigoBarras.isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
 				
 		try {

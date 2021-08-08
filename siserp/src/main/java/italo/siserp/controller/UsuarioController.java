@@ -6,18 +6,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import italo.siserp.util.EnumConversor;
+import italo.siserp.util.enums_tipo.UsuarioTipoEnumConversor;
 
 @RestController
 @RequestMapping(value="/api/usuario")
 public class UsuarioController {
 	
 	@Autowired
-	private EnumConversor enumConversor;
+	private UsuarioTipoEnumConversor usuarioTipoEnumConversor;
 
 	@GetMapping(value="/tipos")
 	public ResponseEntity<Object> buscaTipos() {
-		String[] tipos = enumConversor.getUsuarioTipos();
+		String[] tipos = usuarioTipoEnumConversor.getUsuarioTipos();
 		return ResponseEntity.ok( tipos );
 	}
 

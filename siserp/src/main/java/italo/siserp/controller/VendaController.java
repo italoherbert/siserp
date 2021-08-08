@@ -20,11 +20,14 @@ import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataVendaInvalidaException;
 import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
+import italo.siserp.exception.FormaPagInvalidaException;
+import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
+import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.Caixa;
@@ -50,12 +53,7 @@ public class VendaController {
 	private CaixaService caixaService;
 	
 	@PostMapping(value="/efetua/{usuarioId}")
-	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {
-		if ( request.getDataVenda() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_VENDA_INVALIDA ) );						
-		if ( request.getDataVenda().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_VENDA_INVALIDA ) );
-		
+	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {		
 		if ( request.getIncluirCliente() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.INCLUIR_CLIENTE_VALOR_INVALIDO ) );						
 		if ( request.getIncluirCliente().trim().isEmpty() )
@@ -76,7 +74,7 @@ public class VendaController {
 		}
 				
 		try {
-			Caixa c = caixaService.buscaHojeCaixa( usuarioId );
+			Caixa c = caixaService.buscaHojeCaixaBean( usuarioId );
 			EfetuarVendaPagamentoResponse resp = vendaService.efetuaVenda( c, request );
 			return ResponseEntity.ok( resp );
 		} catch (DataVendaInvalidaException e) {
@@ -95,12 +93,18 @@ public class VendaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_NAO_ENCONTRADO ) );			
 		} catch (PerfilCaixaRequeridoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );			
+		} catch (UsuarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (FuncionarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO) );						
 		} catch (ValorPagoInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_PAGO_INVALIDO ) );						
 		} catch (ClienteNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );						
+		} catch (FormaPagInvalidaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORMA_PAG_INVALIDA ) );						
 		}
 	}
 	
@@ -150,15 +154,25 @@ public class VendaController {
 		}
 	}
 		
-	@PostMapping(value="/efetuapag/{clienteId}")
-	public ResponseEntity<Object> efetuaPagamento( @PathVariable Long clienteId, EfetuarPagamentoRequest request ) {
+	@PostMapping(value="/efetuapag/{usuarioId}")
+	public ResponseEntity<Object> efetuaPagamento( @PathVariable Long usuarioId, EfetuarPagamentoRequest request ) {
 		try {
-			QuitarDebitoResponse resp = vendaService.efetuarPagamento( clienteId, request );
+			Caixa caixa = caixaService.buscaHojeCaixaBean( usuarioId );			
+			
+			QuitarDebitoResponse resp = vendaService.efetuarPagamento( caixa, request );			
 			return ResponseEntity.ok( resp );
 		} catch (ClienteNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );						
 		} catch (ValorPagoInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_PAGO_INVALIDO ) );						
+		} catch (PerfilCaixaRequeridoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );						
+		} catch (UsuarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (FuncionarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
+		} catch (CaixaNaoAbertoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );						
 		}
 	}
 	

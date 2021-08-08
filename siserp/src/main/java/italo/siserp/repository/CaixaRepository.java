@@ -1,6 +1,7 @@
 package italo.siserp.repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,8 @@ public interface CaixaRepository extends JpaRepository<Caixa, Long> {
 	
 	@Query( "select c from Caixa c join c.funcionario f where f.id=?1 and c.dataAbertura=?2")
 	public Optional<Caixa> buscaCaixa( Long funcionarioId, Date dataAbertura );
+	
+	@Query( "select c from Caixa c where c.dataAbertura between ?1 and ?2")
+	public List<Caixa> filtra( Date dataIni, Date dataFim );
 	
 }

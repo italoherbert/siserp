@@ -80,8 +80,12 @@ class Sistema {
 
 	trataRespostaNaoOk( resposta, compRef ) {
 		if ( resposta.status === 400 ) {
-			resposta.json().then( (dados) => {								
-				compRef.setState( { erroMsg : dados.mensagem } );				
+			resposta.json().then( (dados) => {
+				if ( dados.mensagem == null ) {
+					compRef.setState( { erroMsg : 'Mensagem de erro não encontrada pelo código recebido. Codigo='+dados.codigo } );
+				} else {
+					compRef.setState( { erroMsg : dados.mensagem } );				
+				}
 			} );
 		} else {
 			compRef.setState( { erroMsg : this.getMensagemErro( resposta.status ) } );				

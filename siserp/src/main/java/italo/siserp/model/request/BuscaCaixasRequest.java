@@ -7,8 +7,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AbreCaixaRequest {
+public class BuscaCaixasRequest {
 
-	private SaveLancamentoRequest lancamento;
+	private String dataIni;
+	
+	private String dataFim;
 	
 }

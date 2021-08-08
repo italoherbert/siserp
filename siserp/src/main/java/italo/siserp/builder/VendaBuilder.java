@@ -1,7 +1,7 @@
 package italo.siserp.builder;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +11,19 @@ import italo.siserp.exception.DataVendaInvalidaException;
 import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
 import italo.siserp.exception.DoubleInvalidoException;
+import italo.siserp.exception.FormaPagInvalidaException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
+import italo.siserp.model.FormaPag;
 import italo.siserp.model.ItemVenda;
 import italo.siserp.model.Venda;
 import italo.siserp.model.request.SaveVendaRequest;
 import italo.siserp.model.response.ItemVendaResponse;
 import italo.siserp.model.response.VendaResponse;
 import italo.siserp.util.DataUtil;
-import italo.siserp.util.EnumConversor;
 import italo.siserp.util.NumeroUtil;
+import italo.siserp.util.enums_tipo.FormaPagTipoEnumConversor;
 
 @Component
 public class VendaBuilder {
@@ -40,7 +42,7 @@ public class VendaBuilder {
 	private NumeroUtil numeroUtil;
 	
 	@Autowired
-	private EnumConversor enumConversor;	
+	private FormaPagTipoEnumConversor enumConversor;	
 	
 	public void carregaVenda( Venda v, SaveVendaRequest req ) 
 			throws DataVendaInvalidaException, 
@@ -48,15 +50,11 @@ public class VendaBuilder {
 				SubtotalInvalidoException,
 				DescontoInvalidoException,
 				DebitoInvalidoException,
-				QuantidadeInvalidaException {
-		try {
-			v.setDataVenda( dataUtil.stringParaData( req.getDataVenda() ) );
-		} catch (ParseException e) {
-			DataVendaInvalidaException ex = new DataVendaInvalidaException();
-			ex.setParams( req.getDataVenda() );
-			throw ex;
-		}
+				QuantidadeInvalidaException,
+				FormaPagInvalidaException {
 		
+		v.setDataVenda( dataUtil.apenasData( new Date() ) );
+				
 		try {
 			v.setSubtotal( numeroUtil.stringParaDouble( req.getSubtotal() ) );
 		} catch (DoubleInvalidoException e) {
@@ -72,8 +70,12 @@ public class VendaBuilder {
 			ex.setParams( req.getDesconto() );
 			throw ex;
 		}
+		
+		FormaPag formaPag =  enumConversor.getFormaPag( req.getFormaPag() );
+		if ( formaPag == null )
+			throw new FormaPagInvalidaException();
 				
-		v.setFormaPag( enumConversor.getFormaPag( req.getFormaPag() ) ); 
+		v.setFormaPag( formaPag ); 
 	}
 	
 	public void carregaVendaResponse( VendaResponse resp, Venda v ) {

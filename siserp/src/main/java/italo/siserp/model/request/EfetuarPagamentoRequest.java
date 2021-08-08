@@ -9,6 +9,10 @@ import lombok.Setter;
 @Setter
 public class EfetuarPagamentoRequest {
 
+	private Long clienteId;
+	
 	private String valorPago;
+	
+	private String formaPag;
 	
 }

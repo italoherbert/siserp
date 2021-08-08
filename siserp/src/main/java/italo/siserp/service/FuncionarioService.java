@@ -12,6 +12,7 @@ import italo.siserp.builder.FuncionarioBuilder;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
+import italo.siserp.exception.UsuarioTipoInvalidoException;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Pessoa;
 import italo.siserp.model.Usuario;
@@ -44,7 +45,9 @@ public class FuncionarioService {
 	private HashUtil hashUtil;
 
 	public IdResponse registraFuncionario( SaveFuncionarioRequest request ) 
-			throws PessoaJaExisteException, UsuarioJaExisteException {
+			throws PessoaJaExisteException, 
+				UsuarioJaExisteException,
+				UsuarioTipoInvalidoException {
 		
 		if ( this.existeNome( request.getPessoa().getNome() ) )
 			throw new PessoaJaExisteException();
@@ -63,7 +66,8 @@ public class FuncionarioService {
 	public void atualizaFuncionario( Long id, SaveFuncionarioRequest req )
 			throws FuncionarioNaoEncontradoException, 
 					PessoaJaExisteException,
-					UsuarioJaExisteException {
+					UsuarioJaExisteException,
+					UsuarioTipoInvalidoException {
 		
 		Funcionario f = funcionarioRepository.findById( id ).orElseThrow( FuncionarioNaoEncontradoException::new );
 		

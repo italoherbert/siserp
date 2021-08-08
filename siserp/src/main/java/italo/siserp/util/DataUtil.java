@@ -10,14 +10,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataUtil {
 
-	private final SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy" );
+	private final SimpleDateFormat dateFormat = new SimpleDateFormat( "dd/MM/yyyy" );
+	private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat( "dd/MM/yyyy hh:mm:ss" );
 		
 	public String dataParaString( Date date ) {
-		return sdf.format( date );
+		return dateFormat.format( date );
 	}
 	
 	public Date stringParaData( String data ) throws ParseException {
-		return sdf.parse( data );		
+		return dateFormat.parse( data );		
+	}
+	
+	public String dataTimeParaString( Date data ) {
+		return dateTimeFormat.format( data );
 	}
 	
 	public Date apenasData( Date data ) {

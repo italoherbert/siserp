@@ -10,6 +10,8 @@ import Categorias from './telas/categorias/categorias';
 import Compras from './telas/compras/compras';
 import Clientes from './telas/clientes/clientes';
 import Vendas from './telas/vendas/vendas';
+import Caixa from './telas/caixa/caixa';
+import CaixaFluxo from './telas/caixa/caixa-fluxo';
 
 import sistema from './logica/sistema.js';
 
@@ -52,6 +54,14 @@ export default class NavegBar extends React.Component {
 		ReactDOM.render( <Vendas />, sistema.paginaElemento() );
 	}
 	
+	paraTelaCaixa() {
+		ReactDOM.render( <Caixa />, sistema.paginaElemento() );
+	}
+	
+	paraTelaFluxoCaixa() {
+		ReactDOM.render( <CaixaFluxo />, sistema.paginaElemento() );
+	}
+	
 	render() {
 		return(
 			<Navbar bg="dark" variant="dark">
@@ -60,8 +70,8 @@ export default class NavegBar extends React.Component {
 				<Navbar.Collapse id="basic-navbar.nav">
 					<Nav className="me-auto">
 						<NavDropdown title="Financeiro" id="basic-nav-dropdown">
-							<NavDropdown.Item>Caixa</NavDropdown.Item>
-							<NavDropdown.Item>Fluxo de caixa</NavDropdown.Item>
+							<NavDropdown.Item onClick={ () => this.paraTelaCaixa() }>Caixa</NavDropdown.Item>
+							<NavDropdown.Item onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de caixa</NavDropdown.Item>
 							<NavDropdown.Item>Contas a receber</NavDropdown.Item>
 							<NavDropdown.Item>Contas a pagar</NavDropdown.Item>
 							<NavDropdown.Item>Recebimento avulso</NavDropdown.Item>

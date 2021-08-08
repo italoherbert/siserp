@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
+import italo.siserp.exception.UsuarioTipoInvalidoException;
 import italo.siserp.model.request.BuscaFuncionariosRequest;
 import italo.siserp.model.request.SaveFuncionarioRequest;
 import italo.siserp.model.response.ErroResponse;
@@ -54,6 +55,8 @@ public class FuncionarioController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PESSOA_JA_EXISTE ) );		
 		} catch (UsuarioJaExisteException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_JA_EXISTE ) );		
+		} catch (UsuarioTipoInvalidoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_TIPO_INVALIDO ) );		
 		}				
 	}
 	
@@ -82,7 +85,9 @@ public class FuncionarioController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PESSOA_JA_EXISTE ) );		
 		} catch (UsuarioJaExisteException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_JA_EXISTE ) );		
-		}				
+		} catch (UsuarioTipoInvalidoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_TIPO_INVALIDO ) );		
+		}								
 	}
 
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")

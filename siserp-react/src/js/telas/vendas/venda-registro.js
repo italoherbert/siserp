@@ -167,7 +167,7 @@ export default class VendaRegistro extends React.Component {
 					this.setState( { clientesFiltrados : [] } );
 					
 					for( let i = 0; i < dados.length; i++ )
-						this.state.clientesFiltrados.push( dados[ i ].descricao );					
+						this.state.clientesFiltrados.unshift( dados[ i ].descricao );					
 
 					this.setState( {} );
 				} );

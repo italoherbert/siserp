@@ -21,6 +21,7 @@ public class ErroResponse {
 	public final static int COMPRA_NAO_ENCONTRADA = 106;
 	public final static int CLIENTE_NAO_ENCONTRADO = 107;
 	public final static int VENDA_NAO_ENCONTRADA = 108;
+	public final static int CAIXA_NAO_ENCONTRADO = 109;
 	
 	public final static int CODIGO_BARRAS_NAO_REGISTRADO = 150;
 		
@@ -55,6 +56,9 @@ public class ErroResponse {
 	public final static int FLAG_INCLUIR_CLIENTE_OBRIGATORIO = 321;
 	public final static int CLIENTE_NOME_OBRIGATORIO = 322;
 	public final static int CAIXA_VALOR_INICIAL_OBRIGATORIO = 323;
+	public final static int TIPO_LANCAMENTO_OBRIGATORIO = 324;
+	public final static int VALOR_LANCAMENTO_OBRIGATORIO = 325;
+	public final static int LANCAMENTO_ABERTURA_CAIXA_OBRITATORIO = 326;
 
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
@@ -79,6 +83,9 @@ public class ErroResponse {
 	public final static int CAIXA_NAO_ABERTO = 520;
 	public final static int CAIXA_JA_ABERTO = 521;
 	public final static int VALOR_PAGO_INVALIDO = 522;	
+	public final static int LANCAMENTO_TIPO_INVALIDO = 523;
+	public final static int LANCAMENTO_VALOR_INVALIDO = 524;
+	public final static int FORMA_PAG_INVALIDA = 525;
 	
 	private int codigo;
 	private String mensagem;
@@ -120,7 +127,10 @@ public class ErroResponse {
 			case VENDA_NAO_ENCONTRADA:
 				mensagem = "Venda não encontrada.";
 				break;
-								
+			case CAIXA_NAO_ENCONTRADO:
+				mensagem = "Caixa não encontrado.";
+				break;
+				
 			case USUARIO_JA_EXISTE:
 				mensagem = "Já existe outro usuário para o username informado.";
 				break;
@@ -206,6 +216,15 @@ public class ErroResponse {
 			case CAIXA_VALOR_INICIAL_OBRIGATORIO:
 				mensagem = "O valor de início para abertura do caixa é um campo de preenchimento obrigatório.";
 				break;
+			case TIPO_LANCAMENTO_OBRIGATORIO:
+				mensagem = "O tipo do lançamento é um campo obrigatório.";
+				break;
+			case LANCAMENTO_ABERTURA_CAIXA_OBRITATORIO:
+				mensagem = "O lançamento de abertura do caixa é um campo obrigatório.";
+				break;
+			case VALOR_LANCAMENTO_OBRIGATORIO:
+				mensagem = "O valor de lançamento é um campo de preenchimento obrigatório.";
+				break;
 				
 			case USUARIO_TIPO_INVALIDO:
 				mensagem = "Tipo de usuário inválido.";
@@ -275,6 +294,15 @@ public class ErroResponse {
 				break;
 			case VALOR_PAGO_INVALIDO:
 				mensagem = "O valor pago está em formato inválido.";
+				break;
+			case LANCAMENTO_TIPO_INVALIDO:
+				mensagem = "O tipo de lançamento informado é inválido.";
+				break;
+			case LANCAMENTO_VALOR_INVALIDO:
+				mensagem = "O valor de lançamento informado é inválido.";
+				break;
+			case FORMA_PAG_INVALIDA:
+				mensagem = "Forma de pagamento inválida.";
 				break;
 		}		
 	}

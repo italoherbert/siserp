@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import italo.siserp.exception.DataVendaInvalidaException;
 import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
 import italo.siserp.exception.DoubleInvalidoException;
+import italo.siserp.exception.FormaPagInvalidaException;
 import italo.siserp.exception.LongInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
@@ -41,12 +44,13 @@ import italo.siserp.model.request.SaveVendaRequest;
 import italo.siserp.model.response.EfetuarVendaPagamentoResponse;
 import italo.siserp.model.response.QuitarDebitoResponse;
 import italo.siserp.model.response.VendaResponse;
+import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
 import italo.siserp.util.DataUtil;
-import italo.siserp.util.EnumConversor;
 import italo.siserp.util.NumeroUtil;
+import italo.siserp.util.enums_tipo.FormaPagTipoEnumConversor;
 
 @Service
 public class VendaService {
@@ -56,6 +60,9 @@ public class VendaService {
 	
 	@Autowired
 	private ProdutoRepository produtoRepository;
+	
+	@Autowired
+	private CaixaRepository caixaRepository;
 		
 	@Autowired
 	private VendaBuilder vendaBuilder;
@@ -73,8 +80,9 @@ public class VendaService {
 	private NumeroUtil numeroUtil;
 	
 	@Autowired
-	private EnumConversor enumConversor;
+	private FormaPagTipoEnumConversor enumConversor;
 	
+	@Transactional
 	public EfetuarVendaPagamentoResponse efetuaVenda( Caixa caixa, SaveVendaRequest request ) 
 			throws QuantidadeInvalidaException,
 				PrecoUnitVendaInvalidoException,
@@ -86,7 +94,8 @@ public class VendaService {
 				CaixaNaoAbertoException, 
 				PerfilCaixaRequeridoException,
 				ValorPagoInvalidoException,
-				ClienteNaoEncontradoException {				
+				ClienteNaoEncontradoException,
+				FormaPagInvalidaException {				
 								
 		Venda v = vendaBuilder.novoVenda();
 		vendaBuilder.carregaVenda( v, request );
@@ -94,6 +103,8 @@ public class VendaService {
 		List<ItemVenda> itensVenda = new ArrayList<>();
 				
 		List<SaveItemVendaRequest> itens = request.getItensVenda();
+		
+		double subtotal = 0;
 		for( SaveItemVendaRequest item : itens ) {
 			Produto p = produtoRepository.findByCodigoBarras( item.getCodigoBarras() ).orElseThrow( ProdutoNaoEncontradoException::new );
 			ItemVenda iv = itemVendaBuilder.novoItemVenda();
@@ -108,7 +119,9 @@ public class VendaService {
 				iv.setVenda( v ); 
 				iv.setProduto( p );
 				
-				itensVenda.add( iv );					
+				itensVenda.add( iv );
+				
+				subtotal += quantidade * p.getPrecoUnitarioVenda();
 			} catch ( DoubleInvalidoException e ) {
 				PrecoUnitVendaInvalidoException ex = new PrecoUnitVendaInvalidoException();
 				ex.setParams( item.getQuantidade() );
@@ -117,20 +130,14 @@ public class VendaService {
 		}
 		
 		
-		double subtotal, desconto;
-		
-		try {
-			subtotal = numeroUtil.stringParaDouble( request.getSubtotal() );				
-		} catch ( DoubleInvalidoException e ) {
-			throw new SubtotalInvalidoException();
-		}
+		double desconto;		
 		try {
 			desconto = numeroUtil.stringParaDouble( request.getDesconto() );				
 		} catch ( DoubleInvalidoException e ) {
 			throw new ValorPagoInvalidoException();
 		}						
 
-		double total = subtotal * desconto;				
+		double total = subtotal * (1.0d - desconto);				
 		double troco = 0;
 		
 		FormaPag formaPag = enumConversor.getFormaPag( request.getFormaPag() );
@@ -141,9 +148,11 @@ public class VendaService {
 			} catch ( DoubleInvalidoException e ) {
 				throw new ValorPagoInvalidoException();
 			}
+					
+			caixa.setValor( caixa.getValor() + total );
+			caixaRepository.save( caixa );
 			
 			troco = valorPag - total;
-			caixa.setValor( caixa.getValor() + total );
 		} else if ( formaPag == FormaPag.DEBITO ) {
 			v.setDebito( subtotal * desconto ); 
 		}
@@ -179,7 +188,8 @@ public class VendaService {
 					DescontoInvalidoException,
 					DebitoInvalidoException,
 					PrecoUnitVendaInvalidoException,
-					QuantidadeInvalidaException {
+					QuantidadeInvalidaException,
+					FormaPagInvalidaException {
 		
 		Venda v = vendaRepository.findById( id ).orElseThrow( VendaNaoEncontradaException::new );
 						
@@ -249,17 +259,23 @@ public class VendaService {
 		vendaRepository.deleteById( id ); 
 	}
 	
-	public QuitarDebitoResponse efetuarPagamento( Long clienteId, EfetuarPagamentoRequest request ) 
+	@Transactional
+	public QuitarDebitoResponse efetuarPagamento( Caixa caixa, EfetuarPagamentoRequest request ) 
 			throws ClienteNaoEncontradoException, ValorPagoInvalidoException {
+		
+		Long clienteId = request.getClienteId();
 		Cliente c = clienteRepository.findById( clienteId ).orElseThrow( ClienteNaoEncontradoException::new );
 		
 		List<Venda> vendas = c.getVendas();
 		double valor = 0;
 		try {
-			valor = numeroUtil.stringParaDouble( request.getValorPago() );
+			valor = numeroUtil.stringParaDouble( request.getValorPago() );			
 		} catch (DoubleInvalidoException e) {
 			throw new ValorPagoInvalidoException();
 		}
+		
+		caixa.setValor( caixa.getValor() + valor );
+		caixaRepository.save( caixa );
 		
 		int size = vendas.size();
 		double debitoRestante = 0;
@@ -278,7 +294,7 @@ public class VendaService {
 			
 			vendaRepository.save( v );
 		}
-		
+								
 		QuitarDebitoResponse resp = new QuitarDebitoResponse();
 		resp.setTroco( valor );
 		resp.setDebitoRestante( debitoRestante ); 
