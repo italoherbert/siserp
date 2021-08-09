@@ -13,7 +13,6 @@ import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.model.response.LancamentoResponse;
 import italo.siserp.util.DataUtil;
-import italo.siserp.util.NumeroUtil;
 
 @Component
 public class CaixaBuilder {
@@ -26,20 +25,14 @@ public class CaixaBuilder {
 		
 	@Autowired
 	private DataUtil dataUtil;
-	
-	@Autowired
-	private NumeroUtil numeroUtil;
-		
+			
 	public void carregaAbreCaixa( Caixa c, AbreCaixaRequest request ) {
 		c.setDataAbertura( dataUtil.apenasData( new Date() ) );
-		c.setValor( 0 ); 
 	}
 	
 	public void carregaCaixaResponse( CaixaResponse resp, Caixa c ) {
 		resp.setId( c.getId() );
 		resp.setDataAbertura( dataUtil.dataParaString( c.getDataAbertura() ) );
-		resp.setValor( numeroUtil.doubleParaString( c.getValor() ) );
-		funcionarioBuilder.carregaFuncionarioResponse( resp.getFuncionario(), c.getFuncionario() );
 		
 		List<LancamentoResponse> lancamentoResponses = new ArrayList<>();
 		List<Lancamento> lancamentos = c.getLancamentos();

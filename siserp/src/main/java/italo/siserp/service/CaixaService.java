@@ -33,18 +33,20 @@ import italo.siserp.model.UsuarioTipo;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
 import italo.siserp.model.request.SaveLancamentoRequest;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.UsuarioRepository;
 import italo.siserp.util.DataUtil;
+import italo.siserp.util.NumeroUtil;
 
 @Service
 public class CaixaService {
 	
 	@Autowired
 	private CaixaRepository caixaRepository;
-	
+		
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
 	
@@ -60,6 +62,9 @@ public class CaixaService {
 	@Autowired
 	private DataUtil dataUtil;
 	
+	@Autowired
+	private NumeroUtil numeroUtil;
+		
 	public void abreGetCaixaSeNaoAberto( Long usuarioId, AbreCaixaRequest req ) 
 			throws PerfilCaixaRequeridoException,
 				UsuarioNaoEncontradoException, 
@@ -84,7 +89,6 @@ public class CaixaService {
 		lancamentoBuilder.carregaLancamento( lanc, req.getLancamento() );
 		
 		lanc.setTipo( LancamentoTipo.CREDITO );
-		caixa.setValor( lanc.getValor() ); 		
 		
 		caixa.setLancamentos( Arrays.asList( lanc ) );					
 		lanc.setCaixa( caixa ); 
@@ -94,8 +98,7 @@ public class CaixaService {
 				
 		caixaRepository.save( caixa );		
 	}
-	
-
+				
 	public void efetuaLancamento( Long usuarioId, SaveLancamentoRequest request ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
@@ -108,10 +111,42 @@ public class CaixaService {
 
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
 		lancamentoBuilder.carregaLancamento( lanc, request );
-		
+	
 		lanc.setCaixa( c );
 		
 		lancamentoRepository.save( lanc );
+	}
+	
+	public CaixaBalancoResponse geraBalanco( Long usuarioId ) 
+			throws PerfilCaixaRequeridoException, 
+				CaixaNaoAbertoException, 
+				UsuarioNaoEncontradoException, 
+				FuncionarioNaoEncontradoException {
+		
+		Caixa c = this.buscaHojeCaixaBean( usuarioId );
+		List<Lancamento> lancamentos = c.getLancamentos();
+		
+		Date dataAbertura = c.getDataAbertura();
+		
+		double debito = 0;
+		double credito = 0;
+		for( Lancamento l : lancamentos ) {
+			if ( l.getTipo() == LancamentoTipo.DEBITO ) {
+				debito += l.getValor();
+			} else if ( l.getTipo() == LancamentoTipo.CREDITO ) {
+				credito += l.getValor();
+			}
+		}		
+		
+		double saldo = credito - debito;
+		
+		CaixaBalancoResponse resp = new CaixaBalancoResponse();
+		resp.setFuncionarioNome( c.getFuncionario().getPessoa().getNome() ); 
+		resp.setDataAbertura( dataUtil.dataParaString( dataAbertura ) );
+		resp.setDebito( numeroUtil.doubleParaString( debito ) );
+		resp.setCredito( numeroUtil.doubleParaString( credito ) );
+		resp.setSaldo( numeroUtil.doubleParaString( saldo ) ); 
+		return resp;
 	}
 	
 	public List<CaixaResponse> filtra( BuscaCaixasRequest request ) 
@@ -122,11 +157,13 @@ public class CaixaService {
 		
 		try {
 			dataIni = dataUtil.apenasData( dataUtil.stringParaData( request.getDataIni() ) );
+			System.out.println( "Dataini= "+dataIni );
 		} catch (ParseException e) {
 			throw new DataIniInvalidaException();
 		}
 		try {
 			dataFim = dataUtil.apenasData( dataUtil.stringParaData( request.getDataFim() ) );
+			System.out.println( "Datafim= "+dataFim );
 		} catch (ParseException e) {
 			throw new DataIniInvalidaException();
 		}
@@ -137,7 +174,7 @@ public class CaixaService {
 		List<Caixa> caixas = caixaRepository.filtra( dataIni, dataFim );
 		List<CaixaResponse> responses = new ArrayList<>();
 		for( Caixa c : caixas ) {
-			CaixaResponse resp = new CaixaResponse();
+			CaixaResponse resp = caixaBuilder.novoCaixaResponse();
 			caixaBuilder.carregaCaixaResponse( resp, c );
 			
 			responses.add( resp );

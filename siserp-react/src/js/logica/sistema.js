@@ -50,12 +50,18 @@ class Sistema {
 	}
 	
 	formataReal( valor ) {
-		if ( valor === 0 ) 
+		let v = parseFloat( valor );
+		if ( v === 0 ) 
 			return "R$ 0,00";
-		
-		let n = parseInt( parseFloat( valor ) * 100 );
-		let s = ""+n;
-		return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		
+				
+		if ( Math.abs( v ) >= 1.0 ) {
+			let n = parseInt( v * 100 );
+			let s = ""+n;
+			return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		
+		} else {
+			let truncI = ( v < 0 ? 5 : 4 );			
+			return"R$ " +( ( ""+v ).substring( 0, truncI ).replace( '.', ',' ) );			
+		}				
 	}
 	
 	paraFloat( valor ) {

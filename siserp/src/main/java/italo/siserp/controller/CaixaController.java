@@ -27,6 +27,7 @@ import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
 import italo.siserp.model.request.SaveLancamentoRequest;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.CaixaService;
@@ -70,7 +71,7 @@ public class CaixaController {
 		}		
 	}
 	
-	@PostMapping(value="/efetua/lancamento/{usuarioId}")
+	@PostMapping(value="/lancamento/efetua/{usuarioId}")
 	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {
 		try {
 			caixaService.efetuaLancamento( usuarioId, request );
@@ -88,6 +89,23 @@ public class CaixaController {
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		}
+	}
+	
+	@GetMapping(value="/balanco/{usuarioId}")
+	public ResponseEntity<Object> geraBalanco( @PathVariable Long usuarioId ) {
+		try {
+			CaixaBalancoResponse resp = caixaService.geraBalanco( usuarioId );
+			return ResponseEntity.ok( resp );
+		} catch (PerfilCaixaRequeridoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
+		} catch (CaixaNaoAbertoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
+		} catch (UsuarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (FuncionarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
+		}
+		
 	}
 	
 	@GetMapping(value="/get/uid/hoje/{usuarioId}")

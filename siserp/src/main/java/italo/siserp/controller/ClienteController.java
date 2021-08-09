@@ -33,7 +33,7 @@ public class ClienteController {
 	@Autowired
 	private ClienteService clienteService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveClienteRequest request ) {				
 		if ( request.getPessoa().getNome() == null )
@@ -51,7 +51,7 @@ public class ClienteController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveClienteRequest request ) {	
 		if ( request.getPessoa().getNome() == null )
@@ -81,7 +81,7 @@ public class ClienteController {
 		
 		Pageable p = Pageable.unpaged();
 		
-		List<ClienteResponse> clientes = clienteService.buscaClientesPorNomeIni( request, p );
+		List<ClienteResponse> clientes = clienteService.filtra( request, p );
 		return ResponseEntity.ok( clientes );		
 	}
 
@@ -90,12 +90,10 @@ public class ClienteController {
 	public ResponseEntity<Object> buscaCategorias( @PathVariable Integer limit, @RequestBody BuscaClientesRequest request ) {		
 		if ( request.getNomeIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NOME_OBRIGATORIO ) );
-		if ( request.getNomeIni().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NOME_OBRIGATORIO ) );
-		
+				
 		Pageable p = PageRequest.of( 0, limit );
 				
-		List<ClienteResponse> clientes = clienteService.buscaClientesPorNomeIni( request, p );
+		List<ClienteResponse> clientes = clienteService.filtra( request, p );
 		return ResponseEntity.ok( clientes );		
 	}
 	

@@ -15,22 +15,26 @@ export default class Caixa extends React.Component {
 		this.state = { 
 			erroMsg : null,
 			infoMsg : null,
-			caixa : {}
+			balanco : { valor : 0 }
 		};		
 	}
+		
+	componentDidMount() {
+		this.atualizarDados();
+	}		
 		
 	atualizarDados() {
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/caixa/get/uid/hoje/'+sistema.usuario.id, {
+		fetch( '/api/caixa/balanco/'+sistema.usuario.id, {
 			method : 'GET',
 			headers : {
 				'Authorization' : 'Bearer '+sistema.token
 			}
 		} ).then( ( resposta ) => {
 			if ( resposta.status === 200 ) {
-				resposta.json().this( (dados) => {
-					this.setState( { caixa : dados } );
+				resposta.json().then( (dados) => {
+					this.setState( { balanco : dados } );
 				} );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -44,7 +48,7 @@ export default class Caixa extends React.Component {
 	}
 		
 	render() {
-		const {	erroMsg, infoMsg, caixa } = this.state;
+		const {	erroMsg, infoMsg, balanco } = this.state;
 				
 		return (
 			<Container>	
@@ -68,16 +72,21 @@ export default class Caixa extends React.Component {
 							<h4>Dados do caixa</h4>
 							
 							<div className="p-3">
+								
 								<div className="display-inline mb-2">
-									ID : <span className="text-info">{caixa.id}</span>
+									Data de abertura: <span className="text-danger">{ balanco.dataAbertura }</span>
 								</div>
 								
 								<div className="display-inline mb-2">
-									Data de abertura: <span className="text-info">{ caixa.dataAbertura }</span>
-								</div>
-																
+									Credito: <span className="text-danger">{ sistema.formataReal( balanco.credito ) }</span>
+								</div>	
+								
 								<div className="display-inline mb-2">
-									Valor em caixa: <span className="text-info">{ caixa.valor }</span>
+									Debito: <span className="text-danger">{ sistema.formataReal( balanco.debito ) }</span>
+								</div>	
+											
+								<div className="display-inline mb-2">
+									Saldo: <span className="text-danger">{ sistema.formataReal( balanco.saldo ) }</span>
 								</div>																
 							</div>
 							<div>

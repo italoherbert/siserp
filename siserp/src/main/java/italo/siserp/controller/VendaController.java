@@ -35,7 +35,6 @@ import italo.siserp.model.request.BuscaVendasRequest;
 import italo.siserp.model.request.EfetuarPagamentoRequest;
 import italo.siserp.model.request.SaveItemVendaRequest;
 import italo.siserp.model.request.SaveVendaRequest;
-import italo.siserp.model.response.EfetuarVendaPagamentoResponse;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.QuitarDebitoResponse;
 import italo.siserp.model.response.VendaResponse;
@@ -56,27 +55,27 @@ public class VendaController {
 	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {		
 		if ( request.getIncluirCliente() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.INCLUIR_CLIENTE_VALOR_INVALIDO ) );						
-		if ( request.getIncluirCliente().trim().isEmpty() )
+		if ( request.getIncluirCliente().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.INCLUIR_CLIENTE_VALOR_INVALIDO ) );
 
 		if ( request.getIncluirCliente().equals( "true" ) ) {
-			if ( request.getClienteId() == null )
-				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
-			if ( request.getClienteId().trim().isEmpty() )
-				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
+			if ( request.getClienteNome() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );
+			if ( request.getClienteNome().isBlank() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );
 		}
 				
 		for( SaveItemVendaRequest icreq : request.getItensVenda() ) {						
 			if ( icreq.getQuantidade() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
-			if ( icreq.getQuantidade().trim().isEmpty() )
+			if ( icreq.getQuantidade().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );												
 		}
 				
 		try {
 			Caixa c = caixaService.buscaHojeCaixaBean( usuarioId );
-			EfetuarVendaPagamentoResponse resp = vendaService.efetuaVenda( c, request );
-			return ResponseEntity.ok( resp );
+			vendaService.efetuaVenda( c, request );
+			return ResponseEntity.ok().build();
 		} catch (DataVendaInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA, e.getParams() ) );
 		} catch (PrecoUnitVendaInvalidoException e) {
@@ -112,13 +111,13 @@ public class VendaController {
 	public ResponseEntity<Object> filtraVendas( @RequestBody BuscaVendasRequest request ) {
 		if ( request.getIncluirCliente() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_OBRIGATORIO ) );
-		if ( request.getIncluirCliente().trim().isEmpty() )
+		if ( request.getIncluirCliente().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_OBRIGATORIO ) );
 		
 		if ( request.getIncluirCliente().equals( "true") ) {
 			if ( request.getClienteNomeIni() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );
-			if ( request.getClienteNomeIni().trim().isEmpty() )
+			if ( request.getClienteNomeIni().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );			
 		}
 		
@@ -153,7 +152,7 @@ public class VendaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.COMPRA_NAO_ENCONTRADA ) );						
 		}
 	}
-		
+		 
 	@PostMapping(value="/efetuapag/{usuarioId}")
 	public ResponseEntity<Object> efetuaPagamento( @PathVariable Long usuarioId, EfetuarPagamentoRequest request ) {
 		try {

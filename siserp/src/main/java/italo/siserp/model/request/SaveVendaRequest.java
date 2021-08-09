@@ -11,16 +11,14 @@ import lombok.Setter;
 @Setter
 public class SaveVendaRequest {
 
-	private String clienteId;
+	private String clienteNome;
 	
 	private String incluirCliente;
 		
 	private String subtotal;
 	
 	private String desconto;
-		
-	private String valorPago;
-	
+			
 	private String formaPag;
 	
 	private List<SaveItemVendaRequest> itensVenda;

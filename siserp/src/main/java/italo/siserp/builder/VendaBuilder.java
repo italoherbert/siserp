@@ -34,7 +34,7 @@ public class VendaBuilder {
 	
 	@Autowired
 	private ItemVendaBuilder itemVendaBuilder;
-		
+			
 	@Autowired
 	private DataUtil dataUtil;
 	
@@ -84,7 +84,7 @@ public class VendaBuilder {
 		resp.setSubtotal( numeroUtil.doubleParaString( v.getSubtotal() ) );
 		resp.setDesconto( numeroUtil.doubleParaString( v.getDesconto() ) );
 		resp.setDebito( numeroUtil.doubleParaString( v.getDebito() ) );
-		resp.setModoPag( enumConversor.getFormaPagString( v.getFormaPag() ) ); 
+		resp.setFormaPag( enumConversor.getFormaPagString( v.getFormaPag() ) ); 
 		
 		List<ItemVendaResponse> itemResps = new ArrayList<>();
 		for( ItemVenda item : v.getItensVenda() ) {
@@ -93,7 +93,9 @@ public class VendaBuilder {
 			
 			itemResps.add( itemResp );
 		}
-		resp.setItens( itemResps ); 				 				
+		resp.setItens( itemResps );
+		
+		clienteBuilder.carregaClienteResponse( resp.getCliente(), v.getCliente() ); 
 	}	
 	
 	public VendaResponse novoVendaResponse() {		

@@ -73,7 +73,7 @@ public class FornecedorService {
 		
 		return responses;
 	}
-	
+		
 	public FornecedorResponse buscaFornecedorPorId( Long id ) throws FornecedorNaoEncontradoException {
 		Fornecedor f = fornecedorRepository.findById( id ).orElseThrow( FornecedorNaoEncontradoException::new );
 				

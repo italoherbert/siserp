@@ -85,8 +85,6 @@ public class FornecedorController {
 	public ResponseEntity<Object> buscaFornecedores( @PathVariable int limit, @RequestBody BuscaFornecedoresRequest request ) {		
 		if ( request.getEmpresaIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
-		if ( request.getEmpresaIni().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
 		
 		Pageable p = PageRequest.of( 0, limit ); 
 		

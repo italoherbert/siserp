@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Navbar, NavDropdown, Nav } from 'react-bootstrap';
 
+import Login from './login';
 import SedeDetalhes from './telas/sede/sede-detalhes';
 import Funcionarios from './telas/funcionarios/funcionarios';
 import Fornecedores from './telas/fornecedores/fornecedores';
@@ -20,6 +21,10 @@ export default class NavegBar extends React.Component {
 	mostraEscondeMenu( elementoId ) {
 		sistema.showHide( elementoId );
 		this.setState( this.state );
+	}
+	
+	paraTelaLogin() {
+		ReactDOM.render( <Login />, sistema.rootElemento() );
 	}
 	
 	paraTelaSedeDetalhes() {
@@ -90,6 +95,7 @@ export default class NavegBar extends React.Component {
 						{ ( sistema.usuario.tipo === 'ADMIN' || sistema.usuario.tipo === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFornecedores() }>Fornecedores</Nav.Link>
 						) }
+						<Nav.Link className="float-end" onClick={ () => this.paraTelaLogin() }>Sair</Nav.Link>
 					</Nav>
 				</Navbar.Collapse>
 			</Navbar>

@@ -94,8 +94,6 @@ public class SubCategoriaController {
 		
 		if ( request.getDescricaoIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
-		if ( request.getDescricaoIni().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
 		
 		Pageable p = PageRequest.of( 0, limit );
 		

@@ -44,11 +44,33 @@ export default class CaixaFluxo extends React.Component {
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {		
-					if ( dados.length === 0 ) {
-						this.setState( { infoMsg : "Nenhum fluxo de caixa encontrado pelos critérios de busca informados" } );
-					} else {				
-						this.setState( { caixas : dados, infoMsg : "Fluxos de caixas carregados com sucesso." } );																							
+					
+					for( let i = 0; i < dados.length; i++ ) {					
+						let caixa = dados[ i ];
+						let debito = 0;
+						let credito = 0;
+					
+						for( let j = 0; j < caixa.lancamentos.length; j++ ) {
+							let lancamento = caixa.lancamentos[ j ];
+							if ( lancamento.tipo === 'CREDITO' ) {
+								credito += lancamento.valor;
+							} else if ( lancamento.tipo === 'DEBITO' ) {
+								debito += lancamento.valor;
+							}
+						}
+					
+						let saldo = credito - debito;
+						
+						this.state.caixas.push( {
+							dataAbertura : caixa.dataAbertura,
+							debito : debito,
+							credito : credito,
+							saldo : saldo
+						} );
 					}
+					
+					if ( dados.length === 0 )
+						this.setState( { infoMsg : "Nenhum fluxo de caixa encontrado pelos critérios de busca informados" } );					
 				} );																		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -77,18 +99,20 @@ export default class CaixaFluxo extends React.Component {
 							<Table striped bordered hover>
 								<thead>
 									<tr>
-										<th>ID</th>
 										<th>Data de abertura</th>
-										<th>Valor final</th>
+										<th>Entradas</th>
+										<th>Saidas</th>
+										<th>Saldo</th>
 									</tr>
 								</thead>
 								<tbody>
 									{caixas.map( ( caixa, index ) => {
 										return (
 											<tr key={index}>
-												<td>{caixa.id}</td>
-												<td>{ sistema.formataData( caixa.dataAbertura ) }</td>
-												<td>{ sistema.formataReal( caixa.valor ) }</td>	
+												<td>{ caixa.dataAbertura }</td>
+												<td>{ sistema.formataReal( caixa.credito ) }</td>	
+												<td>{ sistema.formataReal( caixa.debito ) }</td>	
+												<td>{ sistema.formataReal( caixa.saldo ) }</td>	
 											</tr>
 										)
 									} ) }	

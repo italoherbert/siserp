@@ -85,8 +85,6 @@ public class CategoriaController {
 	public ResponseEntity<Object> buscaCategorias( @PathVariable Integer limit, @RequestBody BuscaCategoriasRequest request ) {		
 		if ( request.getDescricaoIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
-		if ( request.getDescricaoIni().trim().isEmpty() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
 		
 		Pageable p = PageRequest.of( 0, limit );
 				

@@ -41,6 +41,16 @@ export default class InputDropdown extends React.Component {
 		} else {
 			el.style.display = 'block';
 			el.style.visibility = 'visible';
+			
+			if ( typeof( this.props.carregaItens ) === "function" ) {
+				let item;
+				if ( this.props.referencia !== null && this.props.referencia !== undefined )
+					item = this.props.referencia.current.value;	
+				else item = this.texto.current.value;
+				
+				this.props.carregaItens.call( this, item );
+				this.setState( {} );
+			}
 		}
 	}
 		

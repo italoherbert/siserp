@@ -30,7 +30,7 @@ export default class Produtos extends React.Component {
 	componentDidMount() {
 		this.descricaoIni.current.value = "*";
 		
-		this.filtrar( null, true );		
+		this.filtrar( null, false );		
 	}
 	
 	filtrar( e, filtrarBTClicado ) {

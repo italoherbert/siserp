@@ -48,9 +48,7 @@ export default class CaixaAbertura extends React.Component {
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { infoMsg : "Caixa aberto com sucesso." } );																							
-				} );																		
+				this.setState( { infoMsg : "Caixa aberto com sucesso." } );																							
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}		
@@ -90,7 +88,15 @@ export default class CaixaAbertura extends React.Component {
 									</Col>
 								</Row>
 							</Form>						
-						</Card>						
+						</Card>	
+						<br />
+						<Card className="p-3">
+							<Row>
+								<Col>
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCaixa() }>Ir para tela caixa</button>
+								</Col>
+							</Row>
+						</Card>
 					</Col>
 				</Row>																		
 			</Container>	

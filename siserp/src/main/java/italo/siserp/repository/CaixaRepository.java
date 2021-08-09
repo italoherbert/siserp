@@ -16,5 +16,5 @@ public interface CaixaRepository extends JpaRepository<Caixa, Long> {
 	
 	@Query( "select c from Caixa c where c.dataAbertura between ?1 and ?2")
 	public List<Caixa> filtra( Date dataIni, Date dataFim );
-	
+		
 }

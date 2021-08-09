@@ -21,7 +21,7 @@ public class VendaResponse {
 	
 	private String debito;
 	
-	private String modoPag;
+	private String formaPag;
 
 	private ClienteResponse cliente;
 

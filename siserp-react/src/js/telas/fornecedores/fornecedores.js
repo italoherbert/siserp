@@ -30,7 +30,7 @@ export default class Fornecedores extends React.Component {
 	componentDidMount() {
 		this.empresaIni.current.value = "*";
 		
-		this.filtrar( null, true );		
+		this.filtrar( null, false );		
 	}
 	
 	filtrar( e, filtrarBTClicado ) {

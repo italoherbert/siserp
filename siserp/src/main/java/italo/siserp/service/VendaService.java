@@ -23,7 +23,6 @@ import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
 import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.FormaPagInvalidaException;
-import italo.siserp.exception.LongInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
@@ -35,17 +34,18 @@ import italo.siserp.model.Caixa;
 import italo.siserp.model.Cliente;
 import italo.siserp.model.FormaPag;
 import italo.siserp.model.ItemVenda;
+import italo.siserp.model.Lancamento;
+import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Produto;
 import italo.siserp.model.Venda;
 import italo.siserp.model.request.BuscaVendasRequest;
 import italo.siserp.model.request.EfetuarPagamentoRequest;
 import italo.siserp.model.request.SaveItemVendaRequest;
 import italo.siserp.model.request.SaveVendaRequest;
-import italo.siserp.model.response.EfetuarVendaPagamentoResponse;
 import italo.siserp.model.response.QuitarDebitoResponse;
 import italo.siserp.model.response.VendaResponse;
-import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.ClienteRepository;
+import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
 import italo.siserp.util.DataUtil;
@@ -60,10 +60,10 @@ public class VendaService {
 	
 	@Autowired
 	private ProdutoRepository produtoRepository;
-	
+
 	@Autowired
-	private CaixaRepository caixaRepository;
-		
+	private LancamentoRepository lancamentoRepository;
+			
 	@Autowired
 	private VendaBuilder vendaBuilder;
 	
@@ -72,7 +72,7 @@ public class VendaService {
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
-	
+		
 	@Autowired
 	private DataUtil dataUtil;
 	
@@ -83,7 +83,7 @@ public class VendaService {
 	private FormaPagTipoEnumConversor enumConversor;
 	
 	@Transactional
-	public EfetuarVendaPagamentoResponse efetuaVenda( Caixa caixa, SaveVendaRequest request ) 
+	public void efetuaVenda( Caixa caixa, SaveVendaRequest request ) 
 			throws QuantidadeInvalidaException,
 				PrecoUnitVendaInvalidoException,
 				SubtotalInvalidoException,
@@ -112,6 +112,8 @@ public class VendaService {
 				double quantidade = numeroUtil.stringParaDouble( item.getQuantidade() );
 				
 				iv.setPrecoUnitario( p.getPrecoUnitarioVenda() );
+				iv.setQuantidade( quantidade );
+				
 				p.setQuantidade( p.getQuantidade() - quantidade );
 				
 				produtoRepository.save( p );
@@ -138,47 +140,32 @@ public class VendaService {
 		}						
 
 		double total = subtotal * (1.0d - desconto);				
-		double troco = 0;
 		
 		FormaPag formaPag = enumConversor.getFormaPag( request.getFormaPag() );
-		if ( formaPag == FormaPag.ESPECIE ) {			
-			double valorPag;
-			try {
-				valorPag = numeroUtil.stringParaDouble( request.getValorPago() );				
-			} catch ( DoubleInvalidoException e ) {
-				throw new ValorPagoInvalidoException();
-			}
-					
-			caixa.setValor( caixa.getValor() + total );
-			caixaRepository.save( caixa );
-			
-			troco = valorPag - total;
+		if ( formaPag == FormaPag.ESPECIE ) {
+			Lancamento lanc = new Lancamento();
+			lanc.setCaixa( caixa );
+			lanc.setDataOperacao( new Date() );
+			lanc.setTipo( LancamentoTipo.CREDITO );
+			lanc.setValor( total ); 
+			lancamentoRepository.save( lanc );						
 		} else if ( formaPag == FormaPag.DEBITO ) {
-			v.setDebito( subtotal * desconto ); 
+			v.setDebito( total ); 
 		}
 		
 		if ( request.getIncluirCliente().equals( "true" ) ) {
-			try {
-				Long clienteId = numeroUtil.stringParaLong( request.getClienteId() );
-			
-				Optional<Cliente> cop = clienteRepository.findById( clienteId );
-				if ( !cop.isPresent() )
-					throw new ClienteNaoEncontradoException();
-			
-				v.setCliente( cop.get() );
-			} catch ( LongInvalidoException e ) {
+			String clienteNome = request.getClienteNome();
+			Optional<Cliente> cop = clienteRepository.buscaPorNome( clienteNome );
+			if ( !cop.isPresent() )
 				throw new ClienteNaoEncontradoException();
-			}
+		
+			v.setCliente( cop.get() );			
 		}
 		
 		v.setItensVenda( itensVenda );
 		v.setCaixa( caixa );
 		
-		vendaRepository.save( v );
-				
-		EfetuarVendaPagamentoResponse resp = new EfetuarVendaPagamentoResponse();
-		resp.setTroco( troco );
-		return resp;
+		vendaRepository.save( v );				
 	}
 		
 	public void atualizaVenda( Long id, SaveVendaRequest req )
@@ -252,11 +239,37 @@ public class VendaService {
 		return resp;
 	}
 			
+	@Transactional
 	public void deleta( Long id ) throws VendaNaoEncontradaException {
-		if ( !vendaRepository.existsById( id ) )
-			throw new VendaNaoEncontradaException();
+		Venda v = vendaRepository.findById( id ).orElseThrow( VendaNaoEncontradaException::new );
 		
-		vendaRepository.deleteById( id ); 
+		List<ItemVenda> itens = v.getItensVenda();
+		
+		if ( v.getFormaPag() == FormaPag.ESPECIE ) {
+			double subtotal = 0;
+			for( ItemVenda item : itens )												
+				subtotal += item.getQuantidade() * item.getPrecoUnitario();											
+					
+			double total = subtotal * ( 1.0d - v.getDesconto() );
+									
+			Caixa caixa = v.getCaixa();			
+			
+			Lancamento lanc = new Lancamento();
+			lanc.setCaixa( caixa );
+			lanc.setDataOperacao( new Date() );
+			lanc.setTipo( LancamentoTipo.DEBITO );
+			lanc.setValor( total ); 
+			lancamentoRepository.save( lanc );			
+		}
+		
+		for( ItemVenda item : itens ) {
+			Produto p = item.getProduto();			
+			p.setQuantidade( p.getQuantidade() + item.getQuantidade() );
+			
+			produtoRepository.save( p );
+		}
+						
+		vendaRepository.delete( v ); 
 	}
 	
 	@Transactional
@@ -274,9 +287,13 @@ public class VendaService {
 			throw new ValorPagoInvalidoException();
 		}
 		
-		caixa.setValor( caixa.getValor() + valor );
-		caixaRepository.save( caixa );
-		
+		Lancamento lanc = new Lancamento();
+		lanc.setCaixa( caixa );
+		lanc.setDataOperacao( new Date() );
+		lanc.setTipo( LancamentoTipo.CREDITO );
+		lanc.setValor( valor ); 
+		lancamentoRepository.save( lanc );
+				
 		int size = vendas.size();
 		double debitoRestante = 0;
 		for( int i = 0; i < size; i++ ) {

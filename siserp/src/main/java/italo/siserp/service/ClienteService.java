@@ -66,11 +66,10 @@ public class ClienteService {
 		clienteRepository.save( f );
 	}
 	
-	public List<ClienteResponse> buscaClientesPorNomeIni( BuscaClientesRequest request, Pageable p ) {
+	public List<ClienteResponse> filtra( BuscaClientesRequest request, Pageable p ) {
 		String nomeIni = (request.getNomeIni().equals( "*" ) ? "" : request.getNomeIni() );
 		
 		List<Cliente> clientes = clienteRepository.filtra( nomeIni+"%", p );
-		
 		List<ClienteResponse> responses = new ArrayList<>();
 		
 		for( Cliente f : clientes ) {			

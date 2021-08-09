@@ -8,7 +8,7 @@ import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import VendaRegistro from './venda-registro';
-//import VendaDetalhes from './venda-detalhes';
+import VendaDetalhes from './venda-detalhes';
 
 export default class Vendas extends React.Component {
 	
@@ -32,7 +32,7 @@ export default class Vendas extends React.Component {
 	}
 			
 	componentDidMount() {
-		this.incluirCliente.current.checked = true;
+		this.incluirCliente.current.checked = false;
 	}		
 			
 	filtrar( e, filtrarBTClicado ) {
@@ -78,7 +78,7 @@ export default class Vendas extends React.Component {
 	}
 	
 	detalhes( e, vendaId ) {
-		//ReactDOM.render( <VendaDetalhes vendaId={vendaId} />, sistema.paginaElemento() );
+		ReactDOM.render( <VendaDetalhes vendaId={vendaId} />, sistema.paginaElemento() );
 	}
 	
 	removerSeConfirmado( e, vendaId ) {
@@ -120,7 +120,7 @@ export default class Vendas extends React.Component {
 		
 		ReactDOM.render( <VendaRegistro />, sistema.paginaElemento() );
 	}
-	
+		
 	render() {
 		const {	erroMsg, infoMsg, vendas, dataIni, dataFim, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 				

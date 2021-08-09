@@ -27,9 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import italo.siserp.model.Caixa;
-import italo.siserp.model.FormaPag;
 import italo.siserp.model.Funcionario;
-import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Produto;
 import italo.siserp.model.Venda;
 import italo.siserp.model.request.AbreCaixaRequest;
@@ -41,17 +39,20 @@ import italo.siserp.model.request.SavePessoaRequest;
 import italo.siserp.model.request.SaveProdutoRequest;
 import italo.siserp.model.request.SaveUsuarioRequest;
 import italo.siserp.model.request.SaveVendaRequest;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.FuncionarioRepository;
+import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
+import italo.siserp.service.CaixaService;
 import italo.siserp.util.DataUtil;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @WithMockUser(username = "admin", authorities = "ADMIN")
-public class FluxoCaixaTest {
+public class VendaTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -63,16 +64,22 @@ public class FluxoCaixaTest {
 	private CaixaRepository caixaRepository;
 		
 	@Autowired
+	private LancamentoRepository lancamentoRepository;
+	
+	@Autowired
 	private ProdutoRepository produtoRepository;
 	
 	@Autowired
 	private VendaRepository vendaRepository;
 	
 	@Autowired
+	private CaixaService caixaService;
+	
+	@Autowired
 	private DataUtil dataUtil;
 		
 	@Test
-	public void fluxoCaixaTest() {		 																				
+	public void vendaTest() {		 																				
 		try {			
 			SaveFuncionarioRequest req = new SaveFuncionarioRequest();
 			req.setPessoa( new SavePessoaRequest() );
@@ -99,12 +106,23 @@ public class FluxoCaixaTest {
 			
 			Long uid = f.getUsuario().getId();
 			double valorAberturaCaixa = 50.5;
+			double valorL1 = 280.59;
+			double valorL2 = 80.5;
+			double valorL3 = 100.0;
 			
+			int produto1Quantidade = 80;
+			int produto2Quantidade = 100;
+			
+			int itemVenda1Quantidade = 25;
+			int itemVenda2Quantidade = 48;
+			
+			double valorAposLancamentos = valorAberturaCaixa + valorL1 - valorL2 + valorL3;
+			double valorAposVendaRegistrada = valorAberturaCaixa + ( ( ( 25 * 18.5 + 48 * 45 ) * 0.88 ) + 300 );
 			
 			AbreCaixaRequest abreCaixaReq = new AbreCaixaRequest();
 			abreCaixaReq.setLancamento( new SaveLancamentoRequest() );
 			
-			abreCaixaReq.getLancamento().setTipo( LancamentoTipo.CREDITO.toString() );
+			abreCaixaReq.getLancamento().setTipo( "CREDITO" );
 			abreCaixaReq.getLancamento().setValor( String.valueOf( valorAberturaCaixa ) );
 			
 			RequestBuilder abreCaixaRB = MockMvcRequestBuilders.post( "/api/caixa/abre/{usuarioId}", uid )
@@ -113,27 +131,62 @@ public class FluxoCaixaTest {
 					.accept( MediaType.APPLICATION_JSON );
 			
 			mockMvc.perform( abreCaixaRB ).andExpect( status().isOk() );
+								
+			CaixaBalancoResponse balanco = caixaService.geraBalanco( uid );
+			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAberturaCaixa, 0.01 );
 			
-			Optional<Caixa> cop = caixaRepository.buscaCaixa( f.getId(), dataUtil.apenasData( new Date() ) );
-			assertTrue( cop.isPresent() );
+			SaveLancamentoRequest lancamentoRequest1 = new SaveLancamentoRequest();
+			lancamentoRequest1.setTipo( "CREDITO" );
+			lancamentoRequest1.setValor( ""+valorL1 );
 			
-			Caixa c = cop.get();
+			SaveLancamentoRequest lancamentoRequest2 = new SaveLancamentoRequest();
+			lancamentoRequest2.setTipo( "DEBITO" );
+			lancamentoRequest2.setValor( ""+valorL2 );
+						
+			SaveLancamentoRequest lancamentoRequest3 = new SaveLancamentoRequest();
+			lancamentoRequest3.setTipo( "CREDITO" );
+			lancamentoRequest3.setValor( ""+valorL3 );
 			
-			assertEquals( c.getValor(), valorAberturaCaixa );
+			RequestBuilder regLanc1RB = MockMvcRequestBuilders.post( "/api/caixa/lancamento/efetua/{usuarioId}", uid )
+					.content( toJson( lancamentoRequest1 ) ) 
+					.contentType(MediaType.APPLICATION_JSON )
+					.accept( MediaType.APPLICATION_JSON );
+			
+			RequestBuilder regLanc2RB = MockMvcRequestBuilders.post( "/api/caixa/lancamento/efetua/{usuarioId}", uid )
+					.content( toJson( lancamentoRequest2 ) ) 
+					.contentType(MediaType.APPLICATION_JSON )
+					.accept( MediaType.APPLICATION_JSON );
+			
+			RequestBuilder regLanc3RB = MockMvcRequestBuilders.post( "/api/caixa/lancamento/efetua/{usuarioId}", uid )
+					.content( toJson( lancamentoRequest3 ) ) 
+					.contentType(MediaType.APPLICATION_JSON )
+					.accept( MediaType.APPLICATION_JSON );
+			
+			int quantLancamentos = lancamentoRepository.findAll().size();
+			
+			mockMvc.perform( regLanc1RB ).andExpect( status().isOk() );			
+			mockMvc.perform( regLanc2RB ).andExpect( status().isOk() );
+			mockMvc.perform( regLanc3RB ).andExpect( status().isOk() );
+						
+			int quantLancamentos2 = lancamentoRepository.findAll().size();
+			assertEquals( quantLancamentos2, quantLancamentos + 3 );
+			
+			balanco = caixaService.geraBalanco( uid );
+			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposLancamentos, 0.01 );
 			
 			SaveProdutoRequest p1 = new SaveProdutoRequest();
 			p1.setCodigoBarras( "_000" );
 			p1.setDescricao( "P1" );
 			p1.setPrecoUnitCompra( "15" );
 			p1.setPrecoUnitVenda( "18.5" );
-			p1.setQuantidade( "80" );			
+			p1.setQuantidade( ""+produto1Quantidade );			
 			
 			SaveProdutoRequest p2 = new SaveProdutoRequest();
 			p2.setCodigoBarras( "_001" );
 			p2.setDescricao( "P2" );
 			p2.setPrecoUnitCompra( "40.52" );
 			p2.setPrecoUnitVenda( "45.0" );
-			p2.setQuantidade( "100" );						
+			p2.setQuantidade( ""+produto2Quantidade );						
 		
 			RequestBuilder regP1RB = MockMvcRequestBuilders.post( "/api/produto/salva" )
 					.content( toJson( p1 ) ) 
@@ -146,23 +199,22 @@ public class FluxoCaixaTest {
 					.accept( MediaType.APPLICATION_JSON );
 			
 			mockMvc.perform( regP1RB ).andExpect( status().isOk() );
-			mockMvc.perform( regP2RB ).andExpect( status().isOk() );			
-			
+			mockMvc.perform( regP2RB ).andExpect( status().isOk() );	
+									
 			SaveItemVendaRequest saveIVRequest1 = new SaveItemVendaRequest();
 			saveIVRequest1.setCodigoBarras( "_000" );
-			saveIVRequest1.setQuantidade( "25" );
+			saveIVRequest1.setQuantidade( ""+itemVenda1Quantidade );
 			
 			SaveItemVendaRequest saveIVRequest2 = new SaveItemVendaRequest();
 			saveIVRequest2.setCodigoBarras( "_001" );
-			saveIVRequest2.setQuantidade( "48" );
+			saveIVRequest2.setQuantidade( ""+itemVenda2Quantidade );
 			
 			SaveVendaRequest saveVendaRequest = new SaveVendaRequest();
 			saveVendaRequest.setItensVenda( new ArrayList<>() );
 			saveVendaRequest.setSubtotal( ""+(25 * 18.5 + 48 * 45 ) );
 			saveVendaRequest.setDesconto( "0.12" );
-			saveVendaRequest.setFormaPag( FormaPag.ESPECIE.toString() );
+			saveVendaRequest.setFormaPag( "ESPECIE" );
 			saveVendaRequest.setIncluirCliente( "false" );
-			saveVendaRequest.setValorPago( "3000" );						
 			
 			saveVendaRequest.getItensVenda().add( saveIVRequest1 );
 			saveVendaRequest.getItensVenda().add( saveIVRequest2 );
@@ -173,13 +225,10 @@ public class FluxoCaixaTest {
 					.accept( MediaType.APPLICATION_JSON );
 			
 			mockMvc.perform( regVendaRB ).andExpect( status().isOk() );
-			
-			cop = caixaRepository.buscaCaixa( f.getId(), dataUtil.apenasData( new Date() ) );
-			assertTrue( cop.isPresent() );
-			
-			c = cop.get();
-			assertEquals( c.getValor(), valorAberturaCaixa + ( ( 25 * 18.5 + 48 * 45 ) * 0.88 ) );
-			
+						
+			balanco = caixaService.geraBalanco( uid );
+			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposVendaRegistrada );
+					
 			List<Produto> prod1List = produtoRepository.filtraPorDescIni( "P1" );
 			List<Produto> prod2List = produtoRepository.filtraPorDescIni( "P2" );
 			
@@ -192,10 +241,18 @@ public class FluxoCaixaTest {
 			Produto prod2 = prod2List.get( 0 );
 			assertNotNull( prod2 );
 			
+			assertEquals( prod1.getQuantidade(), produto1Quantidade - itemVenda1Quantidade );
+			assertEquals( prod2.getQuantidade(), produto2Quantidade - itemVenda2Quantidade );
+			
 			List<Venda> vendas = vendaRepository.findAll();
 			assertFalse( vendas.isEmpty() );
 			
 			Venda v = vendas.get( vendas.size()-1 );
+			
+			Optional<Caixa> cop = caixaRepository.buscaCaixa( f.getId(), dataUtil.apenasData( new Date() ) );
+			assertTrue( cop.isPresent() );
+			
+			Caixa c = cop.get();
 			
 			RequestBuilder delVenda = MockMvcRequestBuilders.delete( "/api/venda/deleta/{id}", v.getId() );							
 			RequestBuilder delCaixa = MockMvcRequestBuilders.delete( "/api/caixa/deleta/{id}", c.getId() );							
@@ -203,12 +260,25 @@ public class FluxoCaixaTest {
 			
 			RequestBuilder delP1 = MockMvcRequestBuilders.delete( "/api/produto/deleta/{id}", prod1.getId());	
 			RequestBuilder delP2 = MockMvcRequestBuilders.delete( "/api/produto/deleta/{id}", prod2.getId() );	
-			
+									
 			mockMvc.perform( delVenda ).andExpect( status().isOk() );
+			
+			balanco = caixaService.geraBalanco( uid );
+			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposVendaRegistrada, 0.01 );
+			
+			balanco = caixaService.geraBalanco( uid );
+			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposLancamentos, 0.01 );
+						
+			prod1 = produtoRepository.filtraPorDescIni( "P1" ).get( 0 );
+			prod2 = produtoRepository.filtraPorDescIni( "P2" ).get( 0 ); 
+			
+			assertEquals( prod1.getQuantidade(), produto1Quantidade );
+			assertEquals( prod2.getQuantidade(), produto2Quantidade );
+			
 			mockMvc.perform( delCaixa ).andExpect( status().isOk() );
 			mockMvc.perform( delFunc ).andExpect( status().isOk() );
 			mockMvc.perform( delP1 ).andExpect( status().isOk() );
-			mockMvc.perform( delP2 ).andExpect( status().isOk() );
+			mockMvc.perform( delP2 ).andExpect( status().isOk() );			
 		} catch (Exception e) {			
 			e.printStackTrace();
 		}						

@@ -30,7 +30,7 @@ export default class Clientes extends React.Component {
 	componentDidMount() {
 		this.nomeIni.current.value = "*";
 		
-		this.filtrar( null, true );		
+		this.filtrar( null, false );		
 	}
 	
 	filtrar( e, filtrarBTClicado ) {

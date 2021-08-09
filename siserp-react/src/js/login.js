@@ -39,9 +39,7 @@ export default class Login extends React.Component {
 				resposta.json().then( (dados) => {
 					sistema.token = dados.token;
 					sistema.usuario = dados.usuario;
-					
-					console.log( dados.token );
-										
+															
 					ReactDOM.render( <Layout />, sistema.rootElemento() );				
 					ReactDOM.render( <NavegBar />, sistema.menuNavegElemento() );				
 					ReactDOM.render( <Inicial />, sistema.paginaElemento() );								

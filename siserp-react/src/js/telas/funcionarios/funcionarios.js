@@ -32,7 +32,7 @@ export default class Funcionarios extends React.Component {
 		this.nomeIni.current.value = "*";
 		this.usernameIni.current.value = "*";
 		
-		this.filtrar( null, true );		
+		this.filtrar( null, false );		
 	}
 	
 	filtrar( e, filtrarBTClicado ) {
