@@ -153,7 +153,7 @@ export default class FuncionarioForm extends React.Component {
 				<Row>
 					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
-						<h4 className="text-center">Registro de cliente</h4>
+						<h4 className="text-center">Registro de funcionarios</h4>
 																
 						<Form onSubmit={(e) => this.salvar( e ) }>
 							<Card className="p-3">																

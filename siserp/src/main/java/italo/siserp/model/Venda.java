@@ -58,7 +58,7 @@ public class Venda {
 	@JoinColumn(name="caixa_id") 
 	private Caixa caixa;
 	
-	@OneToMany(mappedBy="venda", cascade=CascadeType.ALL)
+	@OneToMany(mappedBy="venda", cascade=CascadeType.REMOVE)
 	private List<ItemVenda> itensVenda;
 	
 }

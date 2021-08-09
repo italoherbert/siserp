@@ -17,10 +17,7 @@ export default class SetCompraFornecedor extends React.Component {
 		};		
 	}
 		
-	fornecedorOnChange( item ) {
-		if ( item.length === 0 )
-			return;
-								
+	fornecedorOnChange( item ) {										
 		fetch( '/api/fornecedor/filtra/limit/5', {
 			method : 'POST',
 			headers : {

@@ -95,7 +95,8 @@ public class VendaBuilder {
 		}
 		resp.setItens( itemResps );
 		
-		clienteBuilder.carregaClienteResponse( resp.getCliente(), v.getCliente() ); 
+		if ( v.getCliente() != null )
+			clienteBuilder.carregaClienteResponse( resp.getCliente(), v.getCliente() ); 
 	}	
 	
 	public VendaResponse novoVendaResponse() {		

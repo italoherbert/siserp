@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -97,6 +99,22 @@ public class CaixaService {
 		f.setCaixas( Arrays.asList( caixa ) );
 				
 		caixaRepository.save( caixa );		
+	}
+
+	@Transactional
+	public void deletaLancamentos( Long usuarioId ) 
+			throws PerfilCaixaRequeridoException, 
+				CaixaNaoAbertoException, 
+				UsuarioNaoEncontradoException,
+				FuncionarioNaoEncontradoException {
+		
+		Caixa c = this.buscaHojeCaixaBean( usuarioId );
+		
+		List<Lancamento> lancamentos = new ArrayList<>( c.getLancamentos() );
+		for( Lancamento l : lancamentos ) {
+			c.getLancamentos().remove( l );
+			lancamentoRepository.delete( l ); 
+		}
 	}
 				
 	public void efetuaLancamento( Long usuarioId, SaveLancamentoRequest request ) 

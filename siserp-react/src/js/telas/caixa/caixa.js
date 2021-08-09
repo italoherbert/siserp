@@ -15,15 +15,15 @@ export default class Caixa extends React.Component {
 		this.state = { 
 			erroMsg : null,
 			infoMsg : null,
-			balanco : { valor : 0 }
+			balanco : { valor : 0, debito : 0, credito : 0, saldo : 0 }
 		};		
 	}
 		
 	componentDidMount() {
-		this.atualizarDados();
+		this.atualizaDadosHoje();
 	}		
 		
-	atualizarDados() {
+	atualizaDadosHoje() {
 		sistema.showLoadingSpinner();
 		
 		fetch( '/api/caixa/balanco/'+sistema.usuario.id, {
@@ -36,6 +36,26 @@ export default class Caixa extends React.Component {
 				resposta.json().then( (dados) => {
 					this.setState( { balanco : dados } );
 				} );
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}
+			sistema.hideLoadingSpinner();
+		} );
+	}
+	
+	removeLancamentosHoje( e ) {
+		e.preventDefault();
+		
+		sistema.showLoadingSpinner();
+		
+		fetch( '/api/caixa/lancamento/deletatodos/hoje/'+sistema.usuario.id, {
+			method : 'DELETE',
+			headers : {
+				'Authorization' : 'Bearer '+sistema.token
+			}
+		} ).then( ( resposta ) => {
+			if ( resposta.status === 200 ) {
+				this.atualizaDadosHoje();
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -91,9 +111,10 @@ export default class Caixa extends React.Component {
 							</div>
 							<div>
 								<Form>
-									<Button variant="primary" onClick={ (e) => this.atualizarDados( e ) }>Atualizar dados</Button>
+									<Button variant="primary" onClick={ (e) => this.atualizaDadosHoje( e ) }>Atualizar dados</Button>
+									<Button variant="primary" className="mx-3" onClick={ (e) => this.removeLancamentosHoje(e) }>Remover lancamentos</Button>									
 								</Form>
-							</div>
+							</div>												
 						</Card>						
 					</Col>
 				</Row>																		

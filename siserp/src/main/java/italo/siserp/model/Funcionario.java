@@ -35,7 +35,7 @@ public class Funcionario {
 	@JoinColumn(name="pessoa_id")
 	private Pessoa pessoa;
 	
-	@OneToMany( mappedBy="funcionario" ) 
+	@OneToMany( mappedBy="funcionario", cascade=CascadeType.ALL ) 
 	private List<Caixa> caixas;
 		
 }

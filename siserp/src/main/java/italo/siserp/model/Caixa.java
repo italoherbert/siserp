@@ -3,7 +3,6 @@ package italo.siserp.model;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,7 +35,7 @@ public class Caixa {
 	@Temporal(TemporalType.DATE)
 	private Date dataAbertura;
 			
-	@ManyToOne(cascade = CascadeType.REFRESH, optional = true)
+	@ManyToOne
 	@JoinColumn(name="funcionario_id")
 	private Funcionario funcionario;
 	

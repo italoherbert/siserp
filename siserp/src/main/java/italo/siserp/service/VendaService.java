@@ -148,7 +148,7 @@ public class VendaService {
 			lanc.setDataOperacao( new Date() );
 			lanc.setTipo( LancamentoTipo.CREDITO );
 			lanc.setValor( total ); 
-			lancamentoRepository.save( lanc );						
+			lancamentoRepository.save( lanc );			
 		} else if ( formaPag == FormaPag.DEBITO ) {
 			v.setDebito( total ); 
 		}

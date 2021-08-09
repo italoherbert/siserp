@@ -141,8 +141,8 @@ export default class VendaRegistro extends React.Component {
 			} );
 		}
 		
-		sistema.showLoadingSpinner();				
-								
+		sistema.showLoadingSpinner();			
+							
 		fetch( '/api/venda/efetua/'+sistema.usuario.id, {
 			method : 'POST',
 			headers : {
@@ -159,12 +159,16 @@ export default class VendaRegistro extends React.Component {
 			} )
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {
+				this.valorPago.current.value = '';
 				this.desconto.current.value = '';
 				this.formaPag.current.value = '';
 										
 				this.setState( { 
 					infoMsg : 'Venda registrada com êxito',
-					itens : []
+					itens : [],
+					subtotal : 0,
+					total : 0,
+					troco : 0
 				} );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -175,6 +179,8 @@ export default class VendaRegistro extends React.Component {
 		
 	quantidadeItemProdOnChange( e, index ) {		
 		let itens = this.state.itens;				
+		
+		this.setState( { erroMsg : null, infoMsg : null } );
 		
 		let quant = sistema.paraFloat( e.target.value );
 		itens[ index ].quantidade = quant;
@@ -228,10 +234,13 @@ export default class VendaRegistro extends React.Component {
 	
 	calcularTotal( e ) {
 		const { itens } = this.state;
-						
+				
 		let desconto = parseFloat( sistema.paraFloat( this.desconto.current.value ) );
-		if ( isNaN( desconto ) === true )
-			desconto = 0;									
+		if ( isNaN( desconto ) === true ) {
+			desconto = 0;					
+		} else {
+			desconto /= 100.0;
+		}			
 				
 		for( let i = 0; i < itens.length; i++ ) {
 			if ( isNaN( itens[ i ].precoUnitario ) ) {
@@ -252,8 +261,8 @@ export default class VendaRegistro extends React.Component {
 		let subtotal = 0;
 		for( let i = 0; i < itens.length; i++ )
 			subtotal += parseFloat( itens[ i ].quantidade ) * parseFloat( itens[ i ].precoUnitario );				
-				
-		let total = subtotal * ( 1.0 - ( parseFloat( desconto ) / 100.0 ) );		
+								
+		let total = subtotal * ( 1.0 - desconto );		
 		
 		let valorPago = parseFloat( sistema.paraFloat( this.valorPago.current.value ) );
 		
@@ -272,10 +281,7 @@ export default class VendaRegistro extends React.Component {
 		const { infoMsg, erroMsg, itens, formasPag, subtotal, total, troco, clientesNomeLista, incluirCliente } = this.state;
 							
 		return(	
-			<div>
-				<MensagemPainel cor="danger" msg={erroMsg} />
-				<MensagemPainel cor="primary" msg={infoMsg} />
-								
+			<div>												
 				<h4 className="text-center">Lista de Produtos</h4>
 				<div id="produtos-tbl-pnl" className="tbl-pnl-pequeno">
 					<Table striped bordered hover>
@@ -301,7 +307,7 @@ export default class VendaRegistro extends React.Component {
 										<td>{ sistema.formataFloat( item.estoqueQuantidade ) }</td>
 										<td>
 											<Form>
-												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } defaultValue={item.quantidade} />
+												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } value={item.quantidade} />
 											</Form>
 										</td>
 										<td>{ item.unidade }</td>
@@ -327,6 +333,9 @@ export default class VendaRegistro extends React.Component {
 				</div>			
 
 				<br />
+				
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />
 				
 				<div className="p-3 bg-light">
 					<Form.Group>

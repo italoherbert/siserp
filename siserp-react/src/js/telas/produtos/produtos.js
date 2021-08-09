@@ -179,7 +179,6 @@ export default class Produtos extends React.Component {
 										<th>Código de barras</th>
 										<th>Preço compra</th>
 										<th>Preço venda</th>
-										<th>Unidade</th>
 										<th>Quantidade</th>											
 										<th>Detalhes</th>
 										<th>Remover</th>
@@ -192,10 +191,9 @@ export default class Produtos extends React.Component {
 												<td>{item.id}</td>
 												<td>{item.descricao}</td>
 												<td>{item.codigoBarras}</td>
-												<td>{item.precoUnitCompra}</td>
-												<td>{item.precoUnitVenda}</td>
-												<td>{item.unidade}</td>
-												<td>{item.quantidade}</td>
+												<td>{ sistema.formataReal( item.precoUnitCompra ) }</td>
+												<td>{ sistema.formataReal( item.precoUnitVenda ) }</td>
+												<td>{ sistema.formataFloat( item.quantidade ) } {item.unidade}</td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, item.id )}>detalhes</button></td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, item.id )}>remover</button></td>
 											</tr>

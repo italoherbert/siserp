@@ -91,6 +91,22 @@ public class CaixaController {
 		}
 	}
 	
+	@DeleteMapping(value="/lancamento/deletatodos/hoje/{usuarioId}")
+	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
+		try {
+			caixaService.deletaLancamentos( usuarioId );
+			return ResponseEntity.ok().build();
+		} catch (PerfilCaixaRequeridoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
+		} catch (CaixaNaoAbertoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
+		} catch (UsuarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (FuncionarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
+		}
+	}
+	
 	@GetMapping(value="/balanco/{usuarioId}")
 	public ResponseEntity<Object> geraBalanco( @PathVariable Long usuarioId ) {
 		try {
@@ -104,8 +120,7 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
-		}
-		
+		}		
 	}
 	
 	@GetMapping(value="/get/uid/hoje/{usuarioId}")
