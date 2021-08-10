@@ -20,7 +20,7 @@ export default class CaixaAbertura extends React.Component {
 		this.valorInicial = React.createRef();
 	}
 						
-	abrir( e, filtrarBTClicado ) {
+	abrir( e ) {
 		if ( e != null )
 			e.preventDefault();
 					

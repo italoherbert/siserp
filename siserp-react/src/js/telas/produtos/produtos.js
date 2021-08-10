@@ -171,7 +171,7 @@ export default class Produtos extends React.Component {
 					<Col>
 						<h4 className="text-center">Lista de Produtos</h4>
 						<div className="tbl-pnl">
-							<Table className="table-responsive" style={{width: '60em'}} striped bordered hover>
+							<Table striped bordered hover>
 								<thead>
 									<tr>
 										<th>ID</th>

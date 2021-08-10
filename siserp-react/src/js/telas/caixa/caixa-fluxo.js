@@ -17,9 +17,14 @@ export default class CaixaFluxo extends React.Component {
 			dataFim : '',
 			caixas : []
 		};				
+
+		this.incluirFuncionario = React.createRef();
+		this.funcionarioNomeIni = React.createRef();
 	}
 						
 	componentDidMount() {
+		this.incluirFuncionario.current.checked = false;
+
 		this.setState( { dataIni : new Date(), dataFim : new Date() } );
 	}		
 						
@@ -39,7 +44,9 @@ export default class CaixaFluxo extends React.Component {
 			}, 
 			body : JSON.stringify( {
 				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim )
+				"dataFim" : sistema.formataData( this.state.dataFim ),
+				"incluirFuncionario" : this.incluirFuncionario.current.checked,
+				"funcionarioNomeIni" : this.funcionarioNomeIni.current.value
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
@@ -63,10 +70,13 @@ export default class CaixaFluxo extends React.Component {
 						
 						this.state.caixas.push( {
 							dataAbertura : caixa.dataAbertura,
+							funcionarioNome : caixa.funcionario.pessoa.nome,
 							debito : debito,
 							credito : credito,
 							saldo : saldo
 						} );
+						
+						this.setState( {} );
 					}
 					
 					if ( dados.length === 0 )
@@ -99,6 +109,7 @@ export default class CaixaFluxo extends React.Component {
 							<Table striped bordered hover>
 								<thead>
 									<tr>
+										<th>Responsável</th>
 										<th>Data de abertura</th>
 										<th>Entradas</th>
 										<th>Saidas</th>
@@ -109,6 +120,7 @@ export default class CaixaFluxo extends React.Component {
 									{caixas.map( ( caixa, index ) => {
 										return (
 											<tr key={index}>
+												<td>{ caixa.funcionarioNome }</td>
 												<td>{ caixa.dataAbertura }</td>
 												<td>{ sistema.formataReal( caixa.credito ) }</td>	
 												<td>{ sistema.formataReal( caixa.debito ) }</td>	
@@ -132,7 +144,7 @@ export default class CaixaFluxo extends React.Component {
 							<h4>Filtrar</h4>
 							<Form onSubmit={ (e) => this.filtrar( e ) }>
 								<Row>
-									<Col className="col-sm-4">										
+									<Col>										
 										<Form.Group className="pb-2">													
 											<Form.Label>Data de início: </Form.Label>
 											<br />
@@ -143,7 +155,7 @@ export default class CaixaFluxo extends React.Component {
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
 									</Col>
-									<Col className="col-sm-4">										
+									<Col>										
 										<Form.Group className="pb-2">													
 											<Form.Label>Data de fim: </Form.Label>
 											<br />
@@ -154,9 +166,24 @@ export default class CaixaFluxo extends React.Component {
 													minDate={dataIni}
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
-									</Col>							
-									<Col className="col-md-4">
-										<div className="mb-2">&nbsp;</div>
+									</Col>
+								</Row>							
+								
+								<Row>
+									<Col className="col-md-6 my-2 mb-2">	
+										<Form.Group className="mb-2">																								
+											<div>
+												<Form.Label>Funcionario</Form.Label> &nbsp;&nbsp;
+												<input className="my-2" type="checkbox" ref={this.incluirFuncionario} />
+												&nbsp; Incluir funcionário no filtro
+											</div> 	
+											<Form.Control type="text" ref={this.funcionarioNomeIni} name="funcionarioNomeIni" />																								
+										</Form.Group>
+									</Col>									
+								</Row>
+							
+								<Row>
+									<Col>										
 										<Button type="submit" variant="primary">Filtrar</Button>				
 										<br />
 									</Col>

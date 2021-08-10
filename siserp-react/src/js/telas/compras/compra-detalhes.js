@@ -63,7 +63,7 @@ export default class CompraRegistro extends React.Component {
 							<Tab>Parcelas</Tab>
 						</TabList>
 						<TabPanel>							
-							<div className="tbl-pnl">
+							<div className="tbl-pnl-pequeno">
 								<Table striped bordered hover>
 									<thead>
 										<tr>

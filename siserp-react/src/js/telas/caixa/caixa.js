@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
-	
+
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import CaixaAbertura from './caixa-abertura';
+import CaixaLancamentos from './caixa-lancamentos';
 
 export default class Caixa extends React.Component {
 	
@@ -17,6 +18,8 @@ export default class Caixa extends React.Component {
 			infoMsg : null,
 			balanco : { valor : 0, debito : 0, credito : 0, saldo : 0 }
 		};		
+		
+		this.valorFechamento = React.createRef();
 	}
 		
 	componentDidMount() {
@@ -26,7 +29,7 @@ export default class Caixa extends React.Component {
 	atualizaDadosHoje() {
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/caixa/balanco/'+sistema.usuario.id, {
+		fetch( '/api/lancamento/balanco/'+sistema.usuario.id, {
 			method : 'GET',
 			headers : {
 				'Authorization' : 'Bearer '+sistema.token
@@ -42,17 +45,23 @@ export default class Caixa extends React.Component {
 			sistema.hideLoadingSpinner();
 		} );
 	}
-	
-	removeLancamentosHoje( e ) {
-		e.preventDefault();
+		
+	fecharCaixa( e ) {
+		if ( e != null )
+			e.preventDefault();
 		
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/caixa/lancamento/deletatodos/hoje/'+sistema.usuario.id, {
-			method : 'DELETE',
+		fetch( '/api/lancamento/novo/hoje/'+sistema.usuario.id, {
+			method : 'POST',
 			headers : {
+				'Content-Type' : 'application/json; charset=UTF-8',
 				'Authorization' : 'Bearer '+sistema.token
-			}
+			},
+			body : JSON.stringify( {
+				tipo : "DEBITO",
+				valor : sistema.paraFloat( this.valorFechamento.current.value )
+			} )
 		} ).then( ( resposta ) => {
 			if ( resposta.status === 200 ) {
 				this.atualizaDadosHoje();
@@ -63,6 +72,12 @@ export default class Caixa extends React.Component {
 		} );
 	}
 	
+	visualizarLancamentos( e ) {
+		e.preventDefault();
+		
+		ReactDOM.render( <CaixaLancamentos />, sistema.paginaElemento() );
+	}
+	
 	paraTelaAbrirCaixa( e ) {
 		ReactDOM.render( <CaixaAbertura />, sistema.paginaElemento() );
 	}
@@ -71,8 +86,7 @@ export default class Caixa extends React.Component {
 		const {	erroMsg, infoMsg, balanco } = this.state;
 				
 		return (
-			<Container>	
-								
+			<Container>					
 				<Row>
 					<Col>
 						<Form className="float-end">
@@ -112,10 +126,22 @@ export default class Caixa extends React.Component {
 							<div>
 								<Form>
 									<Button variant="primary" onClick={ (e) => this.atualizaDadosHoje( e ) }>Atualizar dados</Button>
-									<Button variant="primary" className="mx-3" onClick={ (e) => this.removeLancamentosHoje(e) }>Remover lancamentos</Button>									
+									<Button variant="primary" className="mx-3" onClick={ (e) => this.visualizarLancamentos( e ) }>Lançamentos</Button>
 								</Form>
 							</div>												
 						</Card>						
+					</Col>
+					<Col>						
+						<Card className="p-3">
+							<h4>Fechar caixa</h4>
+							<Form onSubmit={ (e) => this.fecharCaixa( e ) }>
+								<Form.Group className="mb-2">
+									<Form.Label>Informe o valor em caixa: </Form.Label>
+									<Form.Control type="text" ref={this.valorFechamento} name="valorFechamento" />
+								</Form.Group>
+								<Button type="submit" variant="primary">Fechar caixa</Button>
+							</Form>
+						</Card>																	
 					</Col>
 				</Row>																		
 			</Container>	

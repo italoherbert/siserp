@@ -30,7 +30,6 @@ import italo.siserp.exception.SubtotalInvalidoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
-import italo.siserp.model.Caixa;
 import italo.siserp.model.request.BuscaVendasRequest;
 import italo.siserp.model.request.EfetuarPagamentoRequest;
 import italo.siserp.model.request.SaveItemVendaRequest;
@@ -38,7 +37,6 @@ import italo.siserp.model.request.SaveVendaRequest;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.QuitarDebitoResponse;
 import italo.siserp.model.response.VendaResponse;
-import italo.siserp.service.CaixaService;
 import italo.siserp.service.VendaService;
 
 @RestController
@@ -47,16 +45,13 @@ public class VendaController {
 
 	@Autowired
 	private VendaService vendaService;
-	
-	@Autowired
-	private CaixaService caixaService;
-	
+		
 	@PostMapping(value="/efetua/{usuarioId}")
 	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {		
 		if ( request.getIncluirCliente() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.INCLUIR_CLIENTE_VALOR_INVALIDO ) );						
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_VALOR_INVALIDO ) );						
 		if ( request.getIncluirCliente().isBlank() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.INCLUIR_CLIENTE_VALOR_INVALIDO ) );
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_VALOR_INVALIDO ) );
 
 		if ( request.getIncluirCliente().equals( "true" ) ) {
 			if ( request.getClienteNome() == null )
@@ -73,8 +68,7 @@ public class VendaController {
 		}
 				
 		try {
-			Caixa c = caixaService.buscaHojeCaixaBean( usuarioId );
-			vendaService.efetuaVenda( c, request );
+			vendaService.efetuaVenda( usuarioId, request );
 			return ResponseEntity.ok().build();
 		} catch (DataVendaInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA, e.getParams() ) );
@@ -109,6 +103,16 @@ public class VendaController {
 	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraVendas( @RequestBody BuscaVendasRequest request ) {
+		if ( request.getDataIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );
+		if ( request.getDataIni().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );
+		if ( request.getDataFim() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
+		if ( request.getDataFim().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
+		
+		
 		if ( request.getIncluirCliente() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_OBRIGATORIO ) );
 		if ( request.getIncluirCliente().isBlank() )
@@ -155,10 +159,8 @@ public class VendaController {
 		 
 	@PostMapping(value="/efetuapag/{usuarioId}")
 	public ResponseEntity<Object> efetuaPagamento( @PathVariable Long usuarioId, EfetuarPagamentoRequest request ) {
-		try {
-			Caixa caixa = caixaService.buscaHojeCaixaBean( usuarioId );			
-			
-			QuitarDebitoResponse resp = vendaService.efetuarPagamento( caixa, request );			
+		try {			
+			QuitarDebitoResponse resp = vendaService.efetuarPagamento( usuarioId, request );			
 			return ResponseEntity.ok( resp );
 		} catch (ClienteNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );						

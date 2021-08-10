@@ -22,6 +22,7 @@ public class ErroResponse {
 	public final static int CLIENTE_NAO_ENCONTRADO = 107;
 	public final static int VENDA_NAO_ENCONTRADA = 108;
 	public final static int CAIXA_NAO_ENCONTRADO = 109;
+	public final static int LANCAMENTO_NAO_ENCONTRADO = 110;
 	
 	public final static int CODIGO_BARRAS_NAO_REGISTRADO = 150;
 		
@@ -48,8 +49,8 @@ public class ErroResponse {
 	public final static int PRODUTO_CODIGO_BARRAS_OBRIGATORIO = 313;
 	public final static int PRODUTO_DESCRICAO_OU_CODIGO_BARRAS_OBRIGATORIO = 314;
 	public final static int PRODUTO_QUANTIDADE_OBRIGATORIA = 315;
-	public final static int COMPRA_DATA_INI_OBRIGATORIA = 316;
-	public final static int COMPRA_DATA_FIM_OBRIGATORIA = 317;
+	public final static int DATA_INI_OBRIGATORIA = 316;
+	public final static int DATA_FIM_OBRIGATORIA = 317;
 	public final static int PARCELA_VALOR_OBRIGATORIO = 318;
 	public final static int DATA_PAGAMENTO_OBRIGATORIA = 319;
 	public final static int DATA_VENCIMENTO_OBRIGATORIA = 320;
@@ -59,7 +60,9 @@ public class ErroResponse {
 	public final static int TIPO_LANCAMENTO_OBRIGATORIO = 324;
 	public final static int VALOR_LANCAMENTO_OBRIGATORIO = 325;
 	public final static int LANCAMENTO_ABERTURA_CAIXA_OBRITATORIO = 326;
-
+	public final static int FLAG_INCLUIR_FUNCIONARIO_OBRIGATORIO = 327;
+	public final static int FUNCIONARIO_NOME_OBRIGATORIO = 328;
+	
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int USUARIO_TIPO_INVALIDO = 501;
 	public final static int PRODUTO_PRECO_UNIT_COMPRA_INVALIDO = 502;
@@ -73,7 +76,7 @@ public class ErroResponse {
 	public final static int DATA_FIM_INVALIDA = 510;
 	public final static int DATA_INI_APOS_DATA_FIM = 511;
 	public final static int NENHUM_PRODUTO_INFORMADO = 512;
-	public final static int INCLUIR_CLIENTE_VALOR_INVALIDO = 513;
+	public final static int FLAG_INCLUIR_CLIENTE_VALOR_INVALIDO = 513;
 	public final static int DATA_VENDA_INVALIDA = 514;
 	public final static int SUBTOTAL_INVALIDO = 515;
 	public final static int DESCONTO_INVALIDO = 516;
@@ -86,6 +89,7 @@ public class ErroResponse {
 	public final static int LANCAMENTO_TIPO_INVALIDO = 523;
 	public final static int LANCAMENTO_VALOR_INVALIDO = 524;
 	public final static int FORMA_PAG_INVALIDA = 525;
+	public final static int FLAG_INCLUIR_FUNCIONARIO_VALOR_INVALIDO = 526;
 	
 	private int codigo;
 	private String mensagem;
@@ -129,6 +133,9 @@ public class ErroResponse {
 				break;
 			case CAIXA_NAO_ENCONTRADO:
 				mensagem = "Caixa não encontrado.";
+				break;
+			case LANCAMENTO_NAO_ENCONTRADO:
+				mensagem = "Lançamento não encontrado.";
 				break;
 				
 			case USUARIO_JA_EXISTE:
@@ -195,11 +202,11 @@ public class ErroResponse {
 			case PRODUTO_QUANTIDADE_OBRIGATORIA:
 				mensagem = "A quantidade de unidades do produto é um campo de preenchimento obrigatório.";
 				break;
-			case COMPRA_DATA_INI_OBRIGATORIA:
-				mensagem = "A data de início para filtro de compras é um campo de preenchimento obrigatório.";
+			case DATA_INI_OBRIGATORIA:
+				mensagem = "A data de início é um campo de preenchimento obrigatório.";
 				break;
-			case COMPRA_DATA_FIM_OBRIGATORIA:
-				mensagem = "A data de fim para filtro de compras é um campo de preenchimento obrigatório.";
+			case DATA_FIM_OBRIGATORIA:
+				mensagem = "A data de fim é um campo de preenchimento obrigatório.";
 				break;
 			case DATA_PAGAMENTO_OBRIGATORIA:
 				mensagem = "A data de pagamento é um campo de preenchimento obrigatório.";
@@ -208,7 +215,7 @@ public class ErroResponse {
 				mensagem = "A data de vencimento é um campo de preenchimento obrigatório.";
 				break;
 			case FLAG_INCLUIR_CLIENTE_OBRIGATORIO:
-				mensagem = "Flag de inclusão de clientes no filtro é um campo de preenchimento obrigatório.";
+				mensagem = "Flag de inclusão de cliente no filtro é um campo de preenchimento obrigatório.";
 				break;
 			case CLIENTE_NOME_OBRIGATORIO:
 				mensagem = "O nome do cliente é um campo de preenchimento obrigatório.";
@@ -224,6 +231,12 @@ public class ErroResponse {
 				break;
 			case VALOR_LANCAMENTO_OBRIGATORIO:
 				mensagem = "O valor de lançamento é um campo de preenchimento obrigatório.";
+				break;
+			case FLAG_INCLUIR_FUNCIONARIO_OBRIGATORIO:
+				mensagem = "Flag de inclusão de funcionario no filtro é um campo obrigatório.";
+				break;
+			case FUNCIONARIO_NOME_OBRIGATORIO:
+				mensagem = "O nome do funcionário é um campo de preenchimento obrigatório.";
 				break;
 				
 			case USUARIO_TIPO_INVALIDO:
@@ -268,7 +281,7 @@ public class ErroResponse {
 			case DATA_VENDA_INVALIDA:
 				mensagem = "A data de venda está em formato inválido.";
 				break;
-			case INCLUIR_CLIENTE_VALOR_INVALIDO:
+			case FLAG_INCLUIR_CLIENTE_VALOR_INVALIDO:
 				mensagem = "O campo de incluir cliente ativado está em formato inválido.";
 				break;				
 			case SUBTOTAL_INVALIDO:
@@ -303,6 +316,9 @@ public class ErroResponse {
 				break;
 			case FORMA_PAG_INVALIDA:
 				mensagem = "Forma de pagamento inválida.";
+				break;
+			case FLAG_INCLUIR_FUNCIONARIO_VALOR_INVALIDO:
+				mensagem = "Flag de inclusão de funcionário em formato inválido.";
 				break;
 		}		
 	}

@@ -20,6 +20,8 @@ export default class VendaRegistro extends React.Component {
 			itens : [],
 			formasPag : [],
 			
+			quantValorPadrao : 1,
+			
 			clientesNomeLista : [],
 			clienteId : -1,
 			clienteNome : '',
@@ -278,7 +280,7 @@ export default class VendaRegistro extends React.Component {
 	}	
 		
 	render() {
-		const { infoMsg, erroMsg, itens, formasPag, subtotal, total, troco, clientesNomeLista, incluirCliente } = this.state;
+		const { infoMsg, erroMsg, itens, formasPag, quantValorPadrao, subtotal, total, troco, clientesNomeLista, incluirCliente } = this.state;
 							
 		return(	
 			<div>												
@@ -307,7 +309,7 @@ export default class VendaRegistro extends React.Component {
 										<td>{ sistema.formataFloat( item.estoqueQuantidade ) }</td>
 										<td>
 											<Form>
-												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } value={item.quantidade} />
+												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } defaultValue={quantValorPadrao} />
 											</Form>
 										</td>
 										<td>{ item.unidade }</td>
@@ -347,7 +349,7 @@ export default class VendaRegistro extends React.Component {
 								<Col>
 									<Form.Group className="mb-2">
 										<Form.Label>Desconto (%): &nbsp;</Form.Label>
-										<input className="border-light rounded text-danger" type="number" ref={this.desconto} name="desconto" onChange={ (e) => this.calcularTotal( e ) } />										
+										<input className="border-light rounded text-danger" type="text" ref={this.desconto} name="desconto" onChange={ (e) => this.calcularTotal( e ) } />										
 									</Form.Group>								
 								</Col>	
 							</Row>
@@ -358,7 +360,7 @@ export default class VendaRegistro extends React.Component {
 								<Col>
 									<Form>
 										<span>Valor pago (R$): </span> 
-										<input className="border-light rounded text-danger" type="number" ref={this.valorPago} name="valorPago" onChange={ (e) => this.calcularTotal( e ) } />									
+										<input className="border-light rounded text-danger" type="text" ref={this.valorPago} name="valorPago" onChange={ (e) => this.calcularTotal( e ) } />									
 									</Form>
 								</Col>	
 							</Row>

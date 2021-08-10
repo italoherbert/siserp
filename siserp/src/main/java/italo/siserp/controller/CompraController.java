@@ -31,7 +31,7 @@ import italo.siserp.model.request.SaveItemCompraRequest;
 import italo.siserp.model.request.SaveSubCategoriaRequest;
 import italo.siserp.model.response.CompraResponse;
 import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.TotalCompraResponse;
+import italo.siserp.model.response.FiltroCompraResponse;
 import italo.siserp.service.CompraService;
 
 @RestController
@@ -150,7 +150,7 @@ public class CompraController {
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraCompras( @RequestBody BuscaComprasRequest request ) {
 		try {
-			List<TotalCompraResponse> resps = compraService.filtra( request );
+			List<FiltroCompraResponse> resps = compraService.filtra( request );
 			return ResponseEntity.ok( resps );
 		} catch (DataIniInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA, e.getParams() ) );						

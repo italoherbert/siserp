@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Compra;
 import italo.siserp.model.ItemCompra;
-import italo.siserp.model.response.TotalCompraResponse;
+import italo.siserp.model.response.FiltroCompraResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 
 @Component
-public class TotalCompraBuilder {
+public class FiltroCompraBuilder {
 	
 	@Autowired
 	private DataUtil dataUtil;
@@ -20,7 +20,7 @@ public class TotalCompraBuilder {
 	@Autowired
 	private NumeroUtil numeroUtil;
 	
-	public void carregaTotalCompraResponse( TotalCompraResponse resp, Compra c ) {
+	public void carregaTotalCompraResponse( FiltroCompraResponse resp, Compra c ) {
 		resp.setId( c.getId() );
 		resp.setDataCompra( dataUtil.dataParaString( c.getDataCompra() ) ); 
 		
@@ -32,8 +32,8 @@ public class TotalCompraBuilder {
 		resp.setDebitoTotal( numeroUtil.doubleParaString( total ) ); 
 	}	
 	
-	public TotalCompraResponse novoTotalCompraResponse() {		
-		return new TotalCompraResponse();
+	public FiltroCompraResponse novoTotalCompraResponse() {		
+		return new FiltroCompraResponse();
 	}
 	
 }

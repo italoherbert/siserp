@@ -13,4 +13,8 @@ public class BuscaCaixasRequest {
 	
 	private String dataFim;
 	
+	private String incluirFuncionario;
+	
+	private String funcionarioNomeIni;
+	
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.ItemVendaBuilder;
 import italo.siserp.builder.VendaBuilder;
+import italo.siserp.dao.CaixaDAO;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.ClienteNaoEncontradoException;
 import italo.siserp.exception.DataFimAposDataIniException;
@@ -23,11 +24,13 @@ import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
 import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.FormaPagInvalidaException;
+import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
+import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.Caixa;
@@ -65,6 +68,9 @@ public class VendaService {
 	private LancamentoRepository lancamentoRepository;
 			
 	@Autowired
+	private CaixaDAO caixaDAO;
+	
+	@Autowired
 	private VendaBuilder vendaBuilder;
 	
 	@Autowired
@@ -83,7 +89,7 @@ public class VendaService {
 	private FormaPagTipoEnumConversor enumConversor;
 	
 	@Transactional
-	public void efetuaVenda( Caixa caixa, SaveVendaRequest request ) 
+	public void efetuaVenda( Long usuarioId, SaveVendaRequest request ) 
 			throws QuantidadeInvalidaException,
 				PrecoUnitVendaInvalidoException,
 				SubtotalInvalidoException,
@@ -95,8 +101,12 @@ public class VendaService {
 				PerfilCaixaRequeridoException,
 				ValorPagoInvalidoException,
 				ClienteNaoEncontradoException,
-				FormaPagInvalidaException {				
+				FormaPagInvalidaException, 
+				UsuarioNaoEncontradoException, 
+				FuncionarioNaoEncontradoException {				
 								
+		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		
 		Venda v = vendaBuilder.novoVenda();
 		vendaBuilder.carregaVenda( v, request );
 		
@@ -273,8 +283,15 @@ public class VendaService {
 	}
 	
 	@Transactional
-	public QuitarDebitoResponse efetuarPagamento( Caixa caixa, EfetuarPagamentoRequest request ) 
-			throws ClienteNaoEncontradoException, ValorPagoInvalidoException {
+	public QuitarDebitoResponse efetuarPagamento( Long usuarioId, EfetuarPagamentoRequest request ) 
+			throws ClienteNaoEncontradoException, 
+			ValorPagoInvalidoException, 
+			PerfilCaixaRequeridoException, 
+			CaixaNaoAbertoException,
+			UsuarioNaoEncontradoException, 
+			FuncionarioNaoEncontradoException {
+		
+		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
 		
 		Long clienteId = request.getClienteId();
 		Cliente c = clienteRepository.findById( clienteId ).orElseThrow( ClienteNaoEncontradoException::new );

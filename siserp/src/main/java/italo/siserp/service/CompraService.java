@@ -17,7 +17,7 @@ import italo.siserp.builder.FornecedorBuilder;
 import italo.siserp.builder.ItemCompraBuilder;
 import italo.siserp.builder.ProdutoBuilder;
 import italo.siserp.builder.SubCategoriaBuilder;
-import italo.siserp.builder.TotalCompraBuilder;
+import italo.siserp.builder.FiltroCompraBuilder;
 import italo.siserp.exception.CompraNaoEncontradaException;
 import italo.siserp.exception.DataCompraInvalidaException;
 import italo.siserp.exception.DataFimAposDataIniException;
@@ -45,7 +45,7 @@ import italo.siserp.model.request.SaveItemCompraRequest;
 import italo.siserp.model.request.SaveProdutoRequest;
 import italo.siserp.model.request.SaveSubCategoriaRequest;
 import italo.siserp.model.response.CompraResponse;
-import italo.siserp.model.response.TotalCompraResponse;
+import italo.siserp.model.response.FiltroCompraResponse;
 import italo.siserp.repository.CategoriaMapRepository;
 import italo.siserp.repository.CategoriaRepository;
 import italo.siserp.repository.CompraRepository;
@@ -75,7 +75,7 @@ public class CompraService {
 	private CompraBuilder compraBuilder;
 
 	@Autowired
-	private TotalCompraBuilder totalCompraBuilder;
+	private FiltroCompraBuilder totalCompraBuilder;
 	
 	@Autowired
 	private FornecedorBuilder fornecedorBuilder;
@@ -238,7 +238,7 @@ public class CompraService {
 		}
 	}
 	
-	public List<TotalCompraResponse> filtra( BuscaComprasRequest request ) 
+	public List<FiltroCompraResponse> filtra( BuscaComprasRequest request ) 
 			throws DataIniInvalidaException, 
 					DataFimInvalidaException, 
 					DataFimAposDataIniException {
@@ -262,9 +262,9 @@ public class CompraService {
 			throw new DataFimAposDataIniException();
 		
 		List<Compra> compras = compraRepository.filtra( dataIni, dataFim );
-		List<TotalCompraResponse> responses = new ArrayList<>();
+		List<FiltroCompraResponse> responses = new ArrayList<>();
 		for( Compra c : compras ) {
-			TotalCompraResponse resp = totalCompraBuilder.novoTotalCompraResponse();
+			FiltroCompraResponse resp = totalCompraBuilder.novoTotalCompraResponse();
 			totalCompraBuilder.carregaTotalCompraResponse( resp, c );
 			
 			responses.add( resp );

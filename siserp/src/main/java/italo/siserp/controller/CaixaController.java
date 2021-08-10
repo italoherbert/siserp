@@ -26,8 +26,6 @@ import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
-import italo.siserp.model.request.SaveLancamentoRequest;
-import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.CaixaService;
@@ -38,7 +36,7 @@ public class CaixaController {
 
 	@Autowired
 	private CaixaService caixaService;
-	
+			
 	@PostMapping(value="/abre/{usuarioId}")
 	public ResponseEntity<Object> abrirCaixa( 
 			@PathVariable Long usuarioId, @RequestBody AbreCaixaRequest request ) {
@@ -71,62 +69,10 @@ public class CaixaController {
 		}		
 	}
 	
-	@PostMapping(value="/lancamento/efetua/{usuarioId}")
-	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {
-		try {
-			caixaService.efetuaLancamento( usuarioId, request );
-			return ResponseEntity.ok().build();
-		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
-		} catch (CaixaNaoAbertoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );		
-		} catch (LancamentoTipoInvalidoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_TIPO_INVALIDO ) );		
-		} catch (LancamentoValorInvalidoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_VALOR_INVALIDO ) );		
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
-		} catch (FuncionarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
-		}
-	}
-	
-	@DeleteMapping(value="/lancamento/deletatodos/hoje/{usuarioId}")
-	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
-		try {
-			caixaService.deletaLancamentos( usuarioId );
-			return ResponseEntity.ok().build();
-		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
-		} catch (CaixaNaoAbertoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
-		} catch (FuncionarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
-		}
-	}
-	
-	@GetMapping(value="/balanco/{usuarioId}")
-	public ResponseEntity<Object> geraBalanco( @PathVariable Long usuarioId ) {
-		try {
-			CaixaBalancoResponse resp = caixaService.geraBalanco( usuarioId );
-			return ResponseEntity.ok( resp );
-		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
-		} catch (CaixaNaoAbertoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
-		} catch (FuncionarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
-		}		
-	}
-	
 	@GetMapping(value="/get/uid/hoje/{usuarioId}")
 	public ResponseEntity<Object> buscaPorUsuarioID( @PathVariable Long usuarioId ) {		
 		try {
-			CaixaResponse resp = caixaService.buscaHojeCaixa( usuarioId );
+			CaixaResponse resp = caixaService.buscaCaixaHoje( usuarioId );
 			return ResponseEntity.ok( resp );
 		} catch (PerfilCaixaRequeridoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
@@ -141,6 +87,26 @@ public class CaixaController {
 	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtra( @RequestBody BuscaCaixasRequest request ) {
+		if ( request.getDataIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );		
+		if ( request.getDataIni().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );		
+		
+		if ( request.getDataFim() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );		
+		if ( request.getDataFim().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );		
+		
+		if ( request.getIncluirFuncionario() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_FUNCIONARIO_OBRIGATORIO ) );		
+		
+		if ( request.getIncluirFuncionario().equals( "true" ) ) {
+			if ( request.getFuncionarioNomeIni() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NOME_OBRIGATORIO ) );		
+			if ( request.getFuncionarioNomeIni().isBlank() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NOME_OBRIGATORIO ) );					
+		}
+		
 		try {
 			List<CaixaResponse> lista = caixaService.filtra( request );
 			return ResponseEntity.ok( lista );

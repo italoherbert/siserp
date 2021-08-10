@@ -252,7 +252,7 @@ export default class FuncionarioForm extends React.Component {
 											<select name="tipo" ref={this.tipo}>
 												<option key="0" value="NONE">Selecione um tipo!</option>
 												{ uTipos.map( (item, i) => {
-													return <option key={i} value={item}>{item}</option>
+													return <option key={i+1} value={item}>{item}</option>
 												} )	}
 											</select>
 										</Form.Group>

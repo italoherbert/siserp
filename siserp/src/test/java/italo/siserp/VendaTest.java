@@ -45,7 +45,7 @@ import italo.siserp.repository.FuncionarioRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
-import italo.siserp.service.CaixaService;
+import italo.siserp.service.LancamentoService;
 import italo.siserp.util.DataUtil;
 
 @ExtendWith(SpringExtension.class)
@@ -73,7 +73,7 @@ public class VendaTest {
 	private VendaRepository vendaRepository;
 	
 	@Autowired
-	private CaixaService caixaService;
+	private LancamentoService lancamentoService;
 	
 	@Autowired
 	private DataUtil dataUtil;
@@ -132,7 +132,7 @@ public class VendaTest {
 			
 			mockMvc.perform( abreCaixaRB ).andExpect( status().isOk() );
 								
-			CaixaBalancoResponse balanco = caixaService.geraBalanco( uid );
+			CaixaBalancoResponse balanco = lancamentoService.geraBalanco( uid );
 			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAberturaCaixa, 0.01 );
 			
 			SaveLancamentoRequest lancamentoRequest1 = new SaveLancamentoRequest();
@@ -171,7 +171,7 @@ public class VendaTest {
 			int quantLancamentos2 = lancamentoRepository.findAll().size();
 			assertEquals( quantLancamentos2, quantLancamentos + 3 );
 			
-			balanco = caixaService.geraBalanco( uid );
+			balanco = lancamentoService.geraBalanco( uid );
 			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposLancamentos, 0.01 );
 			
 			SaveProdutoRequest p1 = new SaveProdutoRequest();
@@ -226,7 +226,7 @@ public class VendaTest {
 			
 			mockMvc.perform( regVendaRB ).andExpect( status().isOk() );
 						
-			balanco = caixaService.geraBalanco( uid );
+			balanco = lancamentoService.geraBalanco( uid );
 			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposVendaRegistrada );
 					
 			List<Produto> prod1List = produtoRepository.filtraPorDescIni( "P1" );
@@ -263,10 +263,10 @@ public class VendaTest {
 									
 			mockMvc.perform( delVenda ).andExpect( status().isOk() );
 			
-			balanco = caixaService.geraBalanco( uid );
+			balanco = lancamentoService.geraBalanco( uid );
 			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposVendaRegistrada, 0.01 );
 			
-			balanco = caixaService.geraBalanco( uid );
+			balanco = lancamentoService.geraBalanco( uid );
 			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposLancamentos, 0.01 );
 						
 			prod1 = produtoRepository.filtraPorDescIni( "P1" ).get( 0 );
