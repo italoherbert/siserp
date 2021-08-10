@@ -1,5 +1,5 @@
 package italo.siserp.model;
 
 public enum UsuarioTipo {
-	ADMIN, CAIXA, GERENTE
+	ADMIN, CAIXA, GERENTE, SUPERVISOR
 }

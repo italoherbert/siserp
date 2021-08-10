@@ -6,7 +6,6 @@ import Modal from 'react-bootstrap/Modal';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import Caixa from './caixa';
 import CaixaLancamentoNovo from './caixa-lancamento-novo';
 
 export default class CaixaLancamentos extends React.Component {
@@ -36,8 +35,15 @@ export default class CaixaLancamentos extends React.Component {
 		this.setState( { infoMsg : null, erroMsg : null } );
 				
 		sistema.showLoadingSpinner();
+		
+		let url;
+		if ( this.props.tipoListagem === 'caixa' ) {
+			url = "/api/lancamento/lista/"+this.props.caixaId;
+		} else {
+			url = "/api/lancamento/lista/hoje/"+sistema.usuario.id;
+		}
 
-		fetch( "/api/lancamento/lista/hoje/"+sistema.usuario.id, {
+		fetch( url, {
 			method : "GET",			
 			headers : {
 				"Authorization" : "Bearer "+sistema.token
@@ -151,11 +157,7 @@ export default class CaixaLancamentos extends React.Component {
 			sistema.hideLoadingSpinner();
 		} );
 	}
-	
-	paraTelaCaixa() {
-		ReactDOM.render( <Caixa />, sistema.paginaElemento() );
-	}
-	
+		
 	paraTelaRegistro() {
 		ReactDOM.render( <CaixaLancamentoNovo />, sistema.paginaElemento() );
 	}
@@ -173,7 +175,7 @@ export default class CaixaLancamentos extends React.Component {
 					<Modal.Footer>
 						<Form>
 							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
-							<Button variant="primary" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
+							<Button variant="danger" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
 						</Form>
 					</Modal.Footer>
 				</Modal>
@@ -194,8 +196,8 @@ export default class CaixaLancamentos extends React.Component {
 								<thead>
 									<tr>
 										<th>Data operação</th>
-										<th>Entradas</th>
-										<th>Saidas</th>
+										<th>Entrada</th>
+										<th>Saida</th>
 										<th>Saldo</th>
 										<th>Remover</th>
 									</tr>
@@ -229,15 +231,7 @@ export default class CaixaLancamentos extends React.Component {
 								<Button variant="primary" onClick={ (e) => this.listar( e, true ) }>Atualizar lista</Button>
 								<Button variant="primary" className="mx-3" onClick={ (e) => this.removerTodosHojeSeConfirmado( e ) }>Remover todos</Button>									
 							</Form>
-						</Card>
-						
-						<br />
-						
-						<Card className="p-3">
-							<Form>																
-								<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCaixa( e ) }>Ir para caixa</button>		
-							</Form>
-						</Card>
+						</Card>												
 					</Col>
 				</Row>		
 					

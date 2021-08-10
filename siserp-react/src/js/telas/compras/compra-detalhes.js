@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Container, Row, Col, Card, Table } from 'react-bootstrap';
+import { Container, Row, Col, Card, Table, Form } from 'react-bootstrap';
 import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 
 import sistema from './../../logica/sistema';
@@ -17,7 +17,7 @@ export default class CompraRegistro extends React.Component {
 		this.state = { 
 			infoMsg : null,
 			erroMsg : null,
-			compra : { parcelas : [], itens : [], fornecedor : { empresa : '' } }
+			compra : { parcelas : [], itens : [], fornecedor : { empresa : '' }, total : 0 }
 		};								
 	}				
 	
@@ -32,7 +32,11 @@ export default class CompraRegistro extends React.Component {
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {
 				resposta.json().then( (dados) => {
-					this.setState( { compra : dados } );
+					let total = 0;
+					for( let i = 0; i < dados.parcelas.length; i++ )
+						total += sistema.paraFloat( dados.parcelas[ i ].valor );
+										
+					this.setState( { compra : dados, total : total } );
 				} );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -46,7 +50,7 @@ export default class CompraRegistro extends React.Component {
 	}
 		
 	render() {
-		const { infoMsg, erroMsg, compra } = this.state;
+		const { infoMsg, erroMsg, compra, total } = this.state;
 				
 		return(	
 			<Container>
@@ -118,12 +122,17 @@ export default class CompraRegistro extends React.Component {
 									</tbody>
 								</Table>
 							</div>
+							
+							<br />
+							
+							<Form.Group style={{fontSize: '1.6em'}}>
+								<Form.Label>Total: &nbsp;<span className="text-danger">{ sistema.formataReal( total ) }</span></Form.Label>
+							</Form.Group>
 						</TabPanel>						
 					</Tabs>
 					
 					<MensagemPainel cor="danger" msg={erroMsg} />
 					<MensagemPainel cor="primary" msg={infoMsg} />
-					<br />										
 				</Card>
 				
 				<br />

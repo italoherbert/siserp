@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +47,7 @@ public class VendaController {
 	@Autowired
 	private VendaService vendaService;
 		
+	@PreAuthorize("hasAnyAuthority('CAIXA')")	
 	@PostMapping(value="/efetua/{usuarioId}")
 	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {		
 		if ( request.getIncluirCliente() == null )
@@ -101,6 +103,7 @@ public class VendaController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraVendas( @RequestBody BuscaVendasRequest request ) {
 		if ( request.getDataIni() == null )
@@ -137,6 +140,7 @@ public class VendaController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@GetMapping(value="/get/{id}")
 	public ResponseEntity<Object> buscaVenda( @PathVariable Long id ) {
 		try {
@@ -147,6 +151,7 @@ public class VendaController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@DeleteMapping(value="/deleta/{id}")
 	public ResponseEntity<Object> deletaVenda( @PathVariable Long id ) {
 		try {
@@ -157,6 +162,7 @@ public class VendaController {
 		}
 	}
 		 
+	@PreAuthorize("hasAnyAuthority('CAIXA')")	
 	@PostMapping(value="/efetuapag/{usuarioId}")
 	public ResponseEntity<Object> efetuaPagamento( @PathVariable Long usuarioId, EfetuarPagamentoRequest request ) {
 		try {			

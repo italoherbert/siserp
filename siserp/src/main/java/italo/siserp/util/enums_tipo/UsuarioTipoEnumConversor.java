@@ -11,7 +11,8 @@ public class UsuarioTipoEnumConversor {
 		switch( tipo ) {
 			case ADMIN: return "ADMIN";
 			case CAIXA: return "CAIXA";
-			case GERENTE: return "GERENTE";			
+			case GERENTE: return "GERENTE";
+			case SUPERVISOR: return "SUPERVISOR";
 		}
 		return "DESCONHECIDO";
 	}
@@ -23,7 +24,9 @@ public class UsuarioTipoEnumConversor {
 			return UsuarioTipo.CAIXA;
 		}  else if ( tipo.equalsIgnoreCase( "GERENTE" ) ) {
 			return UsuarioTipo.GERENTE;
-		} 
+		} else if ( tipo.equalsIgnoreCase( "SUPERVISOR" ) ) {
+			return UsuarioTipo.SUPERVISOR;
+		}
 		return null;
 	}
 	

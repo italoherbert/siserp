@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CaixaNaoAbertoException;
+import italo.siserp.exception.CaixaNaoEncontradoException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
@@ -36,8 +38,9 @@ public class LancamentoController {
 	@Autowired
 	private LancamentoTipoEnumConversor lancamentoTipoEnumConversor;
 	
-	@GetMapping(value="/balanco/{usuarioId}")
-	public ResponseEntity<Object> geraBalanco( @PathVariable Long usuarioId ) {
+	@PreAuthorize("hasAnyAuthority('CAIXA')")	
+	@GetMapping(value="/balanco/hoje/{usuarioId}")
+	public ResponseEntity<Object> geraBalancoCaixaHoje( @PathVariable Long usuarioId ) {
 		try {						
 			CaixaBalancoResponse resp = lancamentoService.geraBalanco( usuarioId );
 			return ResponseEntity.ok( resp );
@@ -52,6 +55,7 @@ public class LancamentoController {
 		}		
 	}
 	
+	@PreAuthorize("hasAuthority('CAIXA')")	
 	@PostMapping(value="/novo/hoje/{usuarioId}")
 	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {
 		if ( request.getTipo() == null )
@@ -82,6 +86,7 @@ public class LancamentoController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")		
 	@DeleteMapping(value="/deletatodos/hoje/{usuarioId}")
 	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
 		try {			
@@ -98,10 +103,11 @@ public class LancamentoController {
 		}
 	}
 	
+	@PreAuthorize("hasAuthority('CAIXA')")			
 	@GetMapping("/lista/hoje/{usuarioId}")
-	public ResponseEntity<Object> buscaLancamentos( @PathVariable Long usuarioId ) {
+	public ResponseEntity<Object> listaLancamentosPorUsuario( @PathVariable Long usuarioId ) {
 		try {			
-			List<LancamentoResponse> lista = lancamentoService.buscaLancamentos( usuarioId );
+			List<LancamentoResponse> lista = lancamentoService.buscaLancamentosPorUsuarioId( usuarioId );
 			return ResponseEntity.ok( lista );
 		} catch (PerfilCaixaRequeridoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
@@ -114,6 +120,18 @@ public class LancamentoController {
 		}				
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")		
+	@GetMapping("/lista/{caixaId}")
+	public ResponseEntity<Object> listaLancamentosPorCaixa( @PathVariable Long caixaId ) {
+		try {			
+			List<LancamentoResponse> lista = lancamentoService.buscaLancamentosPorCaixaId( caixaId );
+			return ResponseEntity.ok( lista );
+		} catch ( CaixaNaoEncontradoException e ) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ENCONTRADO ) );					
+		}
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")	
 	@DeleteMapping(value="/deleta/{id}")
 	public ResponseEntity<Object> deleta( @PathVariable Long id ) {
 		try {

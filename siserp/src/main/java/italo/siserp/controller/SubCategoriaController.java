@@ -33,7 +33,7 @@ public class SubCategoriaController {
 	@Autowired
 	private SubCategoriaService subcategoriaService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping("/registra/{categoriaId}")
 	public ResponseEntity<Object> registra( @PathVariable Long categoriaId, @RequestBody SaveSubCategoriaRequest request ) {						
 		if ( request.getDescricao() == null )
@@ -51,7 +51,7 @@ public class SubCategoriaController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveSubCategoriaRequest request ) {	
 		if ( request.getDescricao() == null )
@@ -69,7 +69,6 @@ public class SubCategoriaController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra/{categoriaId}")
 	public ResponseEntity<Object> buscaSubCategorias( 
 			@PathVariable Long categoriaId, @RequestBody BuscaSubCategoriasRequest request ) {
@@ -85,7 +84,6 @@ public class SubCategoriaController {
 		return ResponseEntity.ok( subcategorias );		
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra/limit/{categoria}/{limit}")
 	public ResponseEntity<Object> buscaSubCategorias( 
 			@PathVariable String categoria, 
@@ -101,7 +99,6 @@ public class SubCategoriaController {
 		return ResponseEntity.ok( subcategorias );		
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaSubCategoriaPorId( @PathVariable Long id ) {		
 		try {
@@ -112,7 +109,7 @@ public class SubCategoriaController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaSubCategoria( @PathVariable Long id ) {		
 		try {

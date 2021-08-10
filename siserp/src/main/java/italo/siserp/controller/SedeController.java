@@ -39,7 +39,6 @@ public class SedeController {
 	}
 	
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping(value="/get")
 	public ResponseEntity<Object> get() {		
 		SedeResponse resp = sedeService.getSede();

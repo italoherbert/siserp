@@ -30,7 +30,7 @@ public class ProdutoController {
 	@Autowired
 	private ProdutoService produtoService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping("/salva")
 	public ResponseEntity<Object> registra( @RequestBody SaveProdutoRequest request ) {
 		if ( request.getQuantidade() == null )
@@ -70,7 +70,6 @@ public class ProdutoController {
 		}				
 	}		
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@GetMapping("/filtra/{descricaoIni}")
 	public ResponseEntity<Object> filtraPorDescIni( @PathVariable String descricaoIni ) {
 		if ( descricaoIni == null )
@@ -82,7 +81,6 @@ public class ProdutoController {
 		return ResponseEntity.ok( produtos );		
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@GetMapping("/busca/{codigoBarras}")
 	public ResponseEntity<Object> buscaPorCodBarras( @PathVariable String codigoBarras ) {
 		if ( codigoBarras == null )
@@ -98,7 +96,6 @@ public class ProdutoController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@GetMapping("/existe/{codigoBarras}")
 	public ResponseEntity<Object> existePorCodBarras( @PathVariable String codigoBarras ) {
 		if ( codigoBarras == null )
@@ -114,7 +111,6 @@ public class ProdutoController {
 		}
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaProdutoPorId( @PathVariable Long id ) {		
 		try {
@@ -125,7 +121,7 @@ public class ProdutoController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaProduto( @PathVariable Long id ) {		
 		try {

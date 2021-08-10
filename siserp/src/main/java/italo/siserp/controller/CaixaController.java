@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +38,7 @@ public class CaixaController {
 	@Autowired
 	private CaixaService caixaService;
 			
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping(value="/abre/{usuarioId}")
 	public ResponseEntity<Object> abrirCaixa( 
 			@PathVariable Long usuarioId, @RequestBody AbreCaixaRequest request ) {
@@ -69,6 +71,7 @@ public class CaixaController {
 		}		
 	}
 	
+	@PreAuthorize("hasAnyAuthority('CAIXA')")
 	@GetMapping(value="/get/uid/hoje/{usuarioId}")
 	public ResponseEntity<Object> buscaPorUsuarioID( @PathVariable Long usuarioId ) {		
 		try {
@@ -85,6 +88,18 @@ public class CaixaController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@GetMapping(value="/get/{caixaId}")
+	public ResponseEntity<Object> buscaCaixa( @PathVariable Long caixaId ) {		
+		try {
+			CaixaResponse resp = caixaService.buscaCaixa( caixaId );
+			return ResponseEntity.ok( resp );
+		} catch ( CaixaNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ENCONTRADO ) );					
+		}
+	}
+	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'GERENTE')")
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtra( @RequestBody BuscaCaixasRequest request ) {
 		if ( request.getDataIni() == null )
@@ -119,6 +134,7 @@ public class CaixaController {
 		}
 	}
 		
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping(value="/deleta/{caixaId}")
 	public ResponseEntity<Object> deleta( @PathVariable Long caixaId ) {
 		try {

@@ -32,7 +32,7 @@ public class Lancamento {
 	
 	@Column
 	private double valor;
-	
+		
 	@Column
 	@Enumerated(EnumType.STRING)
 	private LancamentoTipo tipo;

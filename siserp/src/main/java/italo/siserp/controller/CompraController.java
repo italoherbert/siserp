@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,6 +42,7 @@ public class CompraController {
 	@Autowired
 	private CompraService compraService;
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@PostMapping(value="/registra")
 	public ResponseEntity<Object> registraCompra( @RequestBody SaveCompraRequest request ) {
 		if ( request.getDataCompra() == null )
@@ -147,6 +149,7 @@ public class CompraController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraCompras( @RequestBody BuscaComprasRequest request ) {
 		try {
@@ -161,6 +164,7 @@ public class CompraController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@GetMapping(value="/get/{id}")
 	public ResponseEntity<Object> buscaCompra( @PathVariable Long id ) {
 		try {
@@ -171,6 +175,7 @@ public class CompraController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping(value="/deleta/{id}")
 	public ResponseEntity<Object> deletaCompra( @PathVariable Long id ) {
 		try {

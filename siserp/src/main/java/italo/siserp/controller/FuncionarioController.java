@@ -32,7 +32,7 @@ public class FuncionarioController {
 	@Autowired
 	private FuncionarioService funcionarioService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping("/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveFuncionarioRequest request ) {				
 		if ( request.getUsuario().getUsername() == null )
@@ -60,7 +60,7 @@ public class FuncionarioController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveFuncionarioRequest request ) {	
 		if ( request.getUsuario().getUsername() == null )
@@ -90,7 +90,7 @@ public class FuncionarioController {
 		}								
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping("/filtra")
 	public ResponseEntity<Object> buscaFuncionarios( @RequestBody BuscaFuncionariosRequest request ) {		
 		if ( request.getNomeIni() == null )
@@ -106,7 +106,7 @@ public class FuncionarioController {
 		return ResponseEntity.ok( funcs );		
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaFuncionarioPorId( @PathVariable Long id ) {		
 		try {
@@ -117,7 +117,7 @@ public class FuncionarioController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaFuncionario( @PathVariable Long id ) {		
 		try {

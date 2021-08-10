@@ -32,7 +32,7 @@ public class CategoriaController {
 	@Autowired
 	private CategoriaService categoriaService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping("/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveCategoriaRequest request ) {						
 		if ( request.getDescricao() == null )
@@ -48,7 +48,7 @@ public class CategoriaController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveCategoriaRequest request ) {	
 		if ( request.getDescricao() == null )
@@ -66,7 +66,6 @@ public class CategoriaController {
 		}				
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra")
 	public ResponseEntity<Object> buscaCategorias( @RequestBody BuscaCategoriasRequest request ) {		
 		if ( request.getDescricaoIni() == null )
@@ -80,7 +79,6 @@ public class CategoriaController {
 		return ResponseEntity.ok( categorias );		
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra/limit/{limit}")
 	public ResponseEntity<Object> buscaCategorias( @PathVariable Integer limit, @RequestBody BuscaCategoriasRequest request ) {		
 		if ( request.getDescricaoIni() == null )
@@ -92,7 +90,6 @@ public class CategoriaController {
 		return ResponseEntity.ok( categorias );		
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaCategoriaPorId( @PathVariable Long id ) {		
 		try {
@@ -103,7 +100,7 @@ public class CategoriaController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaCategoria( @PathVariable Long id ) {		
 		try {

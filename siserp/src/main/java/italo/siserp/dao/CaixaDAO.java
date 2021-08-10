@@ -29,7 +29,7 @@ public class CaixaDAO {
 		
 	@Autowired
 	private DataUtil dataUtil;
-			
+				
 	public Caixa buscaHojeCaixaBean( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException,

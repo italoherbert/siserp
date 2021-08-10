@@ -29,7 +29,7 @@ export default class Caixa extends React.Component {
 	atualizaDadosHoje() {
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/lancamento/balanco/'+sistema.usuario.id, {
+		fetch( '/api/lancamento/balanco/hoje/'+sistema.usuario.id, {
 			method : 'GET',
 			headers : {
 				'Authorization' : 'Bearer '+sistema.token

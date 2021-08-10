@@ -33,7 +33,7 @@ public class ClienteController {
 	@Autowired
 	private ClienteService clienteService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PostMapping("/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveClienteRequest request ) {				
 		if ( request.getPessoa().getNome() == null )
@@ -51,7 +51,7 @@ public class ClienteController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveClienteRequest request ) {	
 		if ( request.getPessoa().getNome() == null )
@@ -71,7 +71,6 @@ public class ClienteController {
 		}				
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra")
 	public ResponseEntity<Object> buscaClientes( @RequestBody BuscaClientesRequest request ) {		
 		if ( request.getNomeIni() == null )
@@ -85,7 +84,6 @@ public class ClienteController {
 		return ResponseEntity.ok( clientes );		
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")
 	@PostMapping("/filtra/limit/{limit}")
 	public ResponseEntity<Object> buscaCategorias( @PathVariable Integer limit, @RequestBody BuscaClientesRequest request ) {		
 		if ( request.getNomeIni() == null )
@@ -97,7 +95,6 @@ public class ClienteController {
 		return ResponseEntity.ok( clientes );		
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE', 'CAIXA')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaClientePorId( @PathVariable Long id ) {		
 		try {
@@ -108,7 +105,7 @@ public class ClienteController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaCliente( @PathVariable Long id ) {		
 		try {

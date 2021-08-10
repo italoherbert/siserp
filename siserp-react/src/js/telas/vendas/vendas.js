@@ -140,7 +140,7 @@ export default class Vendas extends React.Component {
 					<Modal.Footer>
 						<Form>
 							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
-							<Button variant="primary" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
+							<Button variant="danger" className="mx-2" onClick={(e) => remocaoModalOkFunc() }>Remover</Button>
 						</Form>
 					</Modal.Footer>
 				</Modal>

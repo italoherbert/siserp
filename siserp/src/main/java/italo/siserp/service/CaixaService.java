@@ -125,7 +125,16 @@ public class CaixaService {
 		
 		return responses;
 	}
+	
+	public CaixaResponse buscaCaixa( Long caixaId ) throws CaixaNaoEncontradoException {
+		Caixa c = caixaRepository.findById( caixaId ).orElseThrow( CaixaNaoEncontradoException::new );
 		
+		CaixaResponse resp = caixaBuilder.novoCaixaResponse();
+		caixaBuilder.carregaCaixaResponse( resp, c );
+		
+		return resp;
+	}
+	
 	public CaixaResponse buscaCaixaHoje( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 

@@ -1,9 +1,12 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 	
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
+
+import CaixaLancamentos from './caixa-lancamentos';
 
 export default class CaixaFluxo extends React.Component {
 	
@@ -69,6 +72,7 @@ export default class CaixaFluxo extends React.Component {
 						let saldo = credito - debito;
 						
 						this.state.caixas.push( {
+							id : caixa.id,
 							dataAbertura : caixa.dataAbertura,
 							funcionarioNome : caixa.funcionario.pessoa.nome,
 							debito : debito,
@@ -96,6 +100,10 @@ export default class CaixaFluxo extends React.Component {
 	dataFimOnChange( data ) {
 		this.setState( { dataFim : data } );
 	}
+	
+	paraTelaLancamentos( e, caixaId ) {
+		ReactDOM.render( <CaixaLancamentos listagemTipo="caixa" caixaId={caixaId} />, sistema.paginaElemento() );
+	}
 				
 	render() {
 		const {	erroMsg, infoMsg, caixas, dataIni, dataFim } = this.state;
@@ -111,9 +119,10 @@ export default class CaixaFluxo extends React.Component {
 									<tr>
 										<th>Responsável</th>
 										<th>Data de abertura</th>
-										<th>Entradas</th>
-										<th>Saidas</th>
+										<th>Entrada</th>
+										<th>Saida</th>
 										<th>Saldo</th>
+										<th>Visualizar lançamentos</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -125,6 +134,7 @@ export default class CaixaFluxo extends React.Component {
 												<td>{ sistema.formataReal( caixa.credito ) }</td>	
 												<td>{ sistema.formataReal( caixa.debito ) }</td>	
 												<td>{ sistema.formataReal( caixa.saldo ) }</td>	
+												<td><button className="btn btn-link p-0" onClick={ (e) => this.paraTelaLancamentos() }>visualizar</button></td>
 											</tr>
 										)
 									} ) }	

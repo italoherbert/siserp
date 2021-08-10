@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import italo.siserp.builder.LancamentoBuilder;
 import italo.siserp.dao.CaixaDAO;
 import italo.siserp.exception.CaixaNaoAbertoException;
+import italo.siserp.exception.CaixaNaoEncontradoException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
@@ -24,6 +25,7 @@ import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.request.SaveLancamentoRequest;
 import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.LancamentoResponse;
+import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
@@ -31,6 +33,9 @@ import italo.siserp.util.NumeroUtil;
 @Service
 public class LancamentoService {
 
+	@Autowired
+	private CaixaRepository caixaRepository;
+	
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
 	
@@ -112,7 +117,7 @@ public class LancamentoService {
 		return resp;
 	}
 	
-	public List<LancamentoResponse> buscaLancamentos( Long usuarioId ) 
+	public List<LancamentoResponse> buscaLancamentosPorUsuarioId( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
 				UsuarioNaoEncontradoException,
@@ -131,6 +136,21 @@ public class LancamentoService {
 		
 		return responses;
 	}
+	
+	public List<LancamentoResponse> buscaLancamentosPorCaixaId( Long caixaId ) throws CaixaNaoEncontradoException {
+		Caixa c = caixaRepository.findById( caixaId ).orElseThrow( CaixaNaoEncontradoException::new );
+		List<Lancamento> lancamentos = c.getLancamentos();
+		
+		List<LancamentoResponse> lista = new ArrayList<>();
+		for( Lancamento l : lancamentos ) {
+			LancamentoResponse resp = lancamentoBuilder.novoLancamentoResponse();
+			lancamentoBuilder.carregaLancamentoResponse( resp, l );
+			
+			lista.add( resp );
+		}
+		return lista;
+	}
+		
 	
 	public void deleta( Long id ) throws LancamentoNaoEncontradoException {
 		if ( !lancamentoRepository.existsById( id ) )

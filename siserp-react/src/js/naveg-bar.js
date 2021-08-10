@@ -74,25 +74,31 @@ export default class NavegBar extends React.Component {
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar.nav">
 					<Nav className="me-auto">
-						<NavDropdown title="Financeiro" id="basic-nav-dropdown">
-							<NavDropdown.Item onClick={ () => this.paraTelaCaixa() }>Caixa</NavDropdown.Item>
-							<NavDropdown.Item onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de caixa</NavDropdown.Item>
-							<NavDropdown.Item>Contas a receber</NavDropdown.Item>
-							<NavDropdown.Item>Contas a pagar</NavDropdown.Item>
-							<NavDropdown.Item>Recebimento avulso</NavDropdown.Item>
-							<NavDropdown.Item>Relatórios</NavDropdown.Item>
-						</NavDropdown>
+						{ ( sistema.usuario.tipo === 'CAIXA' ) && (
+							<Nav.Link onClick={ () => this.paraTelaCaixa() }>Caixa</Nav.Link>
+						) }
+						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
+							<Nav.Link onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de caixa</Nav.Link>
+						) }
 						<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
 						<Nav.Link onClick={ () => this.paraTelaVendas() }>Vendas</Nav.Link>
-						<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
+						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
+							<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
+						) }
 						<NavDropdown title="Produtos" id="basic-nav-dropdown">
 							<NavDropdown.Item onClick={ () => this.paraTelaProdutos() }>Produtos</NavDropdown.Item>
 							<NavDropdown.Item onClick={ () => this.paraTelaCategorias() }>Categorias</NavDropdown.Item>
-							<NavDropdown.Item>Impostos</NavDropdown.Item>
+							{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
+								<NavDropdown.Item>Impostos</NavDropdown.Item>
+							) }
 						</NavDropdown>
-						<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>
-						<Nav.Link onClick={ () => this.paraTelaClientes() }>Clientes</Nav.Link>
-						{ ( sistema.usuario.tipo === 'ADMIN' || sistema.usuario.tipo === 'GERENTE' ) && (
+						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
+							<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>						
+						) }
+						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
+							<Nav.Link onClick={ () => this.paraTelaClientes() }>Clientes</Nav.Link>
+						) }
+						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFornecedores() }>Fornecedores</Nav.Link>
 						) }
 						<Nav.Link className="float-end" onClick={ () => this.paraTelaLogin() }>Sair</Nav.Link>
