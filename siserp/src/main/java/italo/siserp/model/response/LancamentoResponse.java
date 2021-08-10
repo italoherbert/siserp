@@ -17,4 +17,6 @@ public class LancamentoResponse {
 	
 	private String dataOperacao;
 	
+	private String obs;
+	
 }

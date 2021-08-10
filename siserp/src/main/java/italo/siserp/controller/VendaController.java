@@ -103,7 +103,6 @@ public class VendaController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraVendas( @RequestBody BuscaVendasRequest request ) {
 		if ( request.getDataIni() == null )

@@ -13,4 +13,6 @@ public class SaveLancamentoRequest {
 	
 	private String valor;
 	
+	private String obs;
+	
 }

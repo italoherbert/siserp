@@ -21,12 +21,14 @@ export default class CaixaLancamentoNovo extends React.Component {
 		
 		this.tipo = React.createRef();
 		this.valor = React.createRef();
+		this.obs = React.createRef();
 	}
 	
 	componentDidMount() {
 		this.carregaTipos();
 				
-		this.valor.current.value = "";								
+		this.valor.current.value = "";	
+		this.obs.current.value = "";
 	}
 	
 	carregaTipos() {
@@ -65,7 +67,8 @@ export default class CaixaLancamentoNovo extends React.Component {
 			}, 
 			body : JSON.stringify( {
 				tipo : this.tipo.current.value,
-				valor : sistema.paraFloat( this.valor.current.value )				
+				valor : sistema.paraFloat( this.valor.current.value ),				
+				obs : this.obs.current.value
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
@@ -102,9 +105,14 @@ export default class CaixaLancamentoNovo extends React.Component {
 									</select>
 								</Form.Group>
 																
-								<Form.Group className="mb-3">													
+								<Form.Group className="mb-2">													
 									<Form.Label>Valor: </Form.Label>
 									<Form.Control type="text" ref={this.valor} name="valor" />																									
+								</Form.Group>
+								
+								<Form.Group className="mb-2">
+									<Form.Label>Observações: </Form.Label>
+									<Form.Control as="textarea" rows="3" ref={this.obs} />
 								</Form.Group>
 								
 								<Button type="submit" variant="primary">Registrar novo</Button>														

@@ -37,8 +37,9 @@ export default class CaixaLancamentos extends React.Component {
 		sistema.showLoadingSpinner();
 		
 		let url;
-		if ( this.props.tipoListagem === 'caixa' ) {
+		if ( this.props.listagemTipo === 'caixa' ) {
 			url = "/api/lancamento/lista/"+this.props.caixaId;
+			alert( this.props.caixaId );
 		} else {
 			url = "/api/lancamento/lista/hoje/"+sistema.usuario.id;
 		}
@@ -62,9 +63,9 @@ export default class CaixaLancamentos extends React.Component {
 						let credito = 0;
 																	
 						if ( lanc.tipo === 'CREDITO' ) {
-							credito = lanc.valor;							
+							credito = sistema.paraFloat( lanc.valor );							
 						} else if ( lanc.tipo === 'DEBITO' ) {
-							debito = lanc.valor;
+							debito = sistema.paraFloat( lanc.valor );
 						}
 						
 						debitoAcumulado += debito;
@@ -74,6 +75,7 @@ export default class CaixaLancamentos extends React.Component {
 						this.state.lancamentos.push( {
 							id : lanc.id,
 							dataOperacao : lanc.dataOperacao,
+							obs : lanc.obs,
 							debito : debito,
 							credito : credito,
 							saldo : saldo
@@ -199,6 +201,7 @@ export default class CaixaLancamentos extends React.Component {
 										<th>Entrada</th>
 										<th>Saida</th>
 										<th>Saldo</th>
+										<th>Obs</th>
 										<th>Remover</th>
 									</tr>
 								</thead>
@@ -210,6 +213,7 @@ export default class CaixaLancamentos extends React.Component {
 												<td>{ sistema.formataReal( lanc.credito ) }</td>	
 												<td>{ sistema.formataReal( lanc.debito ) }</td>	
 												<td>{ sistema.formataReal( lanc.saldo ) }</td>	
+												<td>{ lanc.obs }</td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, lanc.id )}>remover</button></td>
 											</tr>
 										)

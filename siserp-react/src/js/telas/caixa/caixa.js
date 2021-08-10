@@ -27,7 +27,9 @@ export default class Caixa extends React.Component {
 	}		
 		
 	atualizaDadosHoje() {
-		sistema.showLoadingSpinner();
+		this.setState( { erroMsg : null, infoMsg : null } );
+		
+		sistema.showLoadingSpinner();				
 		
 		fetch( '/api/lancamento/balanco/hoje/'+sistema.usuario.id, {
 			method : 'GET',
@@ -49,6 +51,8 @@ export default class Caixa extends React.Component {
 	fecharCaixa( e ) {
 		if ( e != null )
 			e.preventDefault();
+				
+		this.setState( { erroMsg : null, infoMsg : null } );
 		
 		sistema.showLoadingSpinner();
 		
@@ -72,9 +76,7 @@ export default class Caixa extends React.Component {
 		} );
 	}
 	
-	visualizarLancamentos( e ) {
-		e.preventDefault();
-		
+	visualizarLancamentos( e ) {		
 		ReactDOM.render( <CaixaLancamentos />, sistema.paginaElemento() );
 	}
 	

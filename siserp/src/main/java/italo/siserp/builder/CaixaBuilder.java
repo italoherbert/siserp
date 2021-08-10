@@ -26,7 +26,7 @@ public class CaixaBuilder {
 	@Autowired
 	private DataUtil dataUtil;
 			
-	public void carregaAbreCaixa( Caixa c, AbreCaixaRequest request ) {
+	public void carregaCaixa( Caixa c, AbreCaixaRequest request ) {
 		c.setDataAbertura( dataUtil.apenasData( new Date() ) );
 	}
 	

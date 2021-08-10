@@ -139,7 +139,8 @@ export default class VendaRegistro extends React.Component {
 			
 			itensVenda.push( {
 				codigoBarras : itens[ i ].codigoBarras,
-				quantidade : itens[ i ].quantidade
+				quantidade : itens[ i ].quantidade,
+				precoUnitario : sistema.paraFloat( itens[ i ].precoUnitario )
 			} );
 		}
 		

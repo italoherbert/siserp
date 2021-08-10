@@ -79,7 +79,7 @@ public class LancamentoService {
 		
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
 		lancamentoBuilder.carregaLancamento( lanc, request );
-	
+		
 		lanc.setCaixa( c );
 		
 		lancamentoRepository.save( lanc );

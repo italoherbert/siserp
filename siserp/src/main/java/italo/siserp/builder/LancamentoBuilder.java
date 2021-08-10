@@ -36,6 +36,7 @@ public class LancamentoBuilder {
 			throw new LancamentoTipoInvalidoException();
 		
 		l.setTipo( ltipo );
+		l.setObs( request.getObs() );
 		
 		try {
 			l.setValor( numeroUtil.stringParaDouble( request.getValor() ) );
@@ -48,9 +49,10 @@ public class LancamentoBuilder {
 	
 	public void carregaLancamentoResponse( LancamentoResponse resp, Lancamento l ) {
 		resp.setId( l.getId() );
-		resp.setTipo( lancTipoEnumConversor.getLancamentoTipoString( l.getTipo() ) );
+		resp.setTipo( lancTipoEnumConversor.getLancamentoTipoString( l.getTipo() ) );		
 		resp.setValor( numeroUtil.doubleParaString( l.getValor() ) );
-		resp.setDataOperacao( dataUtil.dataTimeParaString( l.getDataOperacao() ) ); 
+		resp.setDataOperacao( dataUtil.dataTimeParaString( l.getDataOperacao() ) );
+		resp.setObs( l.getObs() ); 
 	}
 	
 	public LancamentoResponse novoLancamentoResponse() {		

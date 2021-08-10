@@ -134,7 +134,7 @@ export default class CaixaFluxo extends React.Component {
 												<td>{ sistema.formataReal( caixa.credito ) }</td>	
 												<td>{ sistema.formataReal( caixa.debito ) }</td>	
 												<td>{ sistema.formataReal( caixa.saldo ) }</td>	
-												<td><button className="btn btn-link p-0" onClick={ (e) => this.paraTelaLancamentos() }>visualizar</button></td>
+												<td><button className="btn btn-link p-0" onClick={ (e) => this.paraTelaLancamentos( e, caixa.id ) }>visualizar</button></td>
 											</tr>
 										)
 									} ) }	

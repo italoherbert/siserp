@@ -26,12 +26,20 @@ import lombok.Setter;
 @Table(name = "lancamento")
 public class Lancamento {
 
+	public final static String LANCAMENTO_ABRE_CAIXA = "Caixa aberto.";
+	public final static String LANCAMENTO_FECHA_CAIXA = "Caixa fechado.";
+	public final static String LANCAMENTO_VENDA_EFETUADA = "Venda efetuada.";
+	public final static String LANCAMENTO_VENDA_CANCELADA = "Venda cancelada.";
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column
 	private double valor;
+	
+	@Column
+	private String obs;
 		
 	@Column
 	@Enumerated(EnumType.STRING)

@@ -80,18 +80,17 @@ export default class NavegBar extends React.Component {
 						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de caixa</Nav.Link>
 						) }
-						<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
+						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
+							<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
+						) }
 						<Nav.Link onClick={ () => this.paraTelaVendas() }>Vendas</Nav.Link>
 						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
 						) }
-						<NavDropdown title="Produtos" id="basic-nav-dropdown">
-							<NavDropdown.Item onClick={ () => this.paraTelaProdutos() }>Produtos</NavDropdown.Item>
-							<NavDropdown.Item onClick={ () => this.paraTelaCategorias() }>Categorias</NavDropdown.Item>
-							{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
-								<NavDropdown.Item>Impostos</NavDropdown.Item>
-							) }
-						</NavDropdown>
+						
+						<Nav.Link onClick={ () => this.paraTelaProdutos() }>Produtos</Nav.Link>
+						
+							
 						{ ( sistema.usuario.tipo !== 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>						
 						) }

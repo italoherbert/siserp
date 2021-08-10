@@ -157,6 +157,7 @@ public class VendaService {
 			lanc.setCaixa( caixa );
 			lanc.setDataOperacao( new Date() );
 			lanc.setTipo( LancamentoTipo.CREDITO );
+			lanc.setObs( Lancamento.LANCAMENTO_VENDA_EFETUADA );
 			lanc.setValor( total ); 
 			lancamentoRepository.save( lanc );			
 		} else if ( formaPag == FormaPag.DEBITO ) {
@@ -262,12 +263,14 @@ public class VendaService {
 					
 			double total = subtotal * ( 1.0d - v.getDesconto() );
 									
+			System.out.println( "TOTAL= "+total+"  "+subtotal+"  "+v.getDesconto() );
 			Caixa caixa = v.getCaixa();			
 			
 			Lancamento lanc = new Lancamento();
 			lanc.setCaixa( caixa );
 			lanc.setDataOperacao( new Date() );
 			lanc.setTipo( LancamentoTipo.DEBITO );
+			lanc.setObs( Lancamento.LANCAMENTO_VENDA_CANCELADA ); 
 			lanc.setValor( total ); 
 			lancamentoRepository.save( lanc );			
 		}

@@ -31,8 +31,10 @@ import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
+import italo.siserp.model.request.FechaCaixaRequest;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.repository.CaixaRepository;
+import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.util.DataUtil;
 
 @Service
@@ -40,6 +42,9 @@ public class CaixaService {
 	
 	@Autowired
 	private CaixaRepository caixaRepository;
+	
+	@Autowired
+	private LancamentoRepository lancamentoRepository;
 				
 	@Autowired
 	private CaixaBuilder caixaBuilder;
@@ -53,7 +58,7 @@ public class CaixaService {
 	@Autowired
 	private DataUtil dataUtil;
 					
-	public void abreGetCaixaSeNaoAberto( Long usuarioId, AbreCaixaRequest req ) 
+	public void abreCaixa( Long usuarioId, AbreCaixaRequest req ) 
 			throws PerfilCaixaRequeridoException,
 				UsuarioNaoEncontradoException, 
 				FuncionarioNaoEncontradoException,
@@ -71,11 +76,12 @@ public class CaixaService {
 			throw new CaixaJaAbertoException();
 		
 		Caixa caixa = caixaBuilder.novoCaixa();
-		caixaBuilder.carregaAbreCaixa( caixa, req ); 
+		caixaBuilder.carregaCaixa( caixa, req ); 
 		
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
 		lancamentoBuilder.carregaLancamento( lanc, req.getLancamento() );
-		
+
+		lanc.setObs( Lancamento.LANCAMENTO_ABRE_CAIXA ); 	
 		lanc.setTipo( LancamentoTipo.CREDITO );
 		
 		caixa.setLancamentos( Arrays.asList( lanc ) );					
@@ -85,6 +91,28 @@ public class CaixaService {
 		f.setCaixas( Arrays.asList( caixa ) );
 				
 		caixaRepository.save( caixa );		
+	}
+	
+	public void fechaCaixa( Long usuarioId, FechaCaixaRequest request ) 
+			throws PerfilCaixaRequeridoException, 
+				CaixaNaoAbertoException, 
+				UsuarioNaoEncontradoException, 
+				FuncionarioNaoEncontradoException, 
+				LancamentoTipoInvalidoException, 
+				LancamentoValorInvalidoException {
+		
+		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		
+		Lancamento lanc = lancamentoBuilder.novoLancamento();
+		lancamentoBuilder.carregaLancamento( lanc, request.getLancamento() );
+		
+		lanc.setObs( Lancamento.LANCAMENTO_FECHA_CAIXA ); 
+		lanc.setTipo( LancamentoTipo.DEBITO );
+		
+		caixa.setLancamentos( Arrays.asList( lanc ) );					
+		lanc.setCaixa( caixa );
+		
+		lancamentoRepository.save( lanc );
 	}
 	
 	public List<CaixaResponse> filtra( BuscaCaixasRequest request ) 

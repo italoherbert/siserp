@@ -38,7 +38,7 @@ public class CaixaController {
 	@Autowired
 	private CaixaService caixaService;
 			
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAnyAuthority('CAIXA')")
 	@PostMapping(value="/abre/{usuarioId}")
 	public ResponseEntity<Object> abrirCaixa( 
 			@PathVariable Long usuarioId, @RequestBody AbreCaixaRequest request ) {
@@ -52,7 +52,7 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_LANCAMENTO_OBRIGATORIO ) );		
 		
 		try {
-			caixaService.abreGetCaixaSeNaoAberto( usuarioId, request );
+			caixaService.abreCaixa( usuarioId, request );
 			return ResponseEntity.ok().build();
 		} catch (PerfilCaixaRequeridoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
