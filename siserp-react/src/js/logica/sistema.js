@@ -46,6 +46,9 @@ class Sistema {
 	}
 	
 	formataData( date ) {
+		if ( date === null || date === undefined || date == '' )
+			return "Formato de data não reconhecido";
+		
 		return moment( date ).format( "DD/MM/YYYY" );
 	}
 	

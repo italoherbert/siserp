@@ -17,6 +17,8 @@ export default class CaixaLancamentos extends React.Component {
 			erroMsg : null,
 			infoMsg : null,
 			lancamentos : [],
+			caixaFuncNome : null,
+			caixaDataAbertura : null,
 			
 			remocaoModalVisivel : false,
 			remocaoModalOkFunc : () => {},
@@ -36,28 +38,29 @@ export default class CaixaLancamentos extends React.Component {
 				
 		sistema.showLoadingSpinner();
 		
-		let url;
+		let caixaId;
 		if ( this.props.listagemTipo === 'caixa' ) {
-			url = "/api/lancamento/lista/"+this.props.caixaId;
-			alert( this.props.caixaId );
+			caixaId = this.props.caixaId;
 		} else {
-			url = "/api/lancamento/lista/hoje/"+sistema.usuario.id;
+			caixaId = sistema.usuario.id;
 		}
 
-		fetch( url, {
+		fetch( 'api/caixa/get/'+caixaId, {
 			method : "GET",			
 			headers : {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {																							
+				resposta.json().then( (dados) => {										
 					this.setState( { lancamentos : [] } );
+					
+					let caixa = dados;					
 					
 					let creditoAcumulado = 0;
 					let debitoAcumulado = 0;
-					for( let i = 0; i < dados.length; i++ ) {
-						let lanc = dados[ i ];
+					for( let i = 0; i < caixa.lancamentos.length; i++ ) {
+						let lanc = caixa.lancamentos[ i ];
 						
 						let debito = 0;
 						let credito = 0;
@@ -82,7 +85,7 @@ export default class CaixaLancamentos extends React.Component {
 						} );
 					}
 					
-					this.setState( {} );
+					this.setState( { caixaFuncNome : caixa.funcionario.pessoa.nome, caixaDataAbertura : caixa.dataAbertura } );
 					
 					if ( dados.length === 0 && listarBTClicado === true )
 						this.setState( { infoMsg : "Nenhum lançamento até agora" } );					
@@ -165,7 +168,7 @@ export default class CaixaLancamentos extends React.Component {
 	}
 					
 	render() {
-		const {	erroMsg, infoMsg, lancamentos, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
+		const {	erroMsg, infoMsg, lancamentos, caixaFuncNome, caixaDataAbertura, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 				
 		return (
 			<Container>																												
@@ -189,7 +192,16 @@ export default class CaixaLancamentos extends React.Component {
 						</Form>
 					</Col>
 				</Row>
-				
+
+				<Row>
+					<Col>
+						<Form.Group style={{fontSize: '1.2em'}}>
+							<Form.Label>Funcionario: &nbsp; <span className="text-primary">{ caixaFuncNome }</span></Form.Label>
+							<br />
+							<Form.Label>Data abertura do caixa: &nbsp; <span className="text-primary">{ sistema.formataData( caixaDataAbertura ) }</span></Form.Label>
+						</Form.Group>
+					</Col>
+				</Row>
 				<Row>
 					<Col>
 						<h4 className="text-center">Lançamentos</h4>
