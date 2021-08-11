@@ -71,7 +71,7 @@ public class RecursoController {
 		if ( request.getNomeIni().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.NOME_OBRIGATORIO ) );		
 		
-		List<RecursoResponse> lista = recursoService.filtraGrupos( request );
+		List<RecursoResponse> lista = recursoService.filtraRecursos( request );
 		return ResponseEntity.ok( lista );
 	}
 	
@@ -79,7 +79,7 @@ public class RecursoController {
 	@GetMapping(value="/get/{recursoId}")
 	public ResponseEntity<Object> busca( @PathVariable Long recursoId ) {				
 		try {
-			RecursoResponse resp = recursoService.buscaGrupo( recursoId );
+			RecursoResponse resp = recursoService.buscaRecurso( recursoId );
 			return ResponseEntity.ok( resp );
 		} catch (RecursoNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.RECURSO_NAO_ENCONTRADO ) );

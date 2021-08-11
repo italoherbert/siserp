@@ -20,7 +20,7 @@ insert into recurso ( nome ) values ( 'fornecedor' );
 insert into recurso ( nome ) values ( 'compra' );
 insert into recurso ( nome ) values ( 'venda' );
 
-insert into permissao ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 1, true, true, true );
-insert into permissao ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 2, true, true, true );
-insert into permissao ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 3, true, true, true );
-insert into permissao ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 4, true, true, true );
+insert into permissao_grupo ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 1, true, true, true );
+insert into permissao_grupo ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 2, true, true, true );
+insert into permissao_grupo ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 3, true, true, true );
+insert into permissao_grupo ( grupo_id, recurso_id, leitura, escrita, remocao ) values ( 1, 4, true, true, true );

@@ -187,7 +187,10 @@ public class ErroResponse {
 				break;
 			case PASSWORD_OBRIGATORIO:
 				mensagem = "A senha é um campo de preenchimento obrigatório.";
-				break;																						
+				break;
+			case NOME_OBRIGATORIO:
+				mensagem = "O nome é um campo de preenchimento obrigatório.";
+				break;
 			case RAZAO_SOCIAL_OBRIGATORIA:
 				mensagem = "Razão social é um campo de preenchimento obrigatório.";
 				break;			

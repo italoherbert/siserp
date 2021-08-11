@@ -7,7 +7,7 @@ import sistema from './../../logica/sistema';
 
 import UsuarioGrupos from './usuario-grupos';
 
-export default class UsuarioGrupoForm extends React.Component {
+export default class UsuarioGrupoFormEdit extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -21,7 +21,7 @@ export default class UsuarioGrupoForm extends React.Component {
 		this.nome = React.createRef();
 	}
 	
-	componentDidMount() {			
+	componentDidMount() {		
 		this.carregar();					
 	}
 	
@@ -38,6 +38,7 @@ export default class UsuarioGrupoForm extends React.Component {
 		} ).then( (resposta) => {				
 			if ( resposta.status === 200 ) {
 				resposta.json().then( (dados) => {
+					this.nome.current.value = dados.nome;					
 					this.setState( { grupo : dados } );
 				} );
 			} else {
@@ -51,21 +52,11 @@ export default class UsuarioGrupoForm extends React.Component {
 		e.preventDefault();
 		
 		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		let url;
-		let metodo;
-		if ( this.props.op === 'editar' ) {			
-			url = "/api/usuario/grupo/atualiza/"+this.props.grupoId;
-			metodo = 'PUT';									
-		} else {
-			url = "/api/usuario/grupo/registra";
-			metodo = 'POST';
-		}
-			
+					
 		sistema.showLoadingSpinner();
 		
-		fetch( url, {
-			method : metodo,			
+		fetch( "/api/usuario/grupo/atualiza/"+this.props.grupoId, {
+			method : 'PUT',			
 			headers : {
 				"Content-Type" : "application/json; charset=UTF-8",
 				"Authorization" : "Bearer "+sistema.token
@@ -83,6 +74,68 @@ export default class UsuarioGrupoForm extends React.Component {
 		} );				
 	}
 	
+	sincronizarRecursos( e ) {
+		e.preventDefault();
+
+		this.setState( { erroMsg : null, infoMsg : null } );
+		
+		sistema.showLoadingSpinner();
+		
+		fetch( '/api/usuario/grupo/recursos/sincroniza/'+this.props.grupoId, {
+			method : 'POST',
+			headers : {
+				"Authorization" : "Bearer "+sistema.token
+			}
+		} ).then( (resposta) => {
+			if ( resposta.status == 200 ) {
+				this.carregar();
+				this.setState( { infoMsg : "Recursos sincronizados com sucesso." } );
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}
+			sistema.hideLoadingSpinner();
+		} );
+	}
+	
+	permissaoLeituraOnChange( e, id ) {
+		this.permissaoOnChange( e, id, 'LEITURA' );
+	}
+	
+	permissaoEscritaOnChange( e, id ) {
+		this.permissaoOnChange( e, id, 'ESCRITA' );
+	}
+	
+	permissaoRemocaoOnChange( e, id ) {
+		this.permissaoOnChange( e, id, 'REMOCAO' );
+	}
+	
+	permissaoOnChange( e, id, tipo ) {
+		e.preventDefault();
+
+		this.setState( { erroMsg : null, infoMsg : null } );
+		
+		sistema.showLoadingSpinner();
+				
+		fetch( '/api/permissao/salva/'+id, {
+			method : 'PATCH',
+			headers : {
+				"Content-Type" : "application/json; charset=UTF-8",
+				"Authorization" : "Bearer "+sistema.token
+			},
+			body : JSON.stringify( {
+				tipo : tipo,
+				valor : e.target.checked
+			} )
+		} ).then( (resposta) => {
+			if ( resposta.status == 200 ) {
+				this.carregar();
+			} else {
+				sistema.trataRespostaNaoOk( resposta, this );
+			}
+			sistema.hideLoadingSpinner();
+		} );
+	}
+		
 	paraTelaUsuarioGrupos() {
 		ReactDOM.render( <UsuarioGrupos />, sistema.paginaElemento() );
 	}
@@ -127,6 +180,16 @@ export default class UsuarioGrupoForm extends React.Component {
 				
 				<Row>
 					<Col>
+						<Form>
+							<Button variant="primary" className="float-end" onClick={ (e) => this.sincronizarRecursos( e ) }>
+								Sincronizar Recursos
+							</Button>
+						</Form>
+					</Col>
+				</Row>
+				
+				<Row>
+					<Col>											
 						<h4 className="text-center">Permissões sobre recursos</h4>
 						
 						<div className="tbl-pnl">
@@ -144,9 +207,9 @@ export default class UsuarioGrupoForm extends React.Component {
 										return (
 											<tr key={index}>
 												<td>{item.recurso}</td>
-												<td><input type="checkbox" checked={item.leitura} onChange={ (e) => this.permissaoLeituraOnChange( e, item.id ) } /></td>
-												<td><input type="checkbox" checked={item.escrita} onChange={ (e) => this.permissaoEscritaOnChange( e, item.id ) } /></td>
-												<td><input type="checkbox" checked={item.remocao} onChange={ (e) => this.permissaoRemocaoOnChange( e, item.id ) } /></td>
+												<td><input type="checkbox" checked={item.leitura === "true"} onChange={ (e) => this.permissaoLeituraOnChange( e, item.id ) } /></td>
+												<td><input type="checkbox" checked={item.escrita === "true"} onChange={ (e) => this.permissaoEscritaOnChange( e, item.id ) } /></td>
+												<td><input type="checkbox" checked={item.remocao === "true"} onChange={ (e) => this.permissaoRemocaoOnChange( e, item.id ) } /></td>
 											</tr>
 										)
 									} ) }

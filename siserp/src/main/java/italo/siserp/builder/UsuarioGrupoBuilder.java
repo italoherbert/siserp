@@ -34,6 +34,7 @@ public class UsuarioGrupoBuilder {
 			
 			grupos.add( grupo );
 		}
+						
 		resp.setPermissaoGrupos( grupos );
 	}
 	

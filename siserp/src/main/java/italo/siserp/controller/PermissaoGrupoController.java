@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +29,7 @@ public class PermissaoGrupoController {
 	
 	@PreAuthorize("hasAuthority('permissaoGrupoWRITE')")
 	@PostMapping(value="/grupo/salva/{id}")
-	public ResponseEntity<Object> salvaPermissaoGrupo( Long id, @RequestBody SavePermissaoGrupoRequest request ) {
+	public ResponseEntity<Object> salvaPermissaoGrupo( @PathVariable Long id, @RequestBody SavePermissaoGrupoRequest request ) {
 		try {
 			permissaoGrupoService.salvaPermissaoGrupo( id, request );
 			return 	ResponseEntity.ok().build();
@@ -45,7 +46,7 @@ public class PermissaoGrupoController {
 	
 	@PreAuthorize("hasAuthority('permissaoGrupoWRITE')")
 	@PatchMapping(value="/salva/{id}")
-	public ResponseEntity<Object> salvaPermissao( Long id, @RequestBody SavePermissaoRequest request ) {
+	public ResponseEntity<Object> salvaPermissao( @PathVariable Long id, @RequestBody SavePermissaoRequest request ) {
 		try {
 			permissaoGrupoService.salvaPermissao( id, request );
 			return 	ResponseEntity.ok().build();

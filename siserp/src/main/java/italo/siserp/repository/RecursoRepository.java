@@ -13,7 +13,7 @@ public interface RecursoRepository extends JpaRepository<Recurso, Long> {
 	@Query( "select r from Recurso r where lower(r.nome)=lower(?1)")
 	public Optional<Recurso> buscaPorNome( String nome );
 	
-	@Query( "select r from Recurso r where lower(r.nome) like lower(?1)")
+	@Query( "select r from Recurso r where lower(r.nome) like lower(?1) order by (r.nome)")
 	public List<Recurso> filtra( String nomeIni );
 	
 }

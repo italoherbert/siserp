@@ -6,8 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import UsuarioGrupoDetalhes from './usuario-grupo-detalhes';
-import UsuarioGrupoForm from './usuario-grupo-form';
+import UsuarioGrupoFormEdit from './usuario-grupo-form-edit';
+import UsuarioGrupoFormRegistro from './usuario-grupo-form-registro';
 
 export default class UsuarioGrupos extends React.Component {
 	
@@ -65,10 +65,10 @@ export default class UsuarioGrupos extends React.Component {
 		} );
 	}
 		
-	detalhes( e, id ) {
+	editar( e, id ) {
 		e.preventDefault();
 				
-		ReactDOM.render( <UsuarioGrupoDetalhes grupoId={id}/>, sistema.paginaElemento() );
+		ReactDOM.render( <UsuarioGrupoFormEdit grupoId={id}/>, sistema.paginaElemento() );
 	}
 	
 	removerSeConfirmado( e, id ) {
@@ -87,6 +87,8 @@ export default class UsuarioGrupos extends React.Component {
 	remover( e, id ) {
 		e.preventDefault();
 		
+		this.setState( { erroMsg : null, infoMsg : null } );
+
 		sistema.showLoadingSpinner();
 		
 		fetch( "/api/usuario/grupo/deleta/"+id, {
@@ -106,7 +108,7 @@ export default class UsuarioGrupos extends React.Component {
 	}
 	
 	paraTelaRegistro() {
-		ReactDOM.render( <UsuarioGrupoForm op="cadastrar" />, sistema.paginaElemento() );
+		ReactDOM.render( <UsuarioGrupoFormRegistro />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -144,7 +146,7 @@ export default class UsuarioGrupos extends React.Component {
 									<tr>
 										<th>ID</th>
 										<th>Nome</th>
-										<th>Detalhes</th>
+										<th>Editar</th>
 										<th>Remover</th>
 									</tr>
 								</thead>
@@ -154,7 +156,7 @@ export default class UsuarioGrupos extends React.Component {
 											<tr key={index}>
 												<td>{grupo.id}</td>
 												<td>{grupo.nome}</td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, grupo.id )}>detalhes</button></td>
+												<td><button className="btn btn-link p-0" onClick={(e) => this.editar( e, grupo.id )}>editar</button></td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, grupo.id )}>remover</button></td>
 											</tr>
 										);

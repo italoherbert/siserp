@@ -27,10 +27,10 @@ import italo.siserp.repository.UsuarioGrupoRepository;
 public class RecursoService {
 
 	@Autowired
-	private UsuarioGrupoRepository usuarioGrupoRepository;
+	private UsuarioGrupoRepository usuarioRecursoRepository;
 	
 	@Autowired
-	private PermissaoGrupoRepository permissaoGrupoRepository;
+	private PermissaoGrupoRepository permissaoRecursoRepository;
 	
 	@Autowired
 	private RecursoRepository recursoRepository;
@@ -39,8 +39,8 @@ public class RecursoService {
 	private RecursoBuilder recursoBuilder;
 	
 	@Autowired
-	private PermissaoGrupoBuilder permissaoGrupoBuilder;
-	
+	private PermissaoGrupoBuilder permissaoRecursoBuilder;
+		
 	@Transactional
 	public void registraRecurso( SaveRecursoRequest request ) throws RecursoJaExisteException {
 		Optional<Recurso> rop = recursoRepository.buscaPorNome( request.getNome() );
@@ -52,10 +52,10 @@ public class RecursoService {
 		
 		recursoRepository.save( r );				
 		
-		List<UsuarioGrupo> grupos = usuarioGrupoRepository.findAll();
+		List<UsuarioGrupo> grupos = usuarioRecursoRepository.findAll();
 		for( UsuarioGrupo g : grupos ) {
-			PermissaoGrupo pg = permissaoGrupoBuilder.novoINIPermissaoGrupo( g, r );
-			permissaoGrupoRepository.save( pg );
+			PermissaoGrupo pg = permissaoRecursoBuilder.novoINIPermissaoGrupo( g, r );
+			permissaoRecursoRepository.save( pg );
 		}
 	}
 	
@@ -72,7 +72,7 @@ public class RecursoService {
 		recursoRepository.save( r );		
 	}
 	
-	public List<RecursoResponse> filtraGrupos( BuscaRecursosRequest request ) {
+	public List<RecursoResponse> filtraRecursos( BuscaRecursosRequest request ) {
 		String nomeIni = request.getNomeIni();
 		if ( nomeIni.equals( "*" ) )
 			nomeIni = "";
@@ -91,7 +91,7 @@ public class RecursoService {
 		return lista;
 	}
 	
-	public RecursoResponse buscaGrupo( Long recursoId ) throws RecursoNaoEncontradoException {
+	public RecursoResponse buscaRecurso( Long recursoId ) throws RecursoNaoEncontradoException {
 		Recurso r = recursoRepository.findById( recursoId ).orElseThrow( RecursoNaoEncontradoException::new );
 		
 		RecursoResponse resp = recursoBuilder.novoRecursoResponse();

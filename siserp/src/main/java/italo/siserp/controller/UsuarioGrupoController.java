@@ -30,6 +30,16 @@ public class UsuarioGrupoController {
 	@Autowired
 	private UsuarioGrupoService usuarioGrupoService;
 		
+	@PostMapping(value="/recursos/sincroniza/{grupoId}")
+	public ResponseEntity<Object> sincronizaRecursos( @PathVariable Long grupoId ) {
+		try {
+			usuarioGrupoService.sincronizaRecursos( grupoId );
+			return ResponseEntity.ok().build();
+		} catch (UsuarioGrupoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_GRUPO_NAO_ENCONTRADO ) );
+		}
+	}
+	
 	@PreAuthorize("hasAuthority('usuarioGrupoWRITE')")
 	@PostMapping(value="/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveUsuarioGrupoRequest req ) {

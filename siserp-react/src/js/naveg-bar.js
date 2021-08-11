@@ -82,30 +82,31 @@ export default class NavegBar extends React.Component {
 						{ ( sistema.usuario.grupo.nome === 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaCaixa() }>Caixa</Nav.Link>
 						) }
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de caixa</Nav.Link>
 						) }
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
 						) }
 						<Nav.Link onClick={ () => this.paraTelaVendas() }>Vendas</Nav.Link>
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
 						) }
 						
-						<Nav.Link onClick={ () => this.paraTelaProdutos() }>Produtos</Nav.Link>
-						
+						{ ( sistema.usuario.grupo.nome !== 'ADMIN' ) && (
+							<Nav.Link onClick={ () => this.paraTelaProdutos() }>Produtos</Nav.Link>
+						) }
 							
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>						
 						) }
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaClientes() }>Clientes</Nav.Link>
 						) }
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFornecedores() }>Fornecedores</Nav.Link>
 						) }
-						{ ( sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+						{ ( sistema.usuario.grupo.nome === 'ADMIN' ) && (
 							<Nav.Link onClick={ () => this.paraTelaUsuarios() }>Usuarios</Nav.Link>
 						) }
 						<Nav.Link className="float-end" onClick={ () => this.paraTelaLogin() }>Sair</Nav.Link>
