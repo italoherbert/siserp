@@ -99,6 +99,7 @@ public class ErroResponse {
 	public final static int PERMISSAO_LEITURA_INVALIDA = 528;
 	public final static int PERMISSAO_ESCRITA_INVALIDA = 529;
 	public final static int PERMISSAO_REMOCAO_INVALIDA = 530;
+	public final static int PERMISSAO_TIPO_INVALIDO = 531;
 	
 	private int codigo;
 	private String mensagem;
@@ -355,6 +356,9 @@ public class ErroResponse {
 				break;
 			case PERMISSAO_REMOCAO_INVALIDA:
 				mensagem = "Permissão de remoção não booleana.";	
+				break;
+			case PERMISSAO_TIPO_INVALIDO:
+				mensagem = "Tipo de permissão inválido.";
 				break;
 		}		
 	}

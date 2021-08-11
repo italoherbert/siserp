@@ -8,8 +8,10 @@ import italo.siserp.exception.PermissaoEscritaException;
 import italo.siserp.exception.PermissaoGrupoNaoEncontradoException;
 import italo.siserp.exception.PermissaoLeituraException;
 import italo.siserp.exception.PermissaoRemocaoException;
+import italo.siserp.exception.PermissaoTipoInvalidoException;
 import italo.siserp.model.PermissaoGrupo;
 import italo.siserp.model.request.SavePermissaoGrupoRequest;
+import italo.siserp.model.request.SavePermissaoRequest;
 import italo.siserp.repository.PermissaoGrupoRepository;
 
 @Service
@@ -21,13 +23,26 @@ public class PermissaoGrupoService {
 	@Autowired
 	private PermissaoGrupoBuilder permissaoGrupoBuilder;
 	
-	public void salvaPermissaoGrupo( Long permissoesId, SavePermissaoGrupoRequest request ) 
+	public void salvaPermissao( Long permissaoGrupoId, SavePermissaoRequest request )
+			throws PermissaoGrupoNaoEncontradoException, 
+				PermissaoLeituraException, 
+				PermissaoEscritaException,
+				PermissaoRemocaoException,
+				PermissaoTipoInvalidoException {	
+		
+		PermissaoGrupo pg = permissaoGrupoRepository.findById( permissaoGrupoId ).orElseThrow( PermissaoGrupoNaoEncontradoException::new );
+		permissaoGrupoBuilder.carregaPermissao( pg, request );
+		
+		permissaoGrupoRepository.save( pg );
+	}
+	
+	public void salvaPermissaoGrupo( Long permissaoGrupoId, SavePermissaoGrupoRequest request ) 
 			throws PermissaoGrupoNaoEncontradoException, 
 				PermissaoLeituraException, 
 				PermissaoEscritaException,
 				PermissaoRemocaoException {
 		
-		PermissaoGrupo pg = permissaoGrupoRepository.findById( permissoesId ).orElseThrow( PermissaoGrupoNaoEncontradoException::new );
+		PermissaoGrupo pg = permissaoGrupoRepository.findById( permissaoGrupoId ).orElseThrow( PermissaoGrupoNaoEncontradoException::new );
 		permissaoGrupoBuilder.carregaPermissaoGrupo( pg, request );
 		
 		permissaoGrupoRepository.save( pg );		

@@ -25,7 +25,7 @@ import italo.siserp.model.request.SaveLancamentoRequest;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.LancamentoResponse;
 import italo.siserp.service.LancamentoService;
-import italo.siserp.util.LancamentoTipoEnumConversor;
+import italo.siserp.util.LancamentoEnumConversor;
 
 @RestController
 @RequestMapping(value="/api/lancamento")
@@ -35,7 +35,7 @@ public class LancamentoController {
 	private LancamentoService lancamentoService;
 			
 	@Autowired
-	private LancamentoTipoEnumConversor lancamentoTipoEnumConversor;
+	private LancamentoEnumConversor lancamentoTipoEnumConversor;
 			
 	@PreAuthorize("hasAuthority('lancamentoWRITE')")	
 	@PostMapping(value="/novo/hoje/{usuarioId}")

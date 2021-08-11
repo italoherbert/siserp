@@ -6,14 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import italo.siserp.util.FormaPagTipoEnumConversor;
+import italo.siserp.util.FormaPagEnumConversor;
 
 @RestController
 @RequestMapping(value="/api/pagamento")
 public class PagamentoController {
 	
 	@Autowired
-	private FormaPagTipoEnumConversor enumConversor;
+	private FormaPagEnumConversor enumConversor;
 
 	@GetMapping(value="/formas")
 	public ResponseEntity<Object> buscaTipos() {

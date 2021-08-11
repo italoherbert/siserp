@@ -60,7 +60,7 @@ export default class UsuarioGrupoDetalhes extends React.Component {
 				<Row>
 					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
-						<h4 className="text-center">Dados do grupo</h4>																
+						<h4 className="text-center">Detalhes do grupo</h4>																
 						
 						<Card className="p-3">								
 							<h4>Dados gerais</h4>

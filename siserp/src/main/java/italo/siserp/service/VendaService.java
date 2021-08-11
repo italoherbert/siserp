@@ -53,7 +53,7 @@ import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
 import italo.siserp.util.DataUtil;
-import italo.siserp.util.FormaPagTipoEnumConversor;
+import italo.siserp.util.FormaPagEnumConversor;
 import italo.siserp.util.NumeroUtil;
 
 @Service
@@ -89,7 +89,7 @@ public class VendaService {
 	private NumeroUtil numeroUtil;
 	
 	@Autowired
-	private FormaPagTipoEnumConversor enumConversor;
+	private FormaPagEnumConversor enumConversor;
 	
 	@Transactional
 	public void efetuaVenda( Long usuarioId, SaveVendaRequest request ) 

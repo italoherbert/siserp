@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import italo.siserp.model.FormaPag;
 
 @Component
-public class FormaPagTipoEnumConversor {
+public class FormaPagEnumConversor {
 
 	public String getFormaPagString( FormaPag formaPag ) {
 		switch( formaPag ) {

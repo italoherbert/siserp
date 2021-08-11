@@ -14,7 +14,7 @@ import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.request.SaveLancamentoRequest;
 import italo.siserp.model.response.LancamentoResponse;
 import italo.siserp.util.DataUtil;
-import italo.siserp.util.LancamentoTipoEnumConversor;
+import italo.siserp.util.LancamentoEnumConversor;
 import italo.siserp.util.NumeroUtil;
 
 @Component
@@ -27,7 +27,7 @@ public class LancamentoBuilder {
 	private DataUtil dataUtil;
 	
 	@Autowired
-	private LancamentoTipoEnumConversor lancTipoEnumConversor;
+	private LancamentoEnumConversor lancTipoEnumConversor;
 		
 	public void carregaLancamento( Lancamento l, SaveLancamentoRequest request )
 			throws LancamentoTipoInvalidoException, LancamentoValorInvalidoException {

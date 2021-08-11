@@ -22,7 +22,7 @@ import italo.siserp.model.request.SaveVendaRequest;
 import italo.siserp.model.response.ItemVendaResponse;
 import italo.siserp.model.response.VendaResponse;
 import italo.siserp.util.DataUtil;
-import italo.siserp.util.FormaPagTipoEnumConversor;
+import italo.siserp.util.FormaPagEnumConversor;
 import italo.siserp.util.NumeroUtil;
 
 @Component
@@ -42,7 +42,7 @@ public class VendaBuilder {
 	private NumeroUtil numeroUtil;
 	
 	@Autowired
-	private FormaPagTipoEnumConversor enumConversor;	
+	private FormaPagEnumConversor enumConversor;	
 	
 	public void carregaVenda( Venda v, SaveVendaRequest req ) 
 			throws DataVendaInvalidaException, 

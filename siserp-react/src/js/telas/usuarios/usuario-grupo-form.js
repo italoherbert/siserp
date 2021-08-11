@@ -15,7 +15,7 @@ export default class UsuarioGrupoForm extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null,
-			grupo : {}
+			grupo : { permissaoGrupos : [] }
 		};
 		
 		this.nome = React.createRef();
@@ -30,7 +30,7 @@ export default class UsuarioGrupoForm extends React.Component {
 				
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/usuario/grupo/get'+this.props.grupoId, {
+		fetch( '/api/usuario/grupo/get/'+this.props.grupoId, {
 			method : 'GET',			
 			headers : {
 				"Authorization" : "Bearer "+sistema.token
@@ -55,10 +55,10 @@ export default class UsuarioGrupoForm extends React.Component {
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
-			url = "/api/usuario/grupo/atualiza/"+this.props.usuarioId;
+			url = "/api/usuario/grupo/atualiza/"+this.props.grupoId;
 			metodo = 'PUT';									
 		} else {
-			url = "/api/fornecedor/registra";
+			url = "/api/usuario/grupo/registra";
 			metodo = 'POST';
 		}
 			
@@ -88,62 +88,84 @@ export default class UsuarioGrupoForm extends React.Component {
 	}
 	
 	render() {
-		const { erroMsg, infoMsg } = this.state;
+		const { erroMsg, infoMsg, grupo } = this.state;
 				
 		return(
 			<Container>
+				<h4 className="text-center">Registro de grupos</h4>
+				<br />
 				<Row>
 					<Col className="col-md-8">
-						<h4 className="text-center">Registro de grupos</h4>
 																
 						<Card className="p-3">								
 							<Form onSubmit={(e) => this.salvar( e ) }>
-								<h4 className="card-title">Dados gerais</h4>
-								
-								<Form.Group className="mb-2">
-									<Form.Label>Nome: </Form.Label>
-									<Form.Control type="text" ref={this.nome} name="nome" />
-								</Form.Group>
-																						
-								<MensagemPainel cor="danger" msg={erroMsg} />
-								<MensagemPainel cor="primary" msg={infoMsg} />
-								
-								<Button type="submit" variant="primary">Salvar</Button>
+								<h4 className="card-title">Dados gerais</h4>								
+								<Row>
+									<Col>
+										<Form.Group>
+											<Form.Label>Nome: </Form.Label>
+											<Form.Control type="text" ref={this.nome} name="nome" />
+										</Form.Group>																																				
+									</Col>
+									<Col>
+										<Form.Group>
+											<Form.Label>&nbsp;</Form.Label>
+											<br />
+											<Button type="submit" variant="primary">Salvar</Button>
+										</Form.Group>
+									</Col>
+								</Row>
 							</Form>
 						</Card>	
 					</Col>
 				</Row>
 				
+				<br />
+				
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />	
+				
 				<Row>
 					<Col>
-						<h4>Permissões sobre recursos</h4>
+						<h4 className="text-center">Permissões sobre recursos</h4>
 						
-						<Table striped bordered hover>
-							<thead>
-								<th>Recurso</th>
-								<th>Leitura</th>
-								<th>Escrita</th>
-								<th>Remoção</th>
-							</thead>
-							<tbody>
-								
-							</tbody>
-						</Table>						
+						<div className="tbl-pnl">
+							<Table striped bordered hover>
+								<thead>
+									<tr>
+										<th>Recurso</th>
+										<th>Leitura</th>
+										<th>Escrita</th>
+										<th>Remoção</th>
+									</tr>
+								</thead>
+								<tbody>
+									{grupo.permissaoGrupos.map( (item, index) => {
+										return (
+											<tr key={index}>
+												<td>{item.recurso}</td>
+												<td><input type="checkbox" checked={item.leitura} onChange={ (e) => this.permissaoLeituraOnChange( e, item.id ) } /></td>
+												<td><input type="checkbox" checked={item.escrita} onChange={ (e) => this.permissaoEscritaOnChange( e, item.id ) } /></td>
+												<td><input type="checkbox" checked={item.remocao} onChange={ (e) => this.permissaoRemocaoOnChange( e, item.id ) } /></td>
+											</tr>
+										)
+									} ) }
+								</tbody>
+							</Table>			
+						</div>
 					</Col>
 				</Row>
-						
-				<Row>
-					<Col>
-						<Card className="p-3">
-							<Row>
-								<Col>
-									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaUsuarioGrupos( e ) }>Ir para grupos</button>
-								</Col>
-							</Row>
-						</Card>
+				
+				<br />
+				
+				<Card className="p-3">
+					<Row>
+						<Col>
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaUsuarioGrupos( e ) }>Ir para grupos</button>								
+						</Col>
+					</Row>
+				</Card>
 							
-					</Col>
-				</Row>
 			</Container>
 		);
 	}

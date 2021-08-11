@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import italo.siserp.model.LancamentoTipo;
 
 @Component
-public class LancamentoTipoEnumConversor {
+public class LancamentoEnumConversor {
 
 	public String getLancamentoTipoString( LancamentoTipo tipo ) {
 		switch( tipo ) {
