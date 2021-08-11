@@ -8,13 +8,14 @@ import org.springframework.stereotype.Component;
 import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
+import italo.siserp.model.Caixa;
 import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.request.SaveLancamentoRequest;
 import italo.siserp.model.response.LancamentoResponse;
 import italo.siserp.util.DataUtil;
+import italo.siserp.util.LancamentoTipoEnumConversor;
 import italo.siserp.util.NumeroUtil;
-import italo.siserp.util.enums_tipo.LancamentoTipoEnumConversor;
 
 @Component
 public class LancamentoBuilder {
@@ -64,6 +65,13 @@ public class LancamentoBuilder {
 		return new Lancamento();
 	}
 			
+	public Lancamento novoINILancamento( Caixa caixa ) {
+		Lancamento lanc = new Lancamento();
+		lanc.setCaixa( caixa );
+		lanc.setDataOperacao( new Date() );
+		return lanc;
+	}
+	
 }
 
 

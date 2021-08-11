@@ -13,6 +13,6 @@ public class SaveUsuarioRequest {
 	
 	private String password;
 	
-	private String tipo;
+	private SaveUsuarioGrupoRequest grupo;
 		
 }

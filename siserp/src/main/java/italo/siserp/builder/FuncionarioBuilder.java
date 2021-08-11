@@ -3,7 +3,7 @@ package italo.siserp.builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import italo.siserp.exception.UsuarioTipoInvalidoException;
+import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.request.SaveFuncionarioRequest;
 import italo.siserp.model.response.FuncionarioResponse;
@@ -17,7 +17,7 @@ public class FuncionarioBuilder {
 	@Autowired
 	private UsuarioBuilder usuarioBuilder;
 			
-	public void carregaFuncionario( Funcionario f, SaveFuncionarioRequest req ) throws UsuarioTipoInvalidoException {
+	public void carregaFuncionario( Funcionario f, SaveFuncionarioRequest req ) throws UsuarioGrupoNaoEncontradoException {
 		pessoaBuilder.carregaPessoa( f.getPessoa(), req.getPessoa() );
 		usuarioBuilder.carregaUsuario( f.getUsuario(), req.getUsuario() );
 	}

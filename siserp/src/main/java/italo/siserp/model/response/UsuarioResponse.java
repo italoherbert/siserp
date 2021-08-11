@@ -13,6 +13,6 @@ public class UsuarioResponse {
 	
 	private String username;
 			
-	private String tipo;
+	private UsuarioGrupoResponse grupo;
 		
 }

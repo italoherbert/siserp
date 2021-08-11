@@ -2,6 +2,7 @@ package italo.siserp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -11,11 +12,12 @@ import org.springframework.stereotype.Service;
 import italo.siserp.builder.FuncionarioBuilder;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
+import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.exception.UsuarioJaExisteException;
-import italo.siserp.exception.UsuarioTipoInvalidoException;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Pessoa;
 import italo.siserp.model.Usuario;
+import italo.siserp.model.UsuarioGrupo;
 import italo.siserp.model.request.BuscaFuncionariosRequest;
 import italo.siserp.model.request.SaveFuncionarioRequest;
 import italo.siserp.model.request.SaveUsuarioRequest;
@@ -23,6 +25,7 @@ import italo.siserp.model.response.FuncionarioResponse;
 import italo.siserp.model.response.IdResponse;
 import italo.siserp.repository.FuncionarioRepository;
 import italo.siserp.repository.PessoaRepository;
+import italo.siserp.repository.UsuarioGrupoRepository;
 import italo.siserp.repository.UsuarioRepository;
 import italo.siserp.util.HashUtil;
 
@@ -37,6 +40,9 @@ public class FuncionarioService {
 	
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+	
+	@Autowired
+	private UsuarioGrupoRepository usuarioGrupoRepository;
 			
 	@Autowired
 	private FuncionarioBuilder funcionarioBuilder;
@@ -47,13 +53,18 @@ public class FuncionarioService {
 	public IdResponse registraFuncionario( SaveFuncionarioRequest request ) 
 			throws PessoaJaExisteException, 
 				UsuarioJaExisteException,
-				UsuarioTipoInvalidoException {
+				UsuarioGrupoNaoEncontradoException {
 		
 		if ( this.existeNome( request.getPessoa().getNome() ) )
 			throw new PessoaJaExisteException();
 		
 		if ( this.existeUsuario( request.getUsuario() ) )
 			throw new UsuarioJaExisteException();
+		
+		String nome = request.getUsuario().getGrupo().getNome();
+		Optional<UsuarioGrupo> grupo = usuarioGrupoRepository.buscaPorNome( nome );
+		if ( !grupo.isPresent() )
+			throw new UsuarioGrupoNaoEncontradoException();
 				
 		Funcionario f = funcionarioBuilder.novoFuncionario();
 		funcionarioBuilder.carregaFuncionario( f, request ); 
@@ -67,7 +78,7 @@ public class FuncionarioService {
 			throws FuncionarioNaoEncontradoException, 
 					PessoaJaExisteException,
 					UsuarioJaExisteException,
-					UsuarioTipoInvalidoException {
+					UsuarioGrupoNaoEncontradoException {
 		
 		Funcionario f = funcionarioRepository.findById( id ).orElseThrow( FuncionarioNaoEncontradoException::new );
 		
@@ -76,6 +87,11 @@ public class FuncionarioService {
 		if ( !nome.equalsIgnoreCase( f.getPessoa().getNome() ) )
 			if ( this.existeNome( nome ) )
 				throw new PessoaJaExisteException();
+		
+		String gnome = req.getUsuario().getGrupo().getNome();
+		Optional<UsuarioGrupo> grupo = usuarioGrupoRepository.buscaPorNome( gnome );
+		if ( !grupo.isPresent() )
+			throw new UsuarioGrupoNaoEncontradoException();
 		
 		String username = req.getUsuario().getUsername();
 		String password = hashUtil.geraHash( req.getUsuario().getPassword() );

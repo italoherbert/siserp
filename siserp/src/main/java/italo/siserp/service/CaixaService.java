@@ -32,10 +32,12 @@ import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
 import italo.siserp.model.request.FechaCaixaRequest;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.util.DataUtil;
+import italo.siserp.util.NumeroUtil;
 
 @Service
 public class CaixaService {
@@ -58,6 +60,9 @@ public class CaixaService {
 	@Autowired
 	private DataUtil dataUtil;
 					
+	@Autowired
+	private NumeroUtil numeroUtil;
+	
 	public void abreCaixa( Long usuarioId, AbreCaixaRequest req ) 
 			throws PerfilCaixaRequeridoException,
 				UsuarioNaoEncontradoException, 
@@ -113,6 +118,38 @@ public class CaixaService {
 		lanc.setCaixa( caixa );
 		
 		lancamentoRepository.save( lanc );
+	}
+	
+	public CaixaBalancoResponse geraCaixaBalancoHoje( Long usuarioId ) 
+			throws PerfilCaixaRequeridoException, 
+				CaixaNaoAbertoException, 
+				UsuarioNaoEncontradoException, 
+				FuncionarioNaoEncontradoException{
+		
+		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );						
+		List<Lancamento> lancamentos = c.getLancamentos();
+		
+		Date dataAbertura = c.getDataAbertura();
+		
+		double debito = 0;
+		double credito = 0;
+		for( Lancamento l : lancamentos ) {
+			if ( l.getTipo() == LancamentoTipo.DEBITO ) {
+				debito += l.getValor();
+			} else if ( l.getTipo() == LancamentoTipo.CREDITO ) {
+				credito += l.getValor();
+			}
+		}		
+		
+		double saldo = credito - debito;
+		
+		CaixaBalancoResponse resp = new CaixaBalancoResponse();
+		resp.setFuncionarioNome( c.getFuncionario().getPessoa().getNome() ); 
+		resp.setDataAbertura( dataUtil.dataParaString( dataAbertura ) );
+		resp.setDebito( numeroUtil.doubleParaString( debito ) );
+		resp.setCredito( numeroUtil.doubleParaString( credito ) );
+		resp.setSaldo( numeroUtil.doubleParaString( saldo ) ); 
+		return resp;
 	}
 	
 	public List<CaixaResponse> filtra( BuscaCaixasRequest request ) 

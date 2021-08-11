@@ -23,6 +23,9 @@ public class ErroResponse {
 	public final static int VENDA_NAO_ENCONTRADA = 108;
 	public final static int CAIXA_NAO_ENCONTRADO = 109;
 	public final static int LANCAMENTO_NAO_ENCONTRADO = 110;
+	public final static int USUARIO_GRUPO_NAO_ENCONTRADO = 111;
+	public final static int RECURSO_NAO_ENCONTRADO = 112;
+	public final static int PERMISSAO_GRUPO_NAO_ENCONTRADO = 113;
 	
 	public final static int CODIGO_BARRAS_NAO_REGISTRADO = 150;
 		
@@ -32,6 +35,8 @@ public class ErroResponse {
 	public final static int CATEGORIA_JA_EXISTE = 203;
 	public final static int SUBCATEGORIA_JA_EXISTE = 204;
 	public final static int PRODUTO_JA_EXISTE = 205;
+	public final static int USUARIO_GRUPO_JA_EXISTE = 206;
+	public final static int RECURSO_JA_EXISTE = 207;
 	
 	public final static int USERNAME_OBRIGATORIO = 300;
 	public final static int PASSWORD_OBRIGATORIO = 301;			
@@ -62,9 +67,9 @@ public class ErroResponse {
 	public final static int LANCAMENTO_ABERTURA_CAIXA_OBRITATORIO = 326;
 	public final static int FLAG_INCLUIR_FUNCIONARIO_OBRIGATORIO = 327;
 	public final static int FUNCIONARIO_NOME_OBRIGATORIO = 328;
+	public final static int USUARIO_GRUPO_OBRIGATORIO = 329;
 	
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
-	public final static int USUARIO_TIPO_INVALIDO = 501;
 	public final static int PRODUTO_PRECO_UNIT_COMPRA_INVALIDO = 502;
 	public final static int PRODUTO_PRECO_UNIT_VENDA_INVALIDO = 503;
 	public final static int QUANTIDADE_INVALIDA = 504;
@@ -90,6 +95,10 @@ public class ErroResponse {
 	public final static int LANCAMENTO_VALOR_INVALIDO = 524;
 	public final static int FORMA_PAG_INVALIDA = 525;
 	public final static int FLAG_INCLUIR_FUNCIONARIO_VALOR_INVALIDO = 526;
+	public final static int TENTATIVA_DELETAR_GRUPO_NAO_VAZIO = 527;
+	public final static int PERMISSAO_LEITURA_INVALIDA = 528;
+	public final static int PERMISSAO_ESCRITA_INVALIDA = 529;
+	public final static int PERMISSAO_REMOCAO_INVALIDA = 530;
 	
 	private int codigo;
 	private String mensagem;
@@ -137,6 +146,15 @@ public class ErroResponse {
 			case LANCAMENTO_NAO_ENCONTRADO:
 				mensagem = "Lançamento não encontrado.";
 				break;
+			case RECURSO_NAO_ENCONTRADO:
+				mensagem = "Recurso não encontrado.";
+				break;
+			case USUARIO_GRUPO_NAO_ENCONTRADO:
+				mensagem = "Grupo de usuário não encontrado.";
+				break;
+			case PERMISSAO_GRUPO_NAO_ENCONTRADO:
+				mensagem = "Grupo de permissões não encontrado.";
+				break;
 				
 			case USUARIO_JA_EXISTE:
 				mensagem = "Já existe outro usuário para o username informado.";
@@ -155,6 +173,12 @@ public class ErroResponse {
 				break;
 			case PRODUTO_JA_EXISTE:
 				mensagem = "Já existe um produto cadastrado com descrição ou código de barras informado.";
+				break;
+			case USUARIO_GRUPO_JA_EXISTE:
+				mensagem = "Já existe um grupo de usuario cadastrado com o nome informado.";
+				break;
+			case RECURSO_JA_EXISTE:
+				mensagem = "Já existe um recurso registrado com o nome informado.";
 				break;
 							
 			case USERNAME_OBRIGATORIO:
@@ -238,10 +262,10 @@ public class ErroResponse {
 			case FUNCIONARIO_NOME_OBRIGATORIO:
 				mensagem = "O nome do funcionário é um campo de preenchimento obrigatório.";
 				break;
-				
-			case USUARIO_TIPO_INVALIDO:
-				mensagem = "Tipo de usuário inválido.";
-				break;	
+			case USUARIO_GRUPO_OBRIGATORIO:
+				mensagem = "O grupo do usuário é um campo de preenchimento obrigatório.";
+				break;
+					
 			case USERNAME_PASSWORD_NAO_CORRESPONDEM:
 				mensagem = "Nome de usuário e senha não correspondem.";
 				break;						
@@ -319,6 +343,18 @@ public class ErroResponse {
 				break;
 			case FLAG_INCLUIR_FUNCIONARIO_VALOR_INVALIDO:
 				mensagem = "Flag de inclusão de funcionário em formato inválido.";
+				break;
+			case TENTATIVA_DELETAR_GRUPO_NAO_VAZIO:
+				mensagem = "Tentativa de deletar grupo que contém usuários";
+				break;
+			case PERMISSAO_LEITURA_INVALIDA:
+				mensagem = "Permissão de leitura não booleana.";
+				break;
+			case PERMISSAO_ESCRITA_INVALIDA:
+				mensagem = "Permissão de escrita não booleana.";				
+				break;
+			case PERMISSAO_REMOCAO_INVALIDA:
+				mensagem = "Permissão de remoção não booleana.";	
 				break;
 		}		
 	}

@@ -1,4 +1,4 @@
-package italo.siserp.util.enums_tipo;
+package italo.siserp.util;
 
 import org.springframework.stereotype.Component;
 

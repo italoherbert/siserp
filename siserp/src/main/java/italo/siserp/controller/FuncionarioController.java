@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
-import italo.siserp.exception.UsuarioTipoInvalidoException;
+import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.model.request.BuscaFuncionariosRequest;
 import italo.siserp.model.request.SaveFuncionarioRequest;
 import italo.siserp.model.response.ErroResponse;
@@ -32,7 +32,7 @@ public class FuncionarioController {
 	@Autowired
 	private FuncionarioService funcionarioService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('funcionarioWRITE')")	
 	@PostMapping("/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveFuncionarioRequest request ) {				
 		if ( request.getUsuario().getUsername() == null )
@@ -45,8 +45,8 @@ public class FuncionarioController {
 		if ( request.getUsuario().getPassword().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PASSWORD_OBRIGATORIO ) );
 		
-		if ( request.getUsuario().getTipo() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_TIPO_INVALIDO ) );		
+		if ( request.getUsuario().getGrupo() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_GRUPO_NAO_ENCONTRADO ) );		
 		
 		try {
 			IdResponse resp = funcionarioService.registraFuncionario( request );
@@ -55,12 +55,12 @@ public class FuncionarioController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PESSOA_JA_EXISTE ) );		
 		} catch (UsuarioJaExisteException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_JA_EXISTE ) );		
-		} catch (UsuarioTipoInvalidoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_TIPO_INVALIDO ) );		
+		} catch (UsuarioGrupoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_GRUPO_NAO_ENCONTRADO ) );		
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('funcionarioWRITE')")	
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveFuncionarioRequest request ) {	
 		if ( request.getUsuario().getUsername() == null )
@@ -73,8 +73,8 @@ public class FuncionarioController {
 		if ( request.getUsuario().getPassword().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PASSWORD_OBRIGATORIO ) );
 		
-		if ( request.getUsuario().getTipo() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_TIPO_INVALIDO ) );		
+		if ( request.getUsuario().getGrupo() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_GRUPO_NAO_ENCONTRADO ) );		
 		
 		try {
 			funcionarioService.atualizaFuncionario( id, request );
@@ -85,12 +85,12 @@ public class FuncionarioController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PESSOA_JA_EXISTE ) );		
 		} catch (UsuarioJaExisteException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_JA_EXISTE ) );		
-		} catch (UsuarioTipoInvalidoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_TIPO_INVALIDO ) );		
+		} catch (UsuarioGrupoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_GRUPO_NAO_ENCONTRADO ) );		
 		}								
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('funcionarioREAD')")	
 	@PostMapping("/filtra")
 	public ResponseEntity<Object> buscaFuncionarios( @RequestBody BuscaFuncionariosRequest request ) {		
 		if ( request.getNomeIni() == null )
@@ -106,7 +106,7 @@ public class FuncionarioController {
 		return ResponseEntity.ok( funcs );		
 	}
 
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('funcionarioREAD')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaFuncionarioPorId( @PathVariable Long id ) {		
 		try {
@@ -117,7 +117,7 @@ public class FuncionarioController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('funcionarioDELETE')")	
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaFuncionario( @PathVariable Long id ) {		
 		try {

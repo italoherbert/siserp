@@ -36,14 +36,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			try {
 				if ( !jwtTokenUtil.isTokenExpirado(token) ) {
 					String username = jwtTokenUtil.getSubject( token );
-					String[] roles = jwtTokenUtil.getAuthorities( token );
-										
-					List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-					for( String role : roles )
-						authorities.add( new SimpleGrantedAuthority( role ) );								
+					String[] authorities = jwtTokenUtil.getAuthorities( token );
+																
+					List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+					for( String grantedAuthority : authorities )						
+						grantedAuthorities.add( new SimpleGrantedAuthority( grantedAuthority ) );					
 									
 					UsernamePasswordAuthenticationToken tokenAuth = 
-							new UsernamePasswordAuthenticationToken( username, null, authorities );
+							new UsernamePasswordAuthenticationToken( username, null, grantedAuthorities );
 														
 					SecurityContextHolder.getContext().setAuthentication( tokenAuth );
 				} 

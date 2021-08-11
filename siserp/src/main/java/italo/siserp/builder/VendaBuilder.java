@@ -22,8 +22,8 @@ import italo.siserp.model.request.SaveVendaRequest;
 import italo.siserp.model.response.ItemVendaResponse;
 import italo.siserp.model.response.VendaResponse;
 import italo.siserp.util.DataUtil;
+import italo.siserp.util.FormaPagTipoEnumConversor;
 import italo.siserp.util.NumeroUtil;
-import italo.siserp.util.enums_tipo.FormaPagTipoEnumConversor;
 
 @Component
 public class VendaBuilder {

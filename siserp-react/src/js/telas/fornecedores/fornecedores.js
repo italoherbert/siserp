@@ -137,7 +137,7 @@ export default class Fornecedores extends React.Component {
 			
 				<Row>
 					<Col>
-						<h4 className="text-center col-md-12">Lista de Fornecedores</h4>
+						<h4 className="text-center">Lista de Fornecedores</h4>
 						<div className="tbl-pnl">
 							<Table striped bordered hover>
 								<thead>

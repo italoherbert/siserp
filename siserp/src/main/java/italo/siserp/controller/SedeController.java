@@ -21,7 +21,7 @@ public class SedeController {
 	@Autowired
 	private SedeService sedeService;
 			
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")
+	@PreAuthorize("hasAuthority('sedeWRITE')")	
 	@PutMapping(value="/salva")
 	public ResponseEntity<Object> salvaSede( @RequestBody SaveSedeRequest request ) {		
 		if ( request.getCnpj() == null )
@@ -39,6 +39,7 @@ public class SedeController {
 	}
 	
 	
+	@PreAuthorize("hasAuthority('sedeREAD')")	
 	@GetMapping(value="/get")
 	public ResponseEntity<Object> get() {		
 		SedeResponse resp = sedeService.getSede();

@@ -22,11 +22,10 @@ import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.request.SaveLancamentoRequest;
-import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.LancamentoResponse;
 import italo.siserp.service.LancamentoService;
-import italo.siserp.util.enums_tipo.LancamentoTipoEnumConversor;
+import italo.siserp.util.LancamentoTipoEnumConversor;
 
 @RestController
 @RequestMapping(value="/api/lancamento")
@@ -37,25 +36,8 @@ public class LancamentoController {
 			
 	@Autowired
 	private LancamentoTipoEnumConversor lancamentoTipoEnumConversor;
-	
-	@PreAuthorize("hasAnyAuthority('CAIXA')")	
-	@GetMapping(value="/balanco/hoje/{usuarioId}")
-	public ResponseEntity<Object> geraBalancoCaixaHoje( @PathVariable Long usuarioId ) {
-		try {						
-			CaixaBalancoResponse resp = lancamentoService.geraBalanco( usuarioId );
-			return ResponseEntity.ok( resp );
-		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
-		} catch (CaixaNaoAbertoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
-		} catch (FuncionarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
-		}		
-	}
-	
-	@PreAuthorize("hasAuthority('CAIXA')")	
+			
+	@PreAuthorize("hasAuthority('lancamentoWRITE')")	
 	@PostMapping(value="/novo/hoje/{usuarioId}")
 	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {
 		if ( request.getTipo() == null )
@@ -86,24 +68,7 @@ public class LancamentoController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")		
-	@DeleteMapping(value="/deletatodos/hoje/{usuarioId}")
-	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
-		try {			
-			lancamentoService.deletaLancamentos( usuarioId );
-			return ResponseEntity.ok().build();
-		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
-		} catch (CaixaNaoAbertoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
-		} catch (FuncionarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
-		}
-	}
-	
-	@PreAuthorize("hasAuthority('CAIXA')")			
+	@PreAuthorize("hasAuthority('lancamentoREAD')")	
 	@GetMapping("/lista/hoje/{usuarioId}")
 	public ResponseEntity<Object> listaLancamentosPorUsuario( @PathVariable Long usuarioId ) {
 		try {			
@@ -120,7 +85,7 @@ public class LancamentoController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")		
+	@PreAuthorize("hasAuthority('lancamentoREAD')")	
 	@GetMapping("/lista/{caixaId}")
 	public ResponseEntity<Object> listaLancamentosPorCaixa( @PathVariable Long caixaId ) {
 		try {			
@@ -130,8 +95,25 @@ public class LancamentoController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ENCONTRADO ) );					
 		}
 	}
+
+	@PreAuthorize("hasAuthority('lancamentoDELETE')")	
+	@DeleteMapping(value="/deletatodos/hoje/{usuarioId}")
+	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
+		try {			
+			lancamentoService.deletaLancamentos( usuarioId );
+			return ResponseEntity.ok().build();
+		} catch (PerfilCaixaRequeridoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
+		} catch (CaixaNaoAbertoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
+		} catch (UsuarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (FuncionarioNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
+		}
+	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'GERENTE')")	
+	@PreAuthorize("hasAuthority('lancamentoDELETE')")	
 	@DeleteMapping(value="/deleta/{id}")
 	public ResponseEntity<Object> deleta( @PathVariable Long id ) {
 		try {

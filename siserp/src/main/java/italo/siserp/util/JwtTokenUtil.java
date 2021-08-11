@@ -23,16 +23,16 @@ public class JwtTokenUtil {
 		return authorizationHeader.replace( "Bearer ", "" );
 	}
 	
-	public String geraToken( String username, String[] roles ) {		
+	public String geraToken( String username, String[] authorities ) {		
 		Map<String, Object> claims = new HashMap<String, Object>();
-		String strRoles = "";
-		for( String role : roles ) {
-			if ( !strRoles.isEmpty() )
-				strRoles += ",";
-			strRoles += role;
+		String strAuthorities = "";
+		for( String authority : authorities ) {
+			if ( !strAuthorities.isEmpty() )
+				strAuthorities += ",";
+			strAuthorities += authority;
 		}
 				
-		claims.put( "roles", strRoles );
+		claims.put( "authorities", strAuthorities );
 		
 		return geraToken( claims, username );				
 	}
@@ -49,15 +49,6 @@ public class JwtTokenUtil {
 		return this.getSubject( token ) != null;  
 	}
 	
-	public boolean isUsuarioAdmin( String token ) {
-		String[] roles = this.getAuthorities( token );		
-		for( String role : roles )
-			if ( role.equalsIgnoreCase( "ADMIN" ) )
-				return true;
-		
-		return false;
-	}
-	
 	public boolean isTokenExpirado( String token ) {
 		final Date expiration = this.getExpirationDate( token );
 		return expiration.before( new Date() );
@@ -72,9 +63,9 @@ public class JwtTokenUtil {
 	}
 				
 	public String[] getAuthorities( String token ) {		
-		Object roles = this.getTokenClaims( token ).get( "roles" );
-		if ( roles != null )
-			return String.valueOf( roles ).split( "," );
+		Object authorities = this.getTokenClaims( token ).get( "authorities" );
+		if ( authorities != null )
+			return String.valueOf( authorities ).split( "," );
 		
 		return new String[] {};
 	}

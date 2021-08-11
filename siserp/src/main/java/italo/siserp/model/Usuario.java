@@ -3,11 +3,11 @@ package italo.siserp.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -32,9 +32,9 @@ public class Usuario {
 	@Column
 	private String password;
 	
-	@Column
-	@Enumerated(value = EnumType.STRING)
-	private UsuarioTipo tipo;
+	@ManyToOne
+	@JoinColumn(name="grupo_id") 
+	private UsuarioGrupo grupo;
 	
 	@OneToOne(mappedBy="usuario", cascade=CascadeType.REMOVE, optional = true)
 	private Funcionario funcionario;

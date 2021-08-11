@@ -1,6 +1,6 @@
 package italo.siserp.exception;
 
-public class UsuarioTipoInvalidoException extends GenericaException {
+public class PermissaoGrupoNaoEncontradoException extends GenericaException {
 
 	private static final long serialVersionUID = 1L;
 

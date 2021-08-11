@@ -13,7 +13,7 @@ import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Usuario;
-import italo.siserp.model.UsuarioTipo;
+import italo.siserp.model.UsuarioGrupo;
 import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.UsuarioRepository;
 import italo.siserp.util.DataUtil;
@@ -54,7 +54,7 @@ public class CaixaDAO {
 		
 		Usuario u = usuarioRepository.findById( usuarioId ).orElseThrow( UsuarioNaoEncontradoException::new );
 		
-		if ( u.getTipo() != UsuarioTipo.CAIXA )
+		if ( u.getGrupo().getNome().equalsIgnoreCase( UsuarioGrupo.CAIXA ) )
 			throw new PerfilCaixaRequeridoException();
 		
 		Funcionario f = u.getFuncionario();

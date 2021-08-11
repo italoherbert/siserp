@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.ItemVendaBuilder;
+import italo.siserp.builder.LancamentoBuilder;
 import italo.siserp.builder.VendaBuilder;
 import italo.siserp.dao.CaixaDAO;
 import italo.siserp.exception.CaixaNaoAbertoException;
@@ -52,8 +53,8 @@ import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
 import italo.siserp.util.DataUtil;
+import italo.siserp.util.FormaPagTipoEnumConversor;
 import italo.siserp.util.NumeroUtil;
-import italo.siserp.util.enums_tipo.FormaPagTipoEnumConversor;
 
 @Service
 public class VendaService {
@@ -66,7 +67,10 @@ public class VendaService {
 
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
-			
+
+	@Autowired
+	private ClienteRepository clienteRepository;
+	
 	@Autowired
 	private CaixaDAO caixaDAO;
 	
@@ -76,9 +80,8 @@ public class VendaService {
 	@Autowired
 	private ItemVendaBuilder itemVendaBuilder;
 	
-	@Autowired
-	private ClienteRepository clienteRepository;
-		
+	private LancamentoBuilder lancamentoBuilder;
+			
 	@Autowired
 	private DataUtil dataUtil;
 	
@@ -153,9 +156,7 @@ public class VendaService {
 		
 		FormaPag formaPag = enumConversor.getFormaPag( request.getFormaPag() );
 		if ( formaPag == FormaPag.ESPECIE ) {
-			Lancamento lanc = new Lancamento();
-			lanc.setCaixa( caixa );
-			lanc.setDataOperacao( new Date() );
+			Lancamento lanc = lancamentoBuilder.novoINILancamento( caixa );
 			lanc.setTipo( LancamentoTipo.CREDITO );
 			lanc.setObs( Lancamento.LANCAMENTO_VENDA_EFETUADA );
 			lanc.setValor( total ); 
@@ -266,9 +267,7 @@ public class VendaService {
 			System.out.println( "TOTAL= "+total+"  "+subtotal+"  "+v.getDesconto() );
 			Caixa caixa = v.getCaixa();			
 			
-			Lancamento lanc = new Lancamento();
-			lanc.setCaixa( caixa );
-			lanc.setDataOperacao( new Date() );
+			Lancamento lanc = lancamentoBuilder.novoINILancamento( caixa );
 			lanc.setTipo( LancamentoTipo.DEBITO );
 			lanc.setObs( Lancamento.LANCAMENTO_VENDA_CANCELADA ); 
 			lanc.setValor( total ); 
@@ -307,9 +306,7 @@ public class VendaService {
 			throw new ValorPagoInvalidoException();
 		}
 		
-		Lancamento lanc = new Lancamento();
-		lanc.setCaixa( caixa );
-		lanc.setDataOperacao( new Date() );
+		Lancamento lanc = lancamentoBuilder.novoINILancamento( caixa );
 		lanc.setTipo( LancamentoTipo.CREDITO );
 		lanc.setValor( valor ); 
 		lancamentoRepository.save( lanc );

@@ -32,7 +32,7 @@ public class FornecedorController {
 	@Autowired
 	private FornecedorService fornecedorService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('fornecedorWRITE')")	
 	@PostMapping("/registra")
 	public ResponseEntity<Object> registra( @RequestBody SaveFornecedorRequest request ) {						
 		if ( request.getEmpresa() == null )
@@ -48,7 +48,7 @@ public class FornecedorController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('fornecedorWRITE')")	
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveFornecedorRequest request ) {	
 		if ( request.getEmpresa() == null )
@@ -66,6 +66,7 @@ public class FornecedorController {
 		}				
 	}
 
+	@PreAuthorize("hasAuthority('fornecedorREAD')")	
 	@PostMapping("/filtra")
 	public ResponseEntity<Object> buscaFornecedores( @RequestBody BuscaFornecedoresRequest request ) {		
 		if ( request.getEmpresaIni() == null )
@@ -79,6 +80,7 @@ public class FornecedorController {
 		return ResponseEntity.ok( fornecedors );		
 	}
 	
+	@PreAuthorize("hasAuthority('fornecedorREAD')")	
 	@PostMapping("/filtra/limit/{limit}")
 	public ResponseEntity<Object> buscaFornecedores( @PathVariable int limit, @RequestBody BuscaFornecedoresRequest request ) {		
 		if ( request.getEmpresaIni() == null )
@@ -90,6 +92,7 @@ public class FornecedorController {
 		return ResponseEntity.ok( fornecedors );		
 	}
 
+	@PreAuthorize("hasAuthority('fornecedorREAD')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaFornecedorPorId( @PathVariable Long id ) {		
 		try {
@@ -100,7 +103,7 @@ public class FornecedorController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('fornecedorDELETE')")	
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaFornecedor( @PathVariable Long id ) {		
 		try {

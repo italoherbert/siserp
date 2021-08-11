@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.UsernameNaoEncontradoException;
@@ -13,16 +12,15 @@ import italo.siserp.exception.UsernamePasswordNaoCorrespondemException;
 import italo.siserp.model.request.LoginRequest;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.LoginResponse;
-import italo.siserp.service.UsuarioService;
+import italo.siserp.service.LoginService;
 
 @RestController
 @RequestMapping(value="/api/login")
 public class LoginController {
 
 	@Autowired
-	private UsuarioService loginService;
+	private LoginService loginService;
 	
-	@ResponseBody
 	@PostMapping(value="/entrar")
 	public ResponseEntity<Object> entrar( @RequestBody LoginRequest request ) {
 		if ( request.getUsername() == null )

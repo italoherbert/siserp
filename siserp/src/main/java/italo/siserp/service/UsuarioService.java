@@ -1,58 +1,88 @@
 package italo.siserp.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.UsuarioBuilder;
-import italo.siserp.exception.UsernameNaoEncontradoException;
-import italo.siserp.exception.UsernamePasswordNaoCorrespondemException;
+import italo.siserp.exception.UsuarioJaExisteException;
+import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.Usuario;
-import italo.siserp.model.request.LoginRequest;
-import italo.siserp.model.response.LoginResponse;
+import italo.siserp.model.request.BuscaUsuariosRequest;
+import italo.siserp.model.request.SaveUsuarioRequest;
 import italo.siserp.model.response.UsuarioResponse;
 import italo.siserp.repository.UsuarioRepository;
-import italo.siserp.util.HashUtil;
-import italo.siserp.util.JwtTokenUtil;
 
 @Service
 public class UsuarioService {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
-	@Autowired
-	private UsuarioBuilder usuarioCarregador;
-	
-	@Autowired
-	private HashUtil hashUtil;
-	
-	@Autowired
-	private JwtTokenUtil tokenUtil;
 			
-	public LoginResponse login( LoginRequest request ) 
-			throws UsernameNaoEncontradoException, 
-				UsernamePasswordNaoCorrespondemException {
+	@Autowired
+	private UsuarioBuilder usuarioBuilder;			
+	
+	public void registraUsuario( SaveUsuarioRequest request ) throws UsuarioJaExisteException {
+		Optional<Usuario> uop = usuarioRepository.findByUsername( request.getUsername() );
+		if ( uop.isPresent() )
+			throw new UsuarioJaExisteException();
+		
+		Usuario u = usuarioBuilder.novoUsuario();
+		usuarioBuilder.carregaUsuario( u, request );
+		
+		usuarioRepository.save( u );
+	}
+		
+	public void alteraUsuario( Long usuarioId, SaveUsuarioRequest request ) throws UsuarioJaExisteException, UsuarioNaoEncontradoException {
+		Usuario u = usuarioRepository.findById( usuarioId ).orElseThrow( UsuarioNaoEncontradoException::new );
 		
 		String username = request.getUsername();
-		String password = hashUtil.geraHash( request.getPassword() );
 		
-		Usuario u = usuarioRepository.findByUsername( username ).orElseThrow( UsernameNaoEncontradoException::new );				
-		if ( !u.getPassword().equals( password ) )
-			throw new UsernamePasswordNaoCorrespondemException();
+		if ( !username.equals( u.getUsername() ) )
+			if ( usuarioRepository.findByUsername( username ).isPresent() )
+				throw new UsuarioJaExisteException();
 		
-		UsuarioResponse uResp = usuarioCarregador.novoUsuarioResponse();
-		usuarioCarregador.carregaUsuarioResponse( uResp, u ); 
+		usuarioBuilder.carregaUsuario( u, request );		
+		usuarioRepository.save( u );
+	}
 		
-		String[] roles = {
-			String.valueOf( u.getTipo() )
-		};
-				
-		String token = tokenUtil.geraToken( request.getUsername(), roles );
+	public List<UsuarioResponse> filtraUsuarios( BuscaUsuariosRequest request ) {
+		String usernameIni = request.getUsernameIni();
+		if ( usernameIni.equals( "*" ) )
+			usernameIni = "";
+		usernameIni += "%";
 		
-		LoginResponse resp = new LoginResponse();
-		resp.setUsuario( uResp );
-		resp.setToken( token );
+		List<Usuario> usuarios = usuarioRepository.buscaPorUsernameIni( usernameIni );
+		
+		List<UsuarioResponse> lista = new ArrayList<>();
+		for( Usuario u : usuarios ) {
+			UsuarioResponse resp = usuarioBuilder.novoUsuarioResponse();
+			usuarioBuilder.carregaUsuarioResponse( resp, u );
+			
+			lista.add( resp );
+		}
+		
+		return lista;
+	}
+	
+	public UsuarioResponse buscaUsuario( Long usuarioId ) throws UsuarioNaoEncontradoException {
+		Usuario u = usuarioRepository.findById( usuarioId ).orElseThrow( UsuarioNaoEncontradoException::new );
+		
+		UsuarioResponse resp = usuarioBuilder.novoUsuarioResponse();
+		usuarioBuilder.carregaUsuarioResponse( resp, u );
+		
 		return resp;
 	}
 	
+	public void deletaUsuario( Long usuarioId ) throws UsuarioNaoEncontradoException {
+		Optional<Usuario> uop = usuarioRepository.findById( usuarioId );
+		if ( !uop.isPresent() )
+			throw new UsuarioNaoEncontradoException();
+		
+		usuarioRepository.deleteById( usuarioId ); 
+	}
+		
 }

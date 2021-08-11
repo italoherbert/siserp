@@ -33,7 +33,7 @@ public class SubCategoriaController {
 	@Autowired
 	private SubCategoriaService subcategoriaService;
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('subcategoriaWRITE')")	
 	@PostMapping("/registra/{categoriaId}")
 	public ResponseEntity<Object> registra( @PathVariable Long categoriaId, @RequestBody SaveSubCategoriaRequest request ) {						
 		if ( request.getDescricao() == null )
@@ -51,7 +51,7 @@ public class SubCategoriaController {
 		}				
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('subcategoriaWRITE')")	
 	@PutMapping("/atualiza/{id}")
 	public ResponseEntity<Object> atualiza( @PathVariable Long id, @RequestBody SaveSubCategoriaRequest request ) {	
 		if ( request.getDescricao() == null )
@@ -69,6 +69,7 @@ public class SubCategoriaController {
 		}				
 	}
 	
+	@PreAuthorize("hasAuthority('subcategoriaREAD')")	
 	@PostMapping("/filtra/{categoriaId}")
 	public ResponseEntity<Object> buscaSubCategorias( 
 			@PathVariable Long categoriaId, @RequestBody BuscaSubCategoriasRequest request ) {
@@ -84,6 +85,7 @@ public class SubCategoriaController {
 		return ResponseEntity.ok( subcategorias );		
 	}
 
+	@PreAuthorize("hasAuthority('subcategoriaREAD')")	
 	@PostMapping("/filtra/limit/{categoria}/{limit}")
 	public ResponseEntity<Object> buscaSubCategorias( 
 			@PathVariable String categoria, 
@@ -99,6 +101,7 @@ public class SubCategoriaController {
 		return ResponseEntity.ok( subcategorias );		
 	}
 	
+	@PreAuthorize("hasAuthority('subcategoriaREAD')")	
 	@GetMapping("/get/{id}")
 	public ResponseEntity<Object> buscaSubCategoriaPorId( @PathVariable Long id ) {		
 		try {
@@ -109,7 +112,7 @@ public class SubCategoriaController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAuthority('subcategoriaDELETE')")	
 	@DeleteMapping("/deleta/{id}")
 	public ResponseEntity<Object> deletaSubCategoria( @PathVariable Long id ) {		
 		try {
