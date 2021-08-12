@@ -10,7 +10,7 @@ import italo.siserp.model.CompraParcela;
 
 public interface CompraParcelaRepository extends JpaRepository<CompraParcela, Long> {
 
-	@Query( "select p from CompraParcela p where p.dataPagamento between ?1 and ?2")
+	@Query( "select p from CompraParcela p where p.dataPagamento between ?1 and ?2 order by ( p.dataPagamento )")
 	public List<CompraParcela> filtra( Date dataIni, Date dataFim );
 	
 }

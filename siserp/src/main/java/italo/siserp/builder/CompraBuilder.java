@@ -2,6 +2,7 @@ package italo.siserp.builder;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +66,23 @@ public class CompraBuilder {
 		resp.setItens( itemResps ); 
 		
 		List<CompraParcelaResponse> parcelaResps = new ArrayList<>();
-		for( CompraParcela parcela : c.getParcelas() ) {
+		List<CompraParcela> parcelas = c.getParcelas();
+		
+		Collections.sort( parcelas, ( cpr1, cpr2 ) -> {
+			if( cpr1.getDataPagamento().after( cpr2.getDataPagamento() ) )
+				return 1;
+			if( cpr1.getDataPagamento().before( cpr2.getDataPagamento() ) )
+				return -1;
+			return 0;
+		} );
+		
+		for( CompraParcela parcela : parcelas ) {
 			CompraParcelaResponse parcelaResp = compraParcelaBuilder.novoCompraParcelaResponse();
 			compraParcelaBuilder.carregaCompraParcelaResponse( parcelaResp, parcela );
 			
 			parcelaResps.add( parcelaResp );
-		}
+		}		
+		
 		resp.setParcelas( parcelaResps ); 				
 	}	
 	

@@ -23,6 +23,8 @@ export default class ContasPagar extends React.Component {
 	
 	componentDidMount() {		
 		this.filtrar( null, false );		
+		
+		this.setState( { dataFim : new Date().getTime() + 365 * 24 * 60 * 60 * 1000 } );
 	}
 	
 	filtrar( e, filtrarBTClicado ) {
@@ -67,7 +69,7 @@ export default class ContasPagar extends React.Component {
 
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/conta/pagar/altera/situacao'+parcelaId, {
+		fetch( '/api/conta/pagar/altera/situacao/'+parcelaId, {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json; charset=UTF-8',
@@ -78,7 +80,7 @@ export default class ContasPagar extends React.Component {
 			} )
 		} ).then( (resposta) => {			
 			if ( resposta.status === 200 ) {
-				this.filtra( e, false );				
+				this.filtrar( e, false );				
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
 			}
@@ -114,13 +116,13 @@ export default class ContasPagar extends React.Component {
 							{contas.map( ( conta, index ) => {
 								return (
 									<tr key={index}>
-										<td>{ sistema.formataData( conta.parcela.dataPagamento ) }</td>
-										<td>{ sistema.formataData( conta.parcela.dataVencimento ) }</td>
+										<td>{ conta.parcela.dataPagamento }</td>
+										<td>{ conta.parcela.dataVencimento }</td>
 										<td>{ conta.fornecedorEmpresa }</td>
 										<td>
-											<button className="btn btn-link p-0" onClick={(e) => this.alterarSituacao( e, index, conta.parcela.id )}>
+											<Button variant="primary" onClick={(e) => this.alterarSituacao( e, index, conta.parcela.id )}>
 												{ conta.parcela.paga === 'true' ? 'Desfazer pagamento' : 'Pagar' }
-											</button>
+											</Button>
 										</td>
 									</tr>
 								);
