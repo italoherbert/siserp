@@ -17,4 +17,7 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
 	@Query( "select v from Venda v where v.dataVenda between ?1 and ?2")
 	public List<Venda> filtraSemCliente( Date dataIni, Date dataFim );
 	
+	@Query( "select sum(v.debito) from Venda v where v.debito>0 and v.cliente is not null" )
+	public Double calculaContasReceberTotalCompleto();
+	
 }

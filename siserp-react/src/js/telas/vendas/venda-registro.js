@@ -225,12 +225,14 @@ export default class VendaRegistro extends React.Component {
 			if ( resposta.status === 200 ) {
 				resposta.json().then( (dados) => {
 					this.setState( { clientesNomeLista : [] } );
-										
+															
 					for( let i = 0; i < dados.length; i++ )
 						this.state.clientesNomeLista.push( dados[ i ].pessoa.nome );					
 
 					this.setState( {} );
 				} );
+			} else {
+				alert( resposta.status );
 			}
 		} );
 	}

@@ -190,59 +190,56 @@ export default class Vendas extends React.Component {
 				<MensagemPainel cor="danger" msg={erroMsg} />
 				<MensagemPainel cor="primary" msg={infoMsg} />
 				
-				<Row>
-					<Col>
-						<Card className="p-3">
-							<h4>Filtrar vendas</h4>
-							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
-								<Row>
-									<Col className="col-sm-4">										
-										<Form.Group className="mb-2">													
-											<Form.Label>Data de início: </Form.Label>
-											<br />
-											<DatePicker selected={dataIni} 
-													onChange={ (date) => this.changeDataIni( date ) } 
-													locale="pt" 
-													name="dataIni" 
-													dateFormat="dd/MM/yyyy" className="form-control" />						
-										</Form.Group>									
-									</Col>
-									<Col className="col-sm-4">										
-										<Form.Group className="mb-2">													
-											<Form.Label>Data de fim: </Form.Label>
-											<br />
-											<DatePicker selected={dataFim} 
-													onChange={ (date) => this.changeDataFim( date ) } 
-													locale="pt" 
-													name="dataFim" 
-													minDate={dataIni}
-													dateFormat="dd/MM/yyyy" className="form-control" />						
-										</Form.Group>									
-									</Col>										
-								</Row>						
-								<Row>
-									<Col className="col-md-6">										
-										<Form.Group className="mb-2">													
-											<Row>
-												<Col>
-													<Form.Label>Cliente: </Form.Label>
-													<Form.Control type="text" ref={this.clienteNomeIni} name="clienteNomeIni" />
-													
-													<input className="my-2" type="checkbox" ref={this.incluirCliente} />Incluir cliente no filtro
-												</Col>
-											</Row>
-										</Form.Group>
-									</Col>									
-								</Row>
-								<Row>
-									<Col>
-										<Button type="submit" variant="primary">Filtrar</Button>														
-									</Col>
-								</Row>
-							</Form>						
-						</Card>						
-					</Col>
-				</Row>																		
+				<Card className="p-3">
+					<h4>Filtrar vendas</h4>
+					<Form onSubmit={ (e) => this.filtrar( e, true ) }>
+						<Row>
+							<Col className="col-sm-4">										
+								<Form.Group className="mb-2">													
+									<Form.Label>Data de início: </Form.Label>
+									<br />
+									<DatePicker selected={dataIni} 
+											onChange={ (date) => this.changeDataIni( date ) } 
+											locale="pt" 
+											name="dataIni" 
+											dateFormat="dd/MM/yyyy" className="form-control" />						
+								</Form.Group>									
+							</Col>
+							<Col className="col-sm-4">										
+								<Form.Group className="mb-2">													
+									<Form.Label>Data de fim: </Form.Label>
+									<br />
+									<DatePicker selected={dataFim} 
+											onChange={ (date) => this.changeDataFim( date ) } 
+											locale="pt" 
+											name="dataFim" 
+											minDate={dataIni}
+											dateFormat="dd/MM/yyyy" className="form-control" />						
+								</Form.Group>									
+							</Col>										
+						</Row>						
+						<Row>
+							<Col className="col-md-6">										
+								<Form.Group className="mb-2">													
+									<Row>
+										<Col>
+											<Form.Label>Cliente: </Form.Label>
+											<Form.Control type="text" ref={this.clienteNomeIni} name="clienteNomeIni" />
+											
+											<input className="my-2" type="checkbox" ref={this.incluirCliente} />Incluir cliente no filtro
+										</Col>
+									</Row>
+								</Form.Group>
+							</Col>									
+						</Row>
+						<Row>
+							<Col>
+								<Button type="submit" variant="primary">Filtrar</Button>														
+							</Col>
+						</Row>
+					</Form>						
+				</Card>		
+				
 			</Container>	
 		)
 	}

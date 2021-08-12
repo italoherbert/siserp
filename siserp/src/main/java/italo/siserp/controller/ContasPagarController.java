@@ -1,7 +1,5 @@
 package italo.siserp.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,16 +16,16 @@ import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.model.request.BuscaContasPagarRequest;
 import italo.siserp.model.request.PagamentoParcelaRequest;
-import italo.siserp.model.response.ContaPagarResponse;
+import italo.siserp.model.response.ContasPagarResponse;
 import italo.siserp.model.response.ErroResponse;
-import italo.siserp.service.ContaPagarService;
+import italo.siserp.service.ContasPagarService;
 
 @RestController
 @RequestMapping(value="/api/conta/pagar")
-public class ContaPagarController {
+public class ContasPagarController {
 
 	@Autowired
-	private ContaPagarService compraParcelaService;
+	private ContasPagarService contasPagarService;
 	
 	@PreAuthorize("hasAuthority('contasPagarWRITE')")
 	@PatchMapping(value="/altera/situacao/{parcelaId}")
@@ -40,7 +38,7 @@ public class ContaPagarController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_PARCELA_SITUACAO_INVALIDO ) );
 		
 		try {
-			compraParcelaService.alteraParcelaSituacao( parcelaId, request );
+			contasPagarService.alteraParcelaSituacao( parcelaId, request );
 			return ResponseEntity.ok().build();
 		} catch (ParcelaNaoEncontradaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PARCELA_NAO_ENCONTRADA ) );
@@ -60,8 +58,8 @@ public class ContaPagarController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
 		
 		try {
-			List<ContaPagarResponse> lista = compraParcelaService.filtra( request );
-			return ResponseEntity.ok( lista );
+			ContasPagarResponse resp = contasPagarService.filtra( request );
+			return ResponseEntity.ok( resp );
 		} catch (DataIniInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA ) );
 		} catch (DataFimInvalidaException e) {
@@ -70,5 +68,5 @@ public class ContaPagarController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_APOS_DATA_FIM ) );
 		}
 	}
-	
+		
 }

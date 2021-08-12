@@ -14,7 +14,8 @@ import Vendas from './telas/vendas/vendas';
 import Caixa from './telas/caixa/caixa';
 import CaixaFluxo from './telas/caixa/caixa-fluxo';
 import Usuarios from './telas/usuarios/usuarios';
-import ContasPagar from './telas/contas-pagar/contas-pagar';
+import ContasPagar from './telas/contas/contas-pagar';
+import ContasReceber from './telas/contas/contas-receber';
 
 import sistema from './logica/sistema.js';
 
@@ -69,9 +70,12 @@ export default class NavegBar extends React.Component {
 		ReactDOM.render( <CaixaFluxo />, sistema.paginaElemento() );
 	}
 	
-	
 	paraTelaContasPagar() {
 		ReactDOM.render( <ContasPagar />, sistema.paginaElemento() );
+	}
+	
+	paraTelaContasReceber() {
+		ReactDOM.render( <ContasReceber />, sistema.paginaElemento() );
 	}
 	
 	paraTelaUsuarios() {
@@ -93,6 +97,9 @@ export default class NavegBar extends React.Component {
 								<NavDropdown.Item onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de Caixa</NavDropdown.Item>
 								{ (  sistema.usuario.grupo.nome === 'GERENTE' ) && (
 									<NavDropdown.Item onClick={ () => this.paraTelaContasPagar() }>Contas a pagar</NavDropdown.Item>
+								) }
+								{ (  sistema.usuario.grupo.nome === 'GERENTE' ) && (
+									<NavDropdown.Item onClick={ () => this.paraTelaContasReceber() }>Contas a receber</NavDropdown.Item>
 								) }
 							</NavDropdown>						
 						) }

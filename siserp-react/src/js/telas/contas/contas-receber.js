@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-export default class ContasPagar extends React.Component {
+export default class ContasReceber extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -17,8 +17,14 @@ export default class ContasPagar extends React.Component {
 			dataIni : new Date(),
 			dataFim : new Date(),
 			
-			contas : []
+			contasObj : { vendas : [] },
+			debitoPeriodo : 0,
+			debitoTotal : 0
 		};						
+		
+		this.valorRecebido = React.createRef();
+		this.incluirCliente = React.createRef();
+		this.clienteNomeIni = React.createRef();
 	}
 	
 	componentDidMount() {		
@@ -26,6 +32,7 @@ export default class ContasPagar extends React.Component {
 		
 		this.setState( { dataFim : new Date().getTime() + 365 * 24 * 60 * 60 * 1000 } );
 	}
+	
 	
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
@@ -35,23 +42,33 @@ export default class ContasPagar extends React.Component {
 
 		sistema.showLoadingSpinner();
 		
-		fetch( "/api/conta/pagar/filtra", {
+		fetch( "/api/conta/receber/filtra", {
 			method : "POST",			
 			headers : { 
 				"Content-Type" : "application/json; charset=UTF-8",
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
+				"incluirCliente" : this.incluirCliente.current.checked,
+				"clienteNomeIni" : this.clienteNomeIni.current.value,
 				"dataIni" : sistema.formataData( this.state.dataIni ),
 				"dataFim" : sistema.formataData( this.state.dataFim )
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {
-					this.setState( { contas : dados } );
+					let contasObj = dados;
 					
+					for( let i = 0; i < contasObj.vendas.length; i++ ) {
+						let subtotal = sistema.paraFloat( contasObj.vendas[ i ].subtotal );
+						let desconto = sistema.paraFloat( contasObj.vendas[ i ].desconto );
+						contasObj.vendas[ i ].total = subtotal * ( 1.0 - desconto );
+					}
+										
 					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma conta registrado!" } );																							
+						this.setState( { infoMsg : "Nenhuma conta encontrada pelos critérios de filtro informados!" } );																							
+					
+					this.setState( { contasObj : contasObj } );
 				} );				
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -59,24 +76,22 @@ export default class ContasPagar extends React.Component {
 			sistema.hideLoadingSpinner();
 		} );
 	}
-	
-	alterarSituacao( e, index, parcelaId ) {
+			
+	efetuarRecebimento( e, index, clienteId ) {
 		e.preventDefault();
 				
 		this.setState( { erroMsg : null, infoMsg : null } );
 		
-		let parcelaPaga = this.state.contas[ index ].parcela.paga;
-
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/conta/pagar/altera/situacao/'+parcelaId, {
-			method : 'PATCH',
+		fetch( '/api/conta/receber/efetuarecebimento/'+clienteId, {
+			method : 'POST',
 			headers : {
 				'Content-Type' : 'application/json; charset=UTF-8',
 				'Authorization' : 'Bearer '+sistema.token
 			},
 			body : JSON.stringify( {
-				paga : ( parcelaPaga === 'true' ? false : true )
+				valorRecebido : this.valorRecebido.current.value
 			} )
 		} ).then( (resposta) => {			
 			if ( resposta.status === 200 ) {
@@ -97,7 +112,7 @@ export default class ContasPagar extends React.Component {
 	}
 				
 	render() {
-		const { erroMsg, infoMsg, contas, dataIni, dataFim } = this.state;
+		const { erroMsg, infoMsg, contasObj, dataIni, dataFim } = this.state;
 		
 		return (
 			<Container>					
@@ -106,30 +121,41 @@ export default class ContasPagar extends React.Component {
 					<Table striped bordered hover>
 						<thead>
 							<tr>
-								<th>Data pagamento</th>
-								<th>Data vencimento</th>
-								<th>Fornecedor</th>
-								<th>Alterar status</th>
+								<th>Data de venda</th>
+								<th>Cliente</th>
+								<th>Total</th>
+								<th>Débito</th>
 							</tr>
 						</thead>
 						<tbody>
-							{contas.map( ( conta, index ) => {
+							{contasObj.vendas.map( ( venda, index ) => {
 								return (
 									<tr key={index}>
-										<td>{ conta.parcela.dataPagamento }</td>
-										<td>{ conta.parcela.dataVencimento }</td>
-										<td>{ conta.fornecedorEmpresa }</td>
-										<td>
-											<Button variant="primary" onClick={(e) => this.alterarSituacao( e, index, conta.parcela.id )}>
-												{ conta.parcela.paga === 'true' ? 'Desfazer pagamento' : 'Pagar' }
-											</Button>
-										</td>
+										<td>{ venda.dataVenda }</td>
+										<td>{ venda.cliente.pessoa.nome }</td>
+										<td>{ sistema.formataReal( venda.total ) }</td>
+										<td>{ sistema.formataReal( venda.debito ) }</td>
 									</tr>
 								);
 							} ) }	
 						</tbody>							
 					</Table>
 				</div>
+	
+				<br />
+				
+				<Card className="p-3">
+					<Form.Group style={{fontSize: '1.6em'}}>
+						<Row>
+							<Col>
+								<Form.Label>Valor a receber: &nbsp;<span className="text-danger">{ sistema.formataReal( contasObj.totalPeriodo ) }</span></Form.Label>							
+							</Col>
+							<Col>
+								<Form.Label>Valor a receber total: &nbsp;<span className="text-danger">{ sistema.formataReal( contasObj.totalCompleto ) }</span></Form.Label>
+							</Col>
+						</Row>
+					</Form.Group>
+				</Card>
 					
 				<br />
 				
@@ -137,13 +163,13 @@ export default class ContasPagar extends React.Component {
 				<MensagemPainel cor="primary" msg={infoMsg} />
 				
 				<Row>
-					<Col>
+					<Col className="col-md-8">
 						<Card className="p-3">
-							<h4>Filtrar contas a pagar</h4>
+							<h4>Filtrar contas receber</h4>
 							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 								<Row>
 									<Col className="col-sm-4">										
-										<Form.Group className="pb-2">													
+										<Form.Group className="mb-2">													
 											<Form.Label>Data de início: </Form.Label>
 											<br />
 											<DatePicker selected={dataIni} 
@@ -154,7 +180,7 @@ export default class ContasPagar extends React.Component {
 										</Form.Group>									
 									</Col>
 									<Col className="col-sm-4">										
-										<Form.Group className="pb-2">													
+										<Form.Group className="mb-2">													
 											<Form.Label>Data de fim: </Form.Label>
 											<br />
 											<DatePicker selected={dataFim} 
@@ -164,15 +190,29 @@ export default class ContasPagar extends React.Component {
 													minDate={dataIni}
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
-									</Col>							
-									<Col className="col-md-4">
-										<div className="mb-2">&nbsp;</div>
-										<Button type="submit" variant="primary">Filtrar</Button>				
-										<br />
+									</Col>										
+								</Row>						
+								<Row>
+									<Col className="col-md-6">										
+										<Form.Group className="mb-2">													
+											<Row>
+												<Col>
+													<Form.Label>Cliente: </Form.Label>
+													<Form.Control type="text" ref={this.clienteNomeIni} name="clienteNomeIni" />
+													
+													<input className="my-2" type="checkbox" ref={this.incluirCliente} />Incluir cliente no filtro
+												</Col>
+											</Row>
+										</Form.Group>
+									</Col>									
+								</Row>
+								<Row>
+									<Col>
+										<Button type="submit" variant="primary">Filtrar</Button>														
 									</Col>
-								</Row>								
-							</Form>					
-						</Card>						
+								</Row>
+							</Form>						
+						</Card>							
 					</Col>
 				</Row>						
 			</Container>					

@@ -1,14 +1,13 @@
 package italo.siserp.service;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.builder.ContaPagarBuilder;
+import italo.siserp.builder.ContasPagarBuilder;
 import italo.siserp.exception.DataFimAposDataIniException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
@@ -16,18 +15,18 @@ import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.model.CompraParcela;
 import italo.siserp.model.request.BuscaContasPagarRequest;
 import italo.siserp.model.request.PagamentoParcelaRequest;
-import italo.siserp.model.response.ContaPagarResponse;
+import italo.siserp.model.response.ContasPagarResponse;
 import italo.siserp.repository.CompraParcelaRepository;
 import italo.siserp.util.DataUtil;
 
 @Service
-public class ContaPagarService {
+public class ContasPagarService {
 
 	@Autowired
 	private CompraParcelaRepository compraParcelaRepository;
-	
+		
 	@Autowired
-	private ContaPagarBuilder contaPagarBuilder;
+	private ContasPagarBuilder contasPagarBuilder;
 	
 	@Autowired
 	private DataUtil dataUtil;
@@ -39,7 +38,7 @@ public class ContaPagarService {
 		compraParcelaRepository.save( p );
 	}
 	
-	public List<ContaPagarResponse> filtra( BuscaContasPagarRequest request ) 
+	public ContasPagarResponse filtra( BuscaContasPagarRequest request ) 
 				throws DataIniInvalidaException,
 					DataFimInvalidaException, 
 					DataFimAposDataIniException {
@@ -63,17 +62,16 @@ public class ContaPagarService {
 		if ( dataIni.after( dataFim ) )
 			throw new DataFimAposDataIniException();
 		
-		
 		List<CompraParcela> parcelas = compraParcelaRepository.filtra( dataIni, dataFim );
-		List<ContaPagarResponse> lista = new ArrayList<>();
-		for( CompraParcela p : parcelas ) {
-			ContaPagarResponse resp = contaPagarBuilder.novoContaPagarResponse();
-			contaPagarBuilder.carregaContaPagarResponse( resp, p );
-			
-			lista.add( resp );
-		}
 		
-		return lista;
+		Double debitoTotalCompleto = compraParcelaRepository.calculaDebitoTotalCompleto();
+		if ( debitoTotalCompleto == null )
+			debitoTotalCompleto = 0d;
+		
+		ContasPagarResponse resp = contasPagarBuilder.novoContasPagarResponse();
+		contasPagarBuilder.carregaContasPagarResponse( resp, parcelas, debitoTotalCompleto );
+				
+		return resp;
 	}
 	
 }

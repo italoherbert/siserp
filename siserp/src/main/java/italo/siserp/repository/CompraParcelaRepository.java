@@ -13,4 +13,7 @@ public interface CompraParcelaRepository extends JpaRepository<CompraParcela, Lo
 	@Query( "select p from CompraParcela p where p.dataPagamento between ?1 and ?2 order by ( p.dataPagamento )")
 	public List<CompraParcela> filtra( Date dataIni, Date dataFim );
 	
+	@Query( "select sum(p.valor) from CompraParcela p where p.paga=false")
+	public Double calculaDebitoTotalCompleto();
+	
 }
