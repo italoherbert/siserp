@@ -152,13 +152,22 @@ public class CompraController {
 	@PreAuthorize("hasAuthority('compraREAD')")	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraCompras( @RequestBody BuscaComprasRequest request ) {
+		if ( request.getDataIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );
+		if ( request.getDataIni().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );
+		if ( request.getDataFim() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
+		if ( request.getDataFim().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
+		
 		try {
 			List<FiltroCompraResponse> resps = compraService.filtra( request );
 			return ResponseEntity.ok( resps );
 		} catch (DataIniInvalidaException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA, e.getParams() ) );						
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA ) );						
 		} catch (DataFimInvalidaException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_INVALIDA, e.getParams() ) );						
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_INVALIDA ) );						
 		} catch (DataFimAposDataIniException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_APOS_DATA_FIM ) );						
 		}

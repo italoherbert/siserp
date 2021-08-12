@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Container, Row, Col, Card, Form, Button} from 'react-bootstrap';
+import { Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
 
-import Categorias from './categorias';
+import CategoriaDetalhes from './categoria-detalhes';
 
 export default class CategoriaForm extends React.Component {
 	
@@ -64,50 +64,44 @@ export default class CategoriaForm extends React.Component {
 		} );				
 	}
 		
-	paraTelaCategorias() {
-		ReactDOM.render( <Categorias />, sistema.paginaElemento() );
+	paraTelaCategoriaDetalhes() {
+		ReactDOM.render( <CategoriaDetalhes categoriaId={this.props.categoriaId} />, sistema.paginaElemento() );
 	}
 	
 	render() {
 		const { erroMsg, infoMsg } = this.state;
 				
 		return(	
-			<Container>
-				<Row>
-					<Col className="col-sm-2"></Col>	
-					<Col className="col-sm-8">															
-						<Card className="p-3">								
-							<Form onSubmit={(e) => this.salvar( e ) }>
-								<h4 className="card-title">{this.props.titulo}</h4>
-								
-								<Form.Group className="mb-2">
-									<Form.Label>Descrição: </Form.Label>
-									<Form.Control type="text" ref={this.descricao} name="descricao" />
-								</Form.Group>
-							
-								<MensagemPainel cor="danger" msg={erroMsg} />
-								<MensagemPainel cor="primary" msg={infoMsg} />
-								
-								<Button type="submit" variant="primary">Salvar</Button>
-							</Form>
-						</Card>													
-					</Col>
-				</Row>		
-				
-				
+			<div>																		
+				<Card className="p-3">								
+					<Form onSubmit={(e) => this.salvar( e ) }>
+						<h4 className="card-title">{this.props.titulo}</h4>
+						
+						<Form.Group className="mb-2">
+							<Form.Label>Descrição: </Form.Label>
+							<Form.Control type="text" ref={this.descricao} name="descricao" />
+						</Form.Group>
+					
+						<MensagemPainel cor="danger" msg={erroMsg} />
+						<MensagemPainel cor="primary" msg={infoMsg} />
+						
+						<Button type="submit" variant="primary">Salvar</Button>
+					</Form>
+				</Card>													
+					
 				{ this.props.op === 'editar' && (
 					<div>
 						<br />
 						<Card className="p-3">
 							<Row>
 								<Col>
-									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategorias( e ) }>Ir para categorias</button>
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategoriaDetalhes( e ) }>Ir para detalhes</button>
 								</Col>
 							</Row>
 						</Card>
 					</div>
 				) }
-			</Container>
+			</div>
 		);
 	}
 	

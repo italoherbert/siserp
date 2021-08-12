@@ -17,7 +17,11 @@ export default class CompraRegistro extends React.Component {
 		this.state = { 
 			infoMsg : null,
 			erroMsg : null,
-			compra : { parcelas : [], itens : [], fornecedor : { empresa : '' }, total : 0 }
+			compra : { parcelas : [], itens : [], fornecedor : { empresa : '' } },
+			
+			total : 0, 
+			valorPago : 0, 
+			debito : 0
 		};								
 	}				
 	
@@ -33,10 +37,19 @@ export default class CompraRegistro extends React.Component {
 			if ( resposta.status === 200 ) {
 				resposta.json().then( (dados) => {
 					let total = 0;
-					for( let i = 0; i < dados.parcelas.length; i++ )
-						total += sistema.paraFloat( dados.parcelas[ i ].valor );
+					let valorPago = 0;					
+					for( let i = 0; i < dados.parcelas.length; i++ ) {
+						let valor = sistema.paraFloat( dados.parcelas[ i ].valor );
+						
+						if ( dados.parcelas[ i ].paga === 'true' )
+							valorPago += valor;
+						
+						total += valor;						
+					}
 										
-					this.setState( { compra : dados, total : total } );
+					let debito = total - valorPago;					
+					
+					this.setState( { compra : dados, total : total, valorPago : valorPago, debito : debito } );
 				} );
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -45,12 +58,16 @@ export default class CompraRegistro extends React.Component {
 		} );
 	}
 	
+	pagarParcela( e, parcelaId ) {
+		
+	}
+	
 	paraTelaCompras() {
 		ReactDOM.render( <Compras />, sistema.paginaElemento() ); 
 	}
 		
 	render() {
-		const { infoMsg, erroMsg, compra, total } = this.state;
+		const { infoMsg, erroMsg, compra, total, valorPago, debito } = this.state;
 				
 		return(	
 			<Container>
@@ -107,6 +124,7 @@ export default class CompraRegistro extends React.Component {
 											<th>Valor</th>
 											<th>Data de pagamento</th>
 											<th>Data de vencimento</th>
+											<th>Situação</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -116,6 +134,9 @@ export default class CompraRegistro extends React.Component {
 													<td>{ sistema.formataReal( item.valor ) }</td>
 													<td>{ item.dataPagamento }</td>
 													<td>{ item.dataVencimento }</td>
+													<td className={item.paga === 'true' ? "text-primary" : "text-danger" }>
+														{ ( item.paga === 'true' ? 'Paga' : 'Em débito' ) }
+													</td>
 												</tr>
 											)
 										} ) }
@@ -127,6 +148,15 @@ export default class CompraRegistro extends React.Component {
 							
 							<Form.Group style={{fontSize: '1.6em'}}>
 								<Form.Label>Total: &nbsp;<span className="text-danger">{ sistema.formataReal( total ) }</span></Form.Label>
+								<br />
+								<Row>
+									<Col>
+										<Form.Label>Valor pago: &nbsp;<span className="text-danger">{ sistema.formataReal( valorPago ) }</span></Form.Label>
+									</Col>
+									<Col>
+										<Form.Label>Débito: &nbsp;<span className="text-danger">{ sistema.formataReal( debito ) }</span></Form.Label>
+									</Col>
+								</Row>
 							</Form.Group>
 						</TabPanel>						
 					</Tabs>

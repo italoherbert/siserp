@@ -5,9 +5,9 @@ import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap'
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import UsuarioGrupos from './usuario-grupos';
+import Grupos from './grupos';
 
-export default class UsuarioGrupoFormEdit extends React.Component {
+export default class GrupoFormEdit extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -87,7 +87,7 @@ export default class UsuarioGrupoFormEdit extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {
+			if ( resposta.status === 200 ) {
 				this.carregar();
 				this.setState( { infoMsg : "Recursos sincronizados com sucesso." } );
 			} else {
@@ -127,7 +127,7 @@ export default class UsuarioGrupoFormEdit extends React.Component {
 				valor : e.target.checked
 			} )
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {
+			if ( resposta.status === 200 ) {
 				this.carregar();
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -136,8 +136,8 @@ export default class UsuarioGrupoFormEdit extends React.Component {
 		} );
 	}
 		
-	paraTelaUsuarioGrupos() {
-		ReactDOM.render( <UsuarioGrupos />, sistema.paginaElemento() );
+	paraTelaGrupos() {
+		ReactDOM.render( <Grupos />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -224,7 +224,7 @@ export default class UsuarioGrupoFormEdit extends React.Component {
 				<Card className="p-3">
 					<Row>
 						<Col>
-							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaUsuarioGrupos( e ) }>Ir para grupos</button>								
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaGrupos( e ) }>Ir para grupos</button>								
 						</Col>
 					</Row>
 				</Card>

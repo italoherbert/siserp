@@ -54,7 +54,7 @@ public class CaixaDAO {
 		
 		Usuario u = usuarioRepository.findById( usuarioId ).orElseThrow( UsuarioNaoEncontradoException::new );
 		
-		if ( u.getGrupo().getNome().equalsIgnoreCase( UsuarioGrupo.CAIXA ) )
+		if ( !u.getGrupo().getNome().equalsIgnoreCase( UsuarioGrupo.CAIXA ) )
 			throw new PerfilCaixaRequeridoException();
 		
 		Funcionario f = u.getFuncionario();

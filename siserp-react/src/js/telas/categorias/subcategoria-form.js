@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { Card, Form, Button } from 'react-bootstrap';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -75,35 +75,28 @@ export default class SubCategoriaForm extends React.Component {
 	render() {
 		const { erroMsg, infoMsg } = this.state;
 				
-		return(
-			<Container>
-				<Row>
-					<Col className="col-md-2"></Col>
-					<Col className="col-md-8">																
-						<Card className="p-3">								
-							<Form onSubmit={(e) => this.salvar( e ) }>
-								<h4 className="card-title">{this.props.titulo}</h4>
-								<Form.Group className="mb-2">
-									<Form.Label>Descrição: </Form.Label>
-									<Form.Control type="text" ref={this.descricao} name="descricao" />										
-								</Form.Group>
-							
-								<MensagemPainel cor="danger" msg={erroMsg} />
-								<MensagemPainel cor="primary" msg={infoMsg} />
-																	
-								<Button type="submit" variant="primary">Salvar</Button>									
-								
-								{(this.props.op === 'editar' ) && ( 
-									<div>
-										<br />
-										<button className="btn btn-link p-0" onClick={(e) => this.paraTelaCategoria(e) }>Ir para categoria</button>
-									</div>
-								) }																											
-							</Form>								
-						</Card>									
-					</Col>
-				</Row>
-			</Container>
+		return(																	
+			<Card className="p-3">								
+				<Form onSubmit={(e) => this.salvar( e ) }>
+					<h4 className="card-title">{this.props.titulo}</h4>
+					<Form.Group className="mb-2">
+						<Form.Label>Descrição: </Form.Label>
+						<Form.Control type="text" ref={this.descricao} name="descricao" />										
+					</Form.Group>
+				
+					<MensagemPainel cor="danger" msg={erroMsg} />
+					<MensagemPainel cor="primary" msg={infoMsg} />
+														
+					<Button type="submit" variant="primary">Salvar</Button>									
+					
+					{(this.props.op === 'editar' ) && ( 
+						<div>
+							<br />
+							<button className="btn btn-link p-0" onClick={(e) => this.paraTelaCategoria(e) }>Ir para categoria</button>
+						</div>
+					) }																											
+				</Form>								
+			</Card>													
 		);
 	}
 	

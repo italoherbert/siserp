@@ -17,4 +17,6 @@ public class CompraParcelaResponse {
 	
 	private String dataVencimento;
 	
+	private String paga;
+	
 }

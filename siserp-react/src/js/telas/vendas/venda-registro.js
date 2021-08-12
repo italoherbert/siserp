@@ -460,7 +460,7 @@ export default class VendaRegistro extends React.Component {
 				
 				<Card className="p-3">					
 					<Form>
-						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaVendas( e ) }>Ir para tela de compras</button>
+						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaVendas( e ) }>Ir para tela de vendas</button>
 					</Form>
 				</Card>				
 			</div>

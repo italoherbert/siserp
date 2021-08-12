@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -50,6 +52,7 @@ public class FuncionarioService {
 	@Autowired
 	private HashUtil hashUtil;
 
+	@Transactional
 	public IdResponse registraFuncionario( SaveFuncionarioRequest request ) 
 			throws PessoaJaExisteException, 
 				UsuarioJaExisteException,
@@ -62,18 +65,25 @@ public class FuncionarioService {
 			throw new UsuarioJaExisteException();
 		
 		String nome = request.getUsuario().getGrupo().getNome();
-		Optional<UsuarioGrupo> grupo = usuarioGrupoRepository.buscaPorNome( nome );
-		if ( !grupo.isPresent() )
+		Optional<UsuarioGrupo> gop = usuarioGrupoRepository.buscaPorNome( nome );
+		if ( !gop.isPresent() )
 			throw new UsuarioGrupoNaoEncontradoException();
-				
+		
+		UsuarioGrupo grupo = gop.get();
+		
 		Funcionario f = funcionarioBuilder.novoFuncionario();
 		funcionarioBuilder.carregaFuncionario( f, request ); 
 		
 		funcionarioRepository.save( f );
+		
+		Usuario u = f.getUsuario();
+		u.setGrupo( grupo );
+		usuarioRepository.save( u );
 					
 		return new IdResponse( f.getId() ); 
 	}
 	
+	@Transactional
 	public void atualizaFuncionario( Long id, SaveFuncionarioRequest req )
 			throws FuncionarioNaoEncontradoException, 
 					PessoaJaExisteException,
@@ -89,9 +99,11 @@ public class FuncionarioService {
 				throw new PessoaJaExisteException();
 		
 		String gnome = req.getUsuario().getGrupo().getNome();
-		Optional<UsuarioGrupo> grupo = usuarioGrupoRepository.buscaPorNome( gnome );
-		if ( !grupo.isPresent() )
+		Optional<UsuarioGrupo> gop = usuarioGrupoRepository.buscaPorNome( gnome );
+		if ( !gop.isPresent() )
 			throw new UsuarioGrupoNaoEncontradoException();
+		
+		UsuarioGrupo grupo = gop.get();
 		
 		String username = req.getUsuario().getUsername();
 		String password = hashUtil.geraHash( req.getUsuario().getPassword() );
@@ -102,6 +114,10 @@ public class FuncionarioService {
 		}
 		
 		funcionarioBuilder.carregaFuncionario( f, req );
+		
+		Usuario u = f.getUsuario();
+		u.setGrupo( grupo );
+		usuarioRepository.save( u );
 		
 		funcionarioRepository.save( f );
 	}

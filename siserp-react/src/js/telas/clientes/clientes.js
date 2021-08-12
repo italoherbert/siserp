@@ -135,36 +135,31 @@ export default class Clientes extends React.Component {
 					</Col>
 				</Row>
 				
-				<Row>
-					<Col>
-						<h4 className="text-center col-md-12">Lista de Clientes</h4>
-						
-						<div className="tbl-pnl">
-							<Table striped bordered hover>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Nome</th>
-										<th>Detalhes</th>
-										<th>Remover</th>
+				<h4 className="text-center col-md-12">Lista de Clientes</h4>				
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Nome</th>
+								<th>Detalhes</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{clientes.map( ( cliente, index ) => {
+								return (
+									<tr key={index}>
+										<td>{cliente.id}</td>
+										<td>{cliente.pessoa.nome}</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, cliente.id )}>detalhes</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, cliente.id )}>remover</button></td>
 									</tr>
-								</thead>
-								<tbody>
-									{clientes.map( ( cliente, index ) => {
-										return (
-											<tr key={index}>
-												<td>{cliente.id}</td>
-												<td>{cliente.pessoa.nome}</td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, cliente.id )}>detalhes</button></td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, cliente.id )}>remover</button></td>
-											</tr>
-										);
-									} ) }	
-								</tbody>							
-							</Table>
-						</div>
-					</Col>
-				</Row>
+								);
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>
 					
 				<br />
 				
@@ -172,7 +167,6 @@ export default class Clientes extends React.Component {
 				<MensagemPainel cor="primary" msg={infoMsg} />	
 				
 				<Row>
-					<Col className="col-md-3"></Col>
 					<Col className="col-md-6">
 						<Card className="p-3">
 							<h4>Filtrar clientes</h4>

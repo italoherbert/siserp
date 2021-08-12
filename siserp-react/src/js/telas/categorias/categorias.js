@@ -124,69 +124,60 @@ export default class Categorias extends React.Component {
 						</Form>
 					</Modal.Footer>
 				</Modal>
-				
-				<Row>
-					<Col>
-						<CategoriaForm 
-							op="cadastrar"
-							titulo="Cadastre nova categoria" 
-							registrou={ () => this.filtrar( null, false) } />
-					</Col>
-				</Row>
+					
+				<h4 className="text-center">Lista de Categorias</h4>
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Descrição</th>
+								<th>Detalhes</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{categorias.map( ( categoria, index ) => {
+								return (
+									<tr key={index}>
+										<td>{categoria.id}</td>
+										<td>{categoria.descricao}</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, categoria.id )}>remover</button></td>
+									</tr>
+								)
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>
 				
 				<br />
-				
+		
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />
+					
 				<Row>
 					<Col>
 						<Card className="p-3">
-							<h4 className="text-center">Lista de Categorias</h4>
-							<div className="tbl-pnl">
-								<Table striped bordered hover>
-									<thead>
-										<tr>
-											<th>ID</th>
-											<th>Descrição</th>
-											<th>Detalhes</th>
-											<th>Remover</th>
-										</tr>
-									</thead>
-									<tbody>
-										{categorias.map( ( categoria, index ) => {
-											return (
-												<tr key={index}>
-													<td>{categoria.id}</td>
-													<td>{categoria.descricao}</td>
-													<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
-													<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, categoria.id )}>remover</button></td>
-												</tr>
-											)
-										} ) }	
-									</tbody>							
-								</Table>
-							</div>
-							
-							<br />
-					
-							<MensagemPainel cor="danger" msg={erroMsg} />
-							<MensagemPainel cor="primary" msg={infoMsg} />
-							
-							<Row>
-								<Col className="col-md-3"></Col>
-								<Col className="col-md-6">
-									<Form onSubmit={ (e) => this.filtrar( e, true ) }>
-										<Form.Group className="mb-2">
-											<Form.Label>Descrição:</Form.Label>
-											<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
-										</Form.Group>
-																																								
-										<Button type="submit" variant="primary">Filtrar</Button>				
-									</Form>	
-								</Col>
-							</Row>
+							<h4>Filtro de categorias</h4>
+							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
+								<Form.Group className="mb-2">
+									<Form.Label>Descrição:</Form.Label>
+									<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
+								</Form.Group>
+																																						
+								<Button type="submit" variant="primary">Filtrar</Button>				
+							</Form>	
 						</Card>
-					</Col>	
+					</Col>
+					<Col>								
+						<CategoriaForm 
+							op="cadastrar"
+							titulo="Cadastre nova categoria" 
+							registrou={ () => this.filtrar( null, false) } />							
+					</Col>
 				</Row>
-																															
+																													
 			</Container>					
 		);
 	}

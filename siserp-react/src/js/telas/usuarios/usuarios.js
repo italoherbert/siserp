@@ -5,7 +5,8 @@ import {Container, Row, Col, Card, Form, Table, Button} from 'react-bootstrap';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import UsuarioGrupos from './usuario-grupos';
+import Grupos from './grupos';
+import Recursos from './recursos';
 
 export default class Usuarios extends React.Component {
 	
@@ -60,8 +61,12 @@ export default class Usuarios extends React.Component {
 	}
 				
 	paraTelaGrupos( e ) {
-		ReactDOM.render( <UsuarioGrupos />, sistema.paginaElemento() );
+		ReactDOM.render( <Grupos />, sistema.paginaElemento() );
 	}		
+	
+	paraTelaRecursos( e ) {
+		ReactDOM.render( <Recursos />, sistema.paginaElemento() );
+	}
 		
 	render() {
 		const { erroMsg, infoMsg, usuarios } = this.state;
@@ -71,7 +76,8 @@ export default class Usuarios extends React.Component {
 				<Row>
 					<Col>	
 						<Form className="float-start">
-							<Button variant="primary" onClick={ (e) => this.paraTelaGrupos( e ) }>Grupos</Button>
+							<Button variant="primary" onClick={ (e) => this.paraTelaGrupos( e ) }>Grupos de usuário</Button>
+							<Button variant="primary" className="mx-2" onClick={ (e) => this.paraTelaRecursos( e ) }>Recursos</Button>
 						</Form>
 					</Col>
 				</Row>
@@ -110,7 +116,6 @@ export default class Usuarios extends React.Component {
 				<MensagemPainel cor="primary" msg={infoMsg} />									
 				
 				<Row>
-					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
 						<Card className="p-3">
 							<h4>Filtrar usuarios</h4>

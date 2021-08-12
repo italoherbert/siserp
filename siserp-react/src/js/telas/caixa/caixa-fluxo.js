@@ -63,9 +63,9 @@ export default class CaixaFluxo extends React.Component {
 						for( let j = 0; j < caixa.lancamentos.length; j++ ) {
 							let lancamento = caixa.lancamentos[ j ];
 							if ( lancamento.tipo === 'CREDITO' ) {
-								credito += lancamento.valor;
+								credito += sistema.paraFloat( lancamento.valor );
 							} else if ( lancamento.tipo === 'DEBITO' ) {
-								debito += lancamento.valor;
+								debito += sistema.paraFloat( lancamento.valor );
 							}
 						}
 					

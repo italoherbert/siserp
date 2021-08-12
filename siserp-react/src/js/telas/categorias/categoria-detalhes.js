@@ -51,10 +51,7 @@ export default class CategoriaDetalhes extends React.Component {
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {		
-					this.setState( { categoria : dados } );
-					
-					if ( dados.subcategorias.length === 0 )
-						this.setState( { infoMsg : "Nenhuma subcategoria registrada." } );					
+					this.setState( { categoria : dados } );									
 				} );		
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );				
@@ -178,11 +175,13 @@ export default class CategoriaDetalhes extends React.Component {
 						</Form>
 					</Modal.Footer>
 				</Modal>
+
+				<h4 className="text-center">Dados do categoria</h4>																
+					
+				<br />
 				
 				<Row>
-					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
-						<h4 className="text-center">Dados do categoria</h4>																
 						
 						<Card className="p-3">								
 							<h4 className="card-title">Dados gerais</h4>
@@ -202,63 +201,60 @@ export default class CategoriaDetalhes extends React.Component {
 												
 				<br />
 				
-				<Row>
-					<Col className="card p-3">
-						<h4 className="text-center">Lista de Subcategorias</h4>
-						<Card className="tbl-pnl">
-							<Table striped bordered hover>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Descrição</th>
-										<th>Editar</th>
-										<th>Remover</th>
+				<h4 className="text-center">Lista de Subcategorias</h4>
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Descrição</th>
+								<th>Editar</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{categoria.subcategorias.map( ( subcategoria, index ) => {
+								return (
+									<tr key={index}>
+										<td>{subcategoria.id}</td>
+										<td>{subcategoria.descricao}</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.editarSubcategoria( e, subcategoria )}>editar</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSubcategoriaSeConfirmado( e, subcategoria.id )}>remover</button></td>
 									</tr>
-								</thead>
-								<tbody>
-									{categoria.subcategorias.map( ( subcategoria, index ) => {
-										return (
-											<tr key={index}>
-												<td>{subcategoria.id}</td>
-												<td>{subcategoria.descricao}</td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.editarSubcategoria( e, subcategoria )}>editar</button></td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSubcategoriaSeConfirmado( e, subcategoria.id )}>remover</button></td>
-											</tr>
-										);
-									} ) }	
-								</tbody>							
-							</Table>
-						</Card>
+								);
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>
 						
-						<br />
-						
-						<Row>
-							<Col className="col-sm-2"></Col>
-							<Col className="col-sm-8">
-								<MensagemPainel cor="danger" msg={erroMsg} />
-								<MensagemPainel cor="primary" msg={infoMsg} />
-								
-								<Form onSubmit={ (e) => this.filtrarSubcategorias( e, true ) }>
-									<Form.Group className="mb-2">
-										<Form.Label>Descrição:</Form.Label>
-										<Form.Control type="text" ref={this.subcatDescricaoIni} name="subcatDescricaoIni" />						
-									</Form.Group>
-																							
-									<Button type="submit" variant="primary">Filtrar</Button>				
-								</Form>	
-							</Col>
-						</Row>																
-					</Col>															
-				</Row>		
-				
 				<br />
-								
-				<SubCategoriaForm 
-					op="cadastrar" 
-					titulo="Registre nova subcategoria"
-					categoriaId={this.props.categoriaId} 
-					registrou={ () => this.filtrarSubcategorias( null, false ) } />
 				
+				<MensagemPainel cor="danger" msg={erroMsg} />
+				<MensagemPainel cor="primary" msg={infoMsg} />
+				
+				<Row>
+					<Col>
+						<Card className="p-3">		
+							<h4>Filtro de categorias</h4>
+							<Form onSubmit={ (e) => this.filtrarSubcategorias( e, true ) }>
+								<Form.Group className="mb-2">
+									<Form.Label>Descrição:</Form.Label>
+									<Form.Control type="text" ref={this.subcatDescricaoIni} name="subcatDescricaoIni" />						
+								</Form.Group>
+																						
+								<Button type="submit" variant="primary">Filtrar</Button>				
+							</Form>	
+						</Card>
+					</Col>
+					<Col>
+						<SubCategoriaForm 
+							op="cadastrar" 
+							titulo="Registre nova subcategoria"
+							categoriaId={this.props.categoriaId} 
+							registrou={ () => this.filtrarSubcategorias( null, false ) } />				
+					</Col>
+				</Row>																
+												
 				<br />
 				
 				<Card className="p-3">

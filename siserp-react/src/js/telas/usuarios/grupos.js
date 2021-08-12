@@ -6,10 +6,12 @@ import Modal from 'react-bootstrap/Modal';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import UsuarioGrupoFormEdit from './usuario-grupo-form-edit';
-import UsuarioGrupoFormRegistro from './usuario-grupo-form-registro';
+import GrupoFormEdit from './grupo-form-edit';
+import GrupoFormRegistro from './grupo-form-registro';
 
-export default class UsuarioGrupos extends React.Component {
+import Usuarios from './usuarios';
+
+export default class Grupos extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -68,7 +70,7 @@ export default class UsuarioGrupos extends React.Component {
 	editar( e, id ) {
 		e.preventDefault();
 				
-		ReactDOM.render( <UsuarioGrupoFormEdit grupoId={id}/>, sistema.paginaElemento() );
+		ReactDOM.render( <GrupoFormEdit grupoId={id}/>, sistema.paginaElemento() );
 	}
 	
 	removerSeConfirmado( e, id ) {
@@ -108,7 +110,11 @@ export default class UsuarioGrupos extends React.Component {
 	}
 	
 	paraTelaRegistro() {
-		ReactDOM.render( <UsuarioGrupoFormRegistro />, sistema.paginaElemento() );
+		ReactDOM.render( <GrupoFormRegistro />, sistema.paginaElemento() );
+	}
+	
+	paraTelaUsuarios() {
+		ReactDOM.render( <Usuarios />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -120,7 +126,9 @@ export default class UsuarioGrupos extends React.Component {
 					<Modal.Header>
 						<Modal.Title>Remoção de grupo</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tem certeza que deseja remover o grupo selecionado?</Modal.Body>
+					<Modal.Body>
+						Tem certeza que deseja remover o grupo selecionado?
+					</Modal.Body>
 					<Modal.Footer>
 						<Form>
 							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
@@ -137,35 +145,31 @@ export default class UsuarioGrupos extends React.Component {
 					</Col>
 				</Row>
 			
-				<Row>
-					<Col>
-						<h4 className="text-center">Lista de Grupos</h4>
-						<div className="tbl-pnl">
-							<Table striped bordered hover>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Nome</th>
-										<th>Editar</th>
-										<th>Remover</th>
+				<h4 className="text-center">Lista de Grupos</h4>
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Nome</th>
+								<th>Editar</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{grupos.map( ( grupo, index ) => {
+								return (
+									<tr key={index}>
+										<td>{grupo.id}</td>
+										<td>{grupo.nome}</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.editar( e, grupo.id )}>editar</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, grupo.id )}>remover</button></td>
 									</tr>
-								</thead>
-								<tbody>
-									{grupos.map( ( grupo, index ) => {
-										return (
-											<tr key={index}>
-												<td>{grupo.id}</td>
-												<td>{grupo.nome}</td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.editar( e, grupo.id )}>editar</button></td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, grupo.id )}>remover</button></td>
-											</tr>
-										);
-									} ) }	
-								</tbody>							
-							</Table>
-						</div>
-					</Col>
-				</Row>
+								);
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>
 					
 				<br />
 				
@@ -173,7 +177,6 @@ export default class UsuarioGrupos extends React.Component {
 				<MensagemPainel cor="primary" msg={infoMsg} />									
 				
 				<Row>
-					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
 						<Card className="p-3">
 							<h4>Filtrar grupos</h4>
@@ -188,7 +191,17 @@ export default class UsuarioGrupos extends React.Component {
 							</Form>	
 						</Card>
 					</Col>
-				</Row>						
+				</Row>	
+				
+				<br />
+
+				<Card className="p-3">
+					<Row>
+						<Col>
+							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaUsuarios( e ) }>Ir para usuários</button>								
+						</Col>
+					</Row>
+				</Card>
 			</Container>					
 		);
 	}

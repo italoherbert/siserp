@@ -39,6 +39,9 @@ public class CompraParcela {
 	@Temporal(TemporalType.DATE)
 	private Date dataVencimento;
 	
+	@Column	
+	private boolean paga;
+	
 	@ManyToOne
 	@JoinColumn(name="compra_id")
 	private Compra compra;

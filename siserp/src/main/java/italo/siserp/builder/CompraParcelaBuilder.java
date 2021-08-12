@@ -24,7 +24,7 @@ public class CompraParcelaBuilder {
 	
 	@Autowired
 	private NumeroUtil numeroUtil;
-	
+		
 	public void carregaCompraParcela( CompraParcela parcela, SaveCompraParcelaRequest req ) 
 			throws ParcelaValorInvalidoException, 
 				DataPagamentoInvalidaException, 
@@ -52,13 +52,16 @@ public class CompraParcelaBuilder {
 			ex.setParams( req.getDataPagamento() );
 			throw ex;
 		}		
+		
+		parcela.setPaga( false ); 
 	}
 	
 	public void carregaCompraParcelaResponse( CompraParcelaResponse resp, CompraParcela parcela ) {
 		resp.setId( parcela.getId() );		
 		resp.setValor( numeroUtil.doubleParaString( parcela.getValor() ) );
 		resp.setDataPagamento( dataUtil.dataParaString( parcela.getDataPagamento() ) );
-		resp.setDataVencimento( dataUtil.dataParaString( parcela.getDataVencimento() ) );		
+		resp.setDataVencimento( dataUtil.dataParaString( parcela.getDataVencimento() ) );
+		resp.setPaga( String.valueOf( parcela.isPaga() ) );
 	}	
 	
 	public CompraParcelaResponse novoCompraParcelaResponse() {

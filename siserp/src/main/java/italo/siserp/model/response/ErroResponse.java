@@ -26,6 +26,7 @@ public class ErroResponse {
 	public final static int USUARIO_GRUPO_NAO_ENCONTRADO = 111;
 	public final static int RECURSO_NAO_ENCONTRADO = 112;
 	public final static int PERMISSAO_GRUPO_NAO_ENCONTRADO = 113;
+	public final static int PARCELA_NAO_ENCONTRADA = 114;
 	
 	public final static int CODIGO_BARRAS_NAO_REGISTRADO = 150;
 		
@@ -100,6 +101,7 @@ public class ErroResponse {
 	public final static int PERMISSAO_ESCRITA_INVALIDA = 529;
 	public final static int PERMISSAO_REMOCAO_INVALIDA = 530;
 	public final static int PERMISSAO_TIPO_INVALIDO = 531;
+	public final static int VALOR_PARCELA_SITUACAO_INVALIDO = 532;
 	
 	private int codigo;
 	private String mensagem;
@@ -155,6 +157,9 @@ public class ErroResponse {
 				break;
 			case PERMISSAO_GRUPO_NAO_ENCONTRADO:
 				mensagem = "Grupo de permissões não encontrado.";
+				break;
+			case PARCELA_NAO_ENCONTRADA:
+				mensagem = "Parcela não encontrada";
 				break;
 				
 			case USUARIO_JA_EXISTE:
@@ -362,6 +367,9 @@ public class ErroResponse {
 				break;
 			case PERMISSAO_TIPO_INVALIDO:
 				mensagem = "Tipo de permissão inválido.";
+				break;
+			case VALOR_PARCELA_SITUACAO_INVALIDO:
+				mensagem = "Valor de situação da parcela inválido";
 				break;
 		}		
 	}

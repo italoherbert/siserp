@@ -29,7 +29,7 @@ public class Recurso {
 	@Column
 	private String nome;
 	
-	@OneToMany(mappedBy="grupo", cascade=CascadeType.ALL)	
+	@OneToMany(mappedBy="recurso", cascade=CascadeType.ALL)	
 	private List<PermissaoGrupo> permissaoGrupo;
 	
 }

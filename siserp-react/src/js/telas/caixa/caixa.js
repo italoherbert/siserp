@@ -6,7 +6,6 @@ import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import CaixaAbertura from './caixa-abertura';
-import CaixaLancamentos from './caixa-lancamentos';
 
 export default class Caixa extends React.Component {
 	
@@ -31,7 +30,7 @@ export default class Caixa extends React.Component {
 		
 		sistema.showLoadingSpinner();				
 		
-		fetch( '/api/lancamento/balanco/hoje/'+sistema.usuario.id, {
+		fetch( '/api/caixa/balanco/hoje/'+sistema.usuario.id, {
 			method : 'GET',
 			headers : {
 				'Authorization' : 'Bearer '+sistema.token
@@ -56,18 +55,21 @@ export default class Caixa extends React.Component {
 		
 		sistema.showLoadingSpinner();
 		
-		fetch( '/api/lancamento/novo/hoje/'+sistema.usuario.id, {
+		fetch( '/api/caixa/fecha/'+sistema.usuario.id, {
 			method : 'POST',
 			headers : {
 				'Content-Type' : 'application/json; charset=UTF-8',
 				'Authorization' : 'Bearer '+sistema.token
 			},
 			body : JSON.stringify( {
-				tipo : "DEBITO",
-				valor : sistema.paraFloat( this.valorFechamento.current.value )
+				lancamento : {
+					tipo : "DEBITO",
+					valor : sistema.paraFloat( this.valorFechamento.current.value )
+				}
 			} )
 		} ).then( ( resposta ) => {
 			if ( resposta.status === 200 ) {
+				this.valorFechamento.current.value = '';
 				this.atualizaDadosHoje();
 			} else {
 				sistema.trataRespostaNaoOk( resposta, this );
@@ -75,11 +77,7 @@ export default class Caixa extends React.Component {
 			sistema.hideLoadingSpinner();
 		} );
 	}
-	
-	visualizarLancamentos( e ) {		
-		ReactDOM.render( <CaixaLancamentos />, sistema.paginaElemento() );
-	}
-	
+		
 	paraTelaAbrirCaixa( e ) {
 		ReactDOM.render( <CaixaAbertura />, sistema.paginaElemento() );
 	}
@@ -128,7 +126,6 @@ export default class Caixa extends React.Component {
 							<div>
 								<Form>
 									<Button variant="primary" onClick={ (e) => this.atualizaDadosHoje( e ) }>Atualizar dados</Button>
-									<Button variant="primary" className="mx-3" onClick={ (e) => this.visualizarLancamentos( e ) }>Lançamentos</Button>
 								</Form>
 							</div>												
 						</Card>						

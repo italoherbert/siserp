@@ -15,7 +15,7 @@ export default class FuncionarioForm extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			uTipos : []
+			usuarioGrupos : []
 		};
 		
 		this.nome = React.createRef();
@@ -29,14 +29,14 @@ export default class FuncionarioForm extends React.Component {
 		this.cidade = React.createRef();
 		this.uf = React.createRef();		
 		
-		this.tipo = React.createRef();
+		this.usuarioGrupo = React.createRef();
 		this.username = React.createRef();		
 		this.password = React.createRef();		
 		this.password2 = React.createRef();
 	}
 	
 	componentDidMount() {			
-		this.carregaTipos();
+		this.carregaGrupos();
 		
 		if ( this.props.op === 'editar' )
 			this.carregaFuncionario();		
@@ -63,7 +63,7 @@ export default class FuncionarioForm extends React.Component {
 					this.uf.current.value = dados.pessoa.endereco.uf;
 					
 					this.username.current.value = dados.usuario.username;
-					this.tipo.current.value = dados.usuario.tipo;
+					this.usuarioGrupo.current.value = dados.usuario.grupo.nome;
 					
 					this.setState( {} );
 				} );
@@ -73,15 +73,15 @@ export default class FuncionarioForm extends React.Component {
 		} );
 	}
 		
-	carregaTipos() {
-		fetch( "/api/usuario/tipos", {
+	carregaGrupos() {
+		fetch( "/api/usuario/grupo/lista", {
 			method : "GET",			
 			headers : {
 				"Authorization" : "Bearer "+sistema.token
 			}
 		} ).then( (resposta) => {	
 			resposta.json().then( (dados) => {
-				this.setState( { uTipos : dados } );										
+				this.setState( { usuarioGrupos : dados } );										
 			} );			 
 		} );
 	}
@@ -128,7 +128,9 @@ export default class FuncionarioForm extends React.Component {
 				"usuario" : {
 					"username" : this.username.current.value,
 					"password" : this.password.current.value,
-					"tipo" : this.tipo.current.value	
+					"grupo" : {
+						"nome" : this.usuarioGrupo.current.value	
+					}
 				}
 			} )		
 		} ).then( (resposta) => {						
@@ -146,7 +148,7 @@ export default class FuncionarioForm extends React.Component {
 	}
 	
 	render() {
-		const { erroMsg, infoMsg, uTipos } = this.state;
+		const { erroMsg, infoMsg, usuarioGrupos } = this.state;
 				
 		return(
 			<Container>
@@ -248,10 +250,10 @@ export default class FuncionarioForm extends React.Component {
 									</Col>									
 									<Col>
 										<Form.Group>
-											<Form.Label>Tipos:</Form.Label>
-											<select name="tipo" ref={this.tipo}>
-												<option key="0" value="NONE">Selecione um tipo!</option>
-												{ uTipos.map( (item, i) => {
+											<Form.Label>Grupos de usuário:</Form.Label>
+											<select name="usuarioGrupo" ref={this.usuarioGrupo} className="form-control">
+												<option key="0" value="NONE">Selecione um grupo!</option>
+												{ usuarioGrupos.map( (item, i) => {
 													return <option key={i+1} value={item}>{item}</option>
 												} )	}
 											</select>

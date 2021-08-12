@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown } from 'react-bootstrap';
 
 import Login from './login';
 import SedeDetalhes from './telas/sede/sede-detalhes';
@@ -14,6 +14,7 @@ import Vendas from './telas/vendas/vendas';
 import Caixa from './telas/caixa/caixa';
 import CaixaFluxo from './telas/caixa/caixa-fluxo';
 import Usuarios from './telas/usuarios/usuarios';
+import ContasPagar from './telas/contas-pagar/contas-pagar';
 
 import sistema from './logica/sistema.js';
 
@@ -68,6 +69,11 @@ export default class NavegBar extends React.Component {
 		ReactDOM.render( <CaixaFluxo />, sistema.paginaElemento() );
 	}
 	
+	
+	paraTelaContasPagar() {
+		ReactDOM.render( <ContasPagar />, sistema.paginaElemento() );
+	}
+	
 	paraTelaUsuarios() {
 		ReactDOM.render( <Usuarios />, sistema.paginaElemento() );
 	}
@@ -78,25 +84,30 @@ export default class NavegBar extends React.Component {
 				<Navbar.Brand className="mx-3">Sistema ERP</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
 				<Navbar.Collapse id="basic-navbar.nav">
-					<Nav className="me-auto">
+					<Nav className="mr-auto">
 						{ ( sistema.usuario.grupo.nome === 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaCaixa() }>Caixa</Nav.Link>
 						) }
 						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
-							<Nav.Link onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de caixa</Nav.Link>
+							<NavDropdown title="Financeiro">
+								<NavDropdown.Item onClick={ () => this.paraTelaFluxoCaixa() }>Fluxo de Caixa</NavDropdown.Item>
+								{ (  sistema.usuario.grupo.nome === 'GERENTE' ) && (
+									<NavDropdown.Item onClick={ () => this.paraTelaContasPagar() }>Contas a pagar</NavDropdown.Item>
+								) }
+							</NavDropdown>						
 						) }
 						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>Sede</Nav.Link>
 						) }
-						<Nav.Link onClick={ () => this.paraTelaVendas() }>Vendas</Nav.Link>
+						{ ( sistema.usuario.grupo.nome !== 'ADMIN' ) && (
+							<Nav.Link onClick={ () => this.paraTelaVendas() }>Vendas</Nav.Link>
+						) }
 						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaCompras() }>Compras</Nav.Link>
-						) }
-						
+						) }					
 						{ ( sistema.usuario.grupo.nome !== 'ADMIN' ) && (
 							<Nav.Link onClick={ () => this.paraTelaProdutos() }>Produtos</Nav.Link>
-						) }
-							
+						) }							
 						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
 							<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>Funcionarios</Nav.Link>						
 						) }

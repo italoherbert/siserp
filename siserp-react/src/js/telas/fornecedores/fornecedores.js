@@ -135,35 +135,31 @@ export default class Fornecedores extends React.Component {
 					</Col>
 				</Row>
 			
-				<Row>
-					<Col>
-						<h4 className="text-center">Lista de Fornecedores</h4>
-						<div className="tbl-pnl">
-							<Table striped bordered hover>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Nome da empresa</th>
-										<th>Detalhes</th>
-										<th>Remover</th>
+				<h4 className="text-center">Lista de Fornecedores</h4>
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Nome da empresa</th>
+								<th>Detalhes</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{fornecedores.map( ( fornecedor, index ) => {
+								return (
+									<tr key={index}>
+										<td>{fornecedor.id}</td>
+										<td>{fornecedor.empresa}</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, fornecedor.id )}>detalhes</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, fornecedor.id )}>remover</button></td>
 									</tr>
-								</thead>
-								<tbody>
-									{fornecedores.map( ( fornecedor, index ) => {
-										return (
-											<tr key={index}>
-												<td>{fornecedor.id}</td>
-												<td>{fornecedor.empresa}</td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.detalhes( e, fornecedor.id )}>detalhes</button></td>
-												<td><button className="btn btn-link" style={{ padding : 0 }} onClick={(e) => this.removerSeConfirmado( e, fornecedor.id )}>remover</button></td>
-											</tr>
-										);
-									} ) }	
-								</tbody>							
-							</Table>
-						</div>
-					</Col>
-				</Row>
+								);
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>
 					
 				<br />
 				
@@ -171,7 +167,6 @@ export default class Fornecedores extends React.Component {
 				<MensagemPainel cor="primary" msg={infoMsg} />									
 				
 				<Row>
-					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
 						<Card className="p-3">
 							<h4>Filtrar fornecedores</h4>

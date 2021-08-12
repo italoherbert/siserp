@@ -33,6 +33,7 @@ export default class Vendas extends React.Component {
 			
 	componentDidMount() {
 		this.incluirCliente.current.checked = false;
+		this.filtrar( null, false );	
 	}		
 			
 	filtrar( e, filtrarBTClicado ) {
@@ -153,41 +154,37 @@ export default class Vendas extends React.Component {
 					</Col>
 				</Row>
 				
-				<Row>
-					<Col>
-						<h4 className="text-center">Lista de Vendas</h4>
-						<div className="tbl-pnl">
-							<Table striped bordered hover>
-								<thead>
-									<tr>
-										<th>ID</th>
-										<th>Data venda</th>
-										<th>Cliente</th>
-										<th>Total</th>	
-										<th>Debito</th>	
-										<th>Detalhes</th>
-										<th>Remover</th>
+				<h3 className="text-center">Lista de Vendas</h3>
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Data venda</th>
+								<th>Cliente</th>
+								<th>Total</th>	
+								<th>Debito</th>	
+								<th>Detalhes</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{vendas.map( ( venda, index ) => {
+								return (
+									<tr key={index}>
+										<td>{venda.id}</td>
+										<td>{venda.dataVenda}</td>
+										<td>{venda.cliente.pessoa.nome}</td>
+										<td>{ sistema.formataReal( venda.subtotal * venda.desconto ) }</td>														
+										<td>{ sistema.formataReal( venda.debito ) }</td>														
+										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, venda.id )}>detalhes</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, venda.id )}>remover</button></td>
 									</tr>
-								</thead>
-								<tbody>
-									{vendas.map( ( venda, index ) => {
-										return (
-											<tr key={index}>
-												<td>{venda.id}</td>
-												<td>{venda.dataVenda}</td>
-												<td>{venda.cliente.pessoa.nome}</td>
-												<td>{ sistema.formataReal( venda.subtotal * venda.desconto ) }</td>														
-												<td>{ sistema.formataReal( venda.debito ) }</td>														
-												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, venda.id )}>detalhes</button></td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, venda.id )}>remover</button></td>
-											</tr>
-										)
-									} ) }	
-								</tbody>							
-							</Table>
-						</div>
-					</Col>
-				</Row>
+								)
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>
 				<br />
 		
 				<MensagemPainel cor="danger" msg={erroMsg} />

@@ -74,7 +74,6 @@ public class UsuarioGrupoController {
 		} 
 	}
 		
-	@PreAuthorize("hasAuthority('usuarioGrupoREAD')")
 	@GetMapping(value="/lista")
 	public ResponseEntity<Object> buscaGrupos() {
 		String[] grupos = usuarioGrupoService.listaGrupos();

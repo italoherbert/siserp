@@ -80,6 +80,7 @@ public class VendaService {
 	@Autowired
 	private ItemVendaBuilder itemVendaBuilder;
 	
+	@Autowired
 	private LancamentoBuilder lancamentoBuilder;
 			
 	@Autowired

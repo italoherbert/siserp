@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import UsuarioGrupos from './usuario-grupos';
+import Grupos from './grupos';
 
-export default class UsuarioGrupoFormRegistro extends React.Component {
+export default class GrupoFormRegistro extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -46,12 +46,12 @@ export default class UsuarioGrupoFormRegistro extends React.Component {
 		} );				
 	}
 	
-	paraTelaUsuarioGrupos() {
-		ReactDOM.render( <UsuarioGrupos />, sistema.paginaElemento() );
+	paraTelaGrupos() {
+		ReactDOM.render( <Grupos />, sistema.paginaElemento() );
 	}
 	
 	render() {
-		const { erroMsg, infoMsg, grupo } = this.state;
+		const { erroMsg, infoMsg } = this.state;
 				
 		return(
 			<Container>
@@ -80,7 +80,7 @@ export default class UsuarioGrupoFormRegistro extends React.Component {
 						<Card className="p-3">
 							<Row>
 								<Col>
-									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaUsuarioGrupos( e ) }>Ir para grupos</button>								
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaGrupos( e ) }>Ir para grupos</button>								
 								</Col>
 							</Row>
 						</Card>

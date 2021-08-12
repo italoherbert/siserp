@@ -27,6 +27,10 @@ export default class Compras extends React.Component {
 			remocaoModalCancelaFunc : () => {}
 		};					
 	}
+	
+	componentDidMount() {
+		this.filtrar( null, false );
+	}
 			
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )

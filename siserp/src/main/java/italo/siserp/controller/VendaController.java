@@ -47,7 +47,7 @@ public class VendaController {
 	@Autowired
 	private VendaService vendaService;
 		
-	@PreAuthorize("hasAnyAuthority('CAIXA')")	
+	@PreAuthorize("hasAnyAuthority('vendaWRITE')")	
 	@PostMapping(value="/efetua/{usuarioId}")
 	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {		
 		if ( request.getIncluirCliente() == null )
@@ -103,6 +103,7 @@ public class VendaController {
 		}
 	}
 	
+	@PreAuthorize("hasAnyAuthority('vendaREAD')")	
 	@PostMapping(value="/filtra")
 	public ResponseEntity<Object> filtraVendas( @RequestBody BuscaVendasRequest request ) {
 		if ( request.getDataIni() == null )
@@ -139,7 +140,7 @@ public class VendaController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
+	@PreAuthorize("hasAnyAuthority('vendaREAD')")	
 	@GetMapping(value="/get/{id}")
 	public ResponseEntity<Object> buscaVenda( @PathVariable Long id ) {
 		try {
@@ -150,7 +151,7 @@ public class VendaController {
 		}
 	}
 	
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")	
+	@PreAuthorize("hasAnyAuthority('vendaDELETE')")	
 	@DeleteMapping(value="/deleta/{id}")
 	public ResponseEntity<Object> deletaVenda( @PathVariable Long id ) {
 		try {
