@@ -6,6 +6,7 @@ import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
 import CaixaAbertura from './caixa-abertura';
+import CaixaLancamentos from './caixa-lancamentos';
 
 export default class Caixa extends React.Component {
 	
@@ -81,6 +82,10 @@ export default class Caixa extends React.Component {
 	paraTelaAbrirCaixa( e ) {
 		ReactDOM.render( <CaixaAbertura />, sistema.paginaElemento() );
 	}
+	
+	paraTelaLancamentos( e ) {
+		ReactDOM.render( <CaixaLancamentos />, sistema.paginaElemento() );
+	}
 		
 	render() {
 		const {	erroMsg, infoMsg, balanco } = this.state;
@@ -121,11 +126,21 @@ export default class Caixa extends React.Component {
 											
 								<div className="display-inline mb-2">
 									Saldo: <span className="text-danger">{ sistema.formataReal( balanco.saldo ) }</span>
-								</div>																
+								</div>
+
+								<br />
+								
+								<div className="display-inline mb-2">
+									Valor recebido no cartão: <span className="text-danger">{ sistema.formataReal( balanco.cartaoValorRecebido ) }</span>
+								</div>
+								<div className="display-inline mb-2">
+									Total de vendas a prazo: <span className="text-danger">{ sistema.formataReal( balanco.valorTotalVendasAPrazo ) }</span>
+								</div>
 							</div>
 							<div>
 								<Form>
 									<Button variant="primary" onClick={ (e) => this.atualizaDadosHoje( e ) }>Atualizar dados</Button>
+									<Button variant="primary" className="mx-2" onClick={ (e) => this.paraTelaLancamentos( e ) }>Lançamentos</Button>
 								</Form>
 							</div>												
 						</Card>						

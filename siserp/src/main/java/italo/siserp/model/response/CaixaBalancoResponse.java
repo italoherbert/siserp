@@ -19,6 +19,10 @@ public class CaixaBalancoResponse {
 	
 	private String credito;
 	
+	private String cartaoValorRecebido;
+	
+	private String valorTotalVendasAPrazo;
+	
 	private String saldo;
 	
 }

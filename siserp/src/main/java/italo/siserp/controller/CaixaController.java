@@ -141,7 +141,7 @@ public class CaixaController {
 	
 	@PreAuthorize("hasAuthority('caixaREAD')")
 	@GetMapping(value="/get/{caixaId}")
-	public ResponseEntity<Object> buscaCaixa( @PathVariable Long caixaId ) {		
+	public ResponseEntity<Object> buscaCaixa( @PathVariable Long caixaId ) {
 		try {
 			CaixaResponse resp = caixaService.buscaCaixa( caixaId );
 			return ResponseEntity.ok( resp );

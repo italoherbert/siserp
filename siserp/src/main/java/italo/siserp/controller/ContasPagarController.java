@@ -57,7 +57,20 @@ public class ContasPagarController {
 		if ( request.getDataFim().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
 		
-		try {
+		if ( request.getIncluirFornecedor() == null ) 
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+		
+		if ( request.getIncluirFornecedor().equals( "true" ) ) {
+			if ( request.getFornecedorNomeIni() == null )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+			if ( request.getFornecedorNomeIni().isBlank() )
+				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_EMPRESA_OBRIGATORIA ) );
+		}
+		
+		if ( request.getIncluirPagas() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_PARCELAS_PAGAS_OBRIGATORIO ) );
+		
+		try {			
 			ContasPagarResponse resp = contasPagarService.filtra( request );
 			return ResponseEntity.ok( resp );
 		} catch (DataIniInvalidaException e) {

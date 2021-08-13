@@ -13,4 +13,10 @@ public class BuscaContasPagarRequest {
 	
 	private String dataFim;
 	
+	private String incluirFornecedor;
+	
+	private String fornecedorNomeIni;
+	
+	private String incluirPagas;
+	
 }

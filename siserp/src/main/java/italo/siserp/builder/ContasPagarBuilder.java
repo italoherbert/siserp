@@ -22,16 +22,20 @@ public class ContasPagarBuilder {
 	
 	public void carregaContasPagarResponse( 
 			ContasPagarResponse response, 
-			List<CompraParcela> parcelas, double debitoTotalCompleto ) {
+			List<CompraParcela> parcelas, 
+			double debitoTotalCompleto, boolean incluirPagas ) {
 		
 		double debitoTotalPeriodo = 0;
 		
 		List<ContaPagarResponse> lista = new ArrayList<>();
 		for( CompraParcela p : parcelas ) {
+			if ( !incluirPagas && p.isPaga() )
+				continue;
+			
 			ContaPagarResponse resp = contaPagarBuilder.novoContaPagarResponse();
 			contaPagarBuilder.carregaContaPagarResponse( resp, p );
 			
-			lista.add( resp );
+			lista.add( resp );							
 			
 			if ( !p.isPaga() )
 				debitoTotalPeriodo += p.getValor();

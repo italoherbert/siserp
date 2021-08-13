@@ -62,14 +62,23 @@ public class ContasPagarService {
 		if ( dataIni.after( dataFim ) )
 			throw new DataFimAposDataIniException();
 		
-		List<CompraParcela> parcelas = compraParcelaRepository.filtra( dataIni, dataFim );
+		boolean incluirFornecedor = request.getIncluirFornecedor().equals( "true" );
+		boolean incluirPagas = request.getIncluirPagas().equals( "true" );
+		
+		List<CompraParcela> parcelas;
+		if ( incluirFornecedor ) {
+			String nomeIni = (request.getFornecedorNomeIni().equals( "*" ) ? "" : request.getFornecedorNomeIni() );
+			parcelas = compraParcelaRepository.filtra( dataIni, dataFim, nomeIni+"%", incluirPagas );
+		} else {
+			parcelas = compraParcelaRepository.filtraSemFornecedor( dataIni, dataFim, incluirPagas );
+		}
 		
 		Double debitoTotalCompleto = compraParcelaRepository.calculaDebitoTotalCompleto();
 		if ( debitoTotalCompleto == null )
 			debitoTotalCompleto = 0d;
 		
 		ContasPagarResponse resp = contasPagarBuilder.novoContasPagarResponse();
-		contasPagarBuilder.carregaContasPagarResponse( resp, parcelas, debitoTotalCompleto );
+		contasPagarBuilder.carregaContasPagarResponse( resp, parcelas, debitoTotalCompleto, incluirPagas );
 				
 		return resp;
 	}

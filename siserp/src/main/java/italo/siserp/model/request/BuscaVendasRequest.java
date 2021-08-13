@@ -17,4 +17,6 @@ public class BuscaVendasRequest {
 	
 	private String incluirCliente;
 		
+	private String incluirPagas;
+	
 }

@@ -87,7 +87,8 @@ public class VendaBuilder {
 		resp.setFormaPag( enumConversor.getFormaPagString( v.getFormaPag() ) ); 
 		
 		List<ItemVendaResponse> itemResps = new ArrayList<>();
-		for( ItemVenda item : v.getItensVenda() ) {
+		List<ItemVenda> itens = v.getItensVenda();
+		for( ItemVenda item : itens ) {
 			ItemVendaResponse itemResp = itemVendaBuilder.novoItemVendaResponse();
 			itemVendaBuilder.carregaItemVendaResponse( itemResp, item );
 			

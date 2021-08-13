@@ -38,14 +38,14 @@ export default class CaixaLancamentos extends React.Component {
 				
 		sistema.showLoadingSpinner();
 		
-		let caixaId;
-		if ( this.props.listagemTipo === 'caixa' ) {
-			caixaId = this.props.caixaId;
+		let url;
+		if ( this.props.getTipo == "caixaid" ) {
+			url = '/api/caixa/get/'+this.props.caixaId;
 		} else {
-			caixaId = sistema.usuario.id;
+			url = '/api/caixa/get/uid/hoje/'+sistema.usuario.id;
 		}
-
-		fetch( 'api/caixa/get/'+caixaId, {
+				 				
+		fetch( url, {
 			method : "GET",			
 			headers : {
 				"Authorization" : "Bearer "+sistema.token
@@ -96,20 +96,7 @@ export default class CaixaLancamentos extends React.Component {
 			sistema.hideLoadingSpinner();			
 		} );
 	}
-	
-	removerTodosHojeSeConfirmado( e ) {
-		this.setState( { 
-			remocaoModalVisivel : true, 
-			remocaoModalOkFunc : () => { 
-				this.setState( { remocaoModalVisivel : false } );
-				this.removerTodosHoje( e );
-			},
-			remocaoModalCancelaFunc : () => {
-				this.setState( { remocaoModalVisivel : false } );
-			} 
-		} )
-	}
-	
+		
 	removerSeConfirmado( e, lancId ) {
 		this.setState( { 
 			remocaoModalVisivel : true, 
@@ -122,27 +109,7 @@ export default class CaixaLancamentos extends React.Component {
 			} 
 		} )
 	}
-	
-	removerTodosHoje( e ) {
-		e.preventDefault();
 		
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/lancamento/deletatodos/hoje/'+sistema.usuario.id, {
-			method : 'DELETE',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				this.listar( e, false );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
-	}
-	
 	remover( e, lancId ) {
 		e.preventDefault();
 		
@@ -176,7 +143,7 @@ export default class CaixaLancamentos extends React.Component {
 					<Modal.Header>
 						<Modal.Title>Remoção de lançamentos</Modal.Title>
 					</Modal.Header>
-					<Modal.Body>Tem certeza que deseja remover os lançamento(s)?</Modal.Body>
+					<Modal.Body>Tem certeza que deseja remover o lançamento?</Modal.Body>
 					<Modal.Footer>
 						<Form>
 							<Button variant="primary" onClick={(e) => remocaoModalCancelaFunc() }>Cancelar</Button>
@@ -185,72 +152,61 @@ export default class CaixaLancamentos extends React.Component {
 					</Modal.Footer>
 				</Modal>
 				
-				<Row>
-					<Col>
-						<Form className="float-end">																
-							<Button variant="primary" onClick={ (e) => this.paraTelaRegistro() }>Novo lançamento</Button>
-						</Form>
-					</Col>
-				</Row>
-
-				<Row>
-					<Col>
-						<Form.Group style={{fontSize: '1.2em'}}>
-							<Form.Label>Funcionario: &nbsp; <span className="text-primary">{ caixaFuncNome }</span></Form.Label>
-							<br />
-							<Form.Label>Data abertura do caixa: &nbsp; <span className="text-primary">{ sistema.formataData( caixaDataAbertura ) }</span></Form.Label>
-						</Form.Group>
-					</Col>
-				</Row>
-				<Row>
-					<Col>
-						<h4 className="text-center">Lançamentos</h4>
-						<div className="tbl-pnl">
-							<Table striped bordered hover>
-								<thead>
-									<tr>
-										<th>Data operação</th>
-										<th>Entrada</th>
-										<th>Saida</th>
-										<th>Saldo</th>
-										<th>Obs</th>
-										<th>Remover</th>
+				{ this.props.gettipo !== 'caixaid' && (
+					<Form className="float-end">																
+						<Button variant="primary" onClick={ (e) => this.paraTelaRegistro() }>Novo lançamento</Button>
+					</Form>
+				) }
+				
+				<br />
+				
+				<Form.Group style={{fontSize: '1.2em'}}>
+					<Form.Label>Funcionario: &nbsp; <span className="text-primary">{ caixaFuncNome }</span></Form.Label>
+					<br />
+					<Form.Label>Data abertura do caixa: &nbsp; <span className="text-primary">{ caixaDataAbertura }</span></Form.Label>
+				</Form.Group>
+					
+		
+				<h4 className="text-center">Lançamentos</h4>
+				<div className="tbl-pnl">
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>Data operação</th>
+								<th>Entrada</th>
+								<th>Saida</th>
+								<th>Saldo</th>
+								<th>Obs</th>
+								<th>Remover</th>
+							</tr>
+						</thead>
+						<tbody>
+							{lancamentos.map( ( lanc, index ) => {
+								return (
+									<tr key={index}>
+										<td>{ lanc.dataOperacao }</td>
+										<td>{ sistema.formataReal( lanc.credito ) }</td>	
+										<td>{ sistema.formataReal( lanc.debito ) }</td>	
+										<td>{ sistema.formataReal( lanc.saldo ) }</td>	
+										<td>{ lanc.obs }</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, lanc.id )}>remover</button></td>
 									</tr>
-								</thead>
-								<tbody>
-									{lancamentos.map( ( lanc, index ) => {
-										return (
-											<tr key={index}>
-												<td>{ lanc.dataOperacao }</td>
-												<td>{ sistema.formataReal( lanc.credito ) }</td>	
-												<td>{ sistema.formataReal( lanc.debito ) }</td>	
-												<td>{ sistema.formataReal( lanc.saldo ) }</td>	
-												<td>{ lanc.obs }</td>
-												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, lanc.id )}>remover</button></td>
-											</tr>
-										)
-									} ) }	
-								</tbody>							
-							</Table>
-						</div>
-					</Col>
-				</Row>
+								)
+							} ) }	
+						</tbody>							
+					</Table>
+				</div>					
+				
 				<br />
 		
 				<MensagemPainel cor="danger" msg={erroMsg} />
 				<MensagemPainel cor="primary" msg={infoMsg} />
 				
-				<Row>
-					<Col>						
-						<Card className="p-3">
-							<Form>																
-								<Button variant="primary" onClick={ (e) => this.listar( e, true ) }>Atualizar lista</Button>
-								<Button variant="primary" className="mx-3" onClick={ (e) => this.removerTodosHojeSeConfirmado( e ) }>Remover todos</Button>									
-							</Form>
-						</Card>												
-					</Col>
-				</Row>		
-					
+				<Card className="p-3">
+					<Form>																
+						<Button variant="primary" onClick={ (e) => this.listar( e, true ) }>Atualizar lista</Button>
+					</Form>
+				</Card>					
 			</Container>		
 		)
 	}

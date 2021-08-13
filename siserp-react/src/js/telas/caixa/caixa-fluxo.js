@@ -102,7 +102,7 @@ export default class CaixaFluxo extends React.Component {
 	}
 	
 	paraTelaLancamentos( e, caixaId ) {
-		ReactDOM.render( <CaixaLancamentos listagemTipo="caixa" caixaId={caixaId} />, sistema.paginaElemento() );
+		ReactDOM.render( <CaixaLancamentos getTipo="caixaid" caixaId={caixaId} />, sistema.paginaElemento() );
 	}
 				
 	render() {

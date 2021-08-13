@@ -33,6 +33,7 @@ import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
+import italo.siserp.exception.ValorRecebidoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Cliente;
@@ -43,10 +44,9 @@ import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Produto;
 import italo.siserp.model.Venda;
 import italo.siserp.model.request.BuscaVendasRequest;
-import italo.siserp.model.request.EfetuarPagamentoRequest;
 import italo.siserp.model.request.SaveItemVendaRequest;
 import italo.siserp.model.request.SaveVendaRequest;
-import italo.siserp.model.response.QuitarDebitoResponse;
+import italo.siserp.model.request.ValorRecebidoRequest;
 import italo.siserp.model.response.VendaResponse;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.LancamentoRepository;
@@ -223,12 +223,14 @@ public class VendaService {
 		if ( dataIni.after( dataFim ) )
 			throw new DataFimAposDataIniException();
 		
+		boolean incluirPagas = request.getIncluirPagas().equals( "true" );
+		
 		List<Venda> vendas;
 		if ( incluirCliente ) {
 			String nomeIni = (request.getClienteNomeIni().equals( "*" ) ? "" : request.getClienteNomeIni() );
-			vendas = vendaRepository.filtra( dataIni, dataFim, nomeIni+"%" );
+			vendas = vendaRepository.filtra( dataIni, dataFim, nomeIni+"%", incluirPagas );
 		} else {
-			vendas = vendaRepository.filtraSemCliente( dataIni, dataFim );
+			vendas = vendaRepository.filtraSemCliente( dataIni, dataFim, incluirPagas );
 		}
 		
 		List<VendaResponse> responses = new ArrayList<>();
@@ -241,6 +243,19 @@ public class VendaService {
 		}
 		
 		return responses;
+	}
+	
+	public List<VendaResponse> buscaVendasPorClienteId( Long clienteId ) {
+		List<Venda> vendas = vendaRepository.buscaVendasPorClienteId( clienteId );
+		
+		List<VendaResponse> lista = new ArrayList<>();
+		for( Venda v : vendas ) {
+			VendaResponse resp = vendaBuilder.novoVendaResponse();
+			vendaBuilder.carregaVendaResponse( resp, v );
+			
+			lista.add( resp );
+		}
+		return lista;
 	}
 	
 	public VendaResponse buscaVendaPorId( Long id ) throws VendaNaoEncontradaException {
@@ -286,54 +301,37 @@ public class VendaService {
 	}
 	
 	@Transactional
-	public QuitarDebitoResponse efetuarPagamento( Long usuarioId, EfetuarPagamentoRequest request ) 
-			throws ClienteNaoEncontradoException, 
-			ValorPagoInvalidoException, 
-			PerfilCaixaRequeridoException, 
-			CaixaNaoAbertoException,
-			UsuarioNaoEncontradoException, 
-			FuncionarioNaoEncontradoException {
+	public void efetuaRecebimento( Long clienteId, ValorRecebidoRequest request ) 
+			throws ClienteNaoEncontradoException, ValorRecebidoInvalidoException {
 		
-		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Cliente c = clienteRepository.findById( clienteId ).orElseThrow( ClienteNaoEncontradoException::new );		
 		
-		Long clienteId = request.getClienteId();
-		Cliente c = clienteRepository.findById( clienteId ).orElseThrow( ClienteNaoEncontradoException::new );
+		double valor;
+		try {
+			valor = numeroUtil.stringParaDouble( request.getValor() );
+		} catch (DoubleInvalidoException e) {
+			throw new ValorRecebidoInvalidoException();
+		} 
+	
+		double debito = valor;
 		
 		List<Venda> vendas = c.getVendas();
-		double valor = 0;
-		try {
-			valor = numeroUtil.stringParaDouble( request.getValorPago() );			
-		} catch (DoubleInvalidoException e) {
-			throw new ValorPagoInvalidoException();
-		}
-		
-		Lancamento lanc = lancamentoBuilder.novoINILancamento( caixa );
-		lanc.setTipo( LancamentoTipo.CREDITO );
-		lanc.setValor( valor ); 
-		lancamentoRepository.save( lanc );
-				
 		int size = vendas.size();
-		double debitoRestante = 0;
-		for( int i = 0; i < size; i++ ) {
+		for( int i = 0; debito > 0 && i < size; i++ ) {
 			Venda v = vendas.get( i );
-			if ( valor > 0 ) {
-				if ( valor >= v.getDebito() ) {
-					v.setDebito( 0 );
-					valor -= v.getDebito();
-				} else {
-					v.setDebito( v.getDebito() - valor );
-					valor = 0;
-				}
-			}
-			debitoRestante += v.getDebito();
 			
+			if( v.getDebito() <= 0 )
+				continue;
+			
+			if ( valor > v.getDebito() ) {
+				debito -= v.getDebito();
+				v.setDebito( 0 );
+			} else {
+				v.setDebito( v.getDebito() - debito );
+				debito = 0;
+			}
 			vendaRepository.save( v );
-		}
-								
-		QuitarDebitoResponse resp = new QuitarDebitoResponse();
-		resp.setTroco( valor );
-		resp.setDebitoRestante( debitoRestante ); 
-		return resp;
+		}		
 	}
 			
 }

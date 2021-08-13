@@ -231,8 +231,6 @@ export default class VendaRegistro extends React.Component {
 
 					this.setState( {} );
 				} );
-			} else {
-				alert( resposta.status );
 			}
 		} );
 	}

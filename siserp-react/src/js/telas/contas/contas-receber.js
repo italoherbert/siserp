@@ -23,6 +23,7 @@ export default class ContasReceber extends React.Component {
 		};						
 		
 		this.valorRecebido = React.createRef();
+		this.incluirContasPagas = React.createRef();
 		this.incluirCliente = React.createRef();
 		this.clienteNomeIni = React.createRef();
 	}
@@ -49,6 +50,7 @@ export default class ContasReceber extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
+				"incluirPagas" : this.incluirContasPagas.current.checked,
 				"incluirCliente" : this.incluirCliente.current.checked,
 				"clienteNomeIni" : this.clienteNomeIni.current.value,
 				"dataIni" : sistema.formataData( this.state.dataIni ),
@@ -166,9 +168,9 @@ export default class ContasReceber extends React.Component {
 					<Col className="col-md-8">
 						<Card className="p-3">
 							<h4>Filtrar contas receber</h4>
-							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
+							<Form onSubmit={ (e) => this.filtrar( e, true ) }>																									
 								<Row>
-									<Col className="col-sm-4">										
+									<Col>										
 										<Form.Group className="mb-2">													
 											<Form.Label>Data de início: </Form.Label>
 											<br />
@@ -179,7 +181,7 @@ export default class ContasReceber extends React.Component {
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
 									</Col>
-									<Col className="col-sm-4">										
+									<Col>										
 										<Form.Group className="mb-2">													
 											<Form.Label>Data de fim: </Form.Label>
 											<br />
@@ -191,9 +193,16 @@ export default class ContasReceber extends React.Component {
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
 									</Col>										
+									<Col>
+										<Form.Group className="mb-2">													
+											<Form.Label>&nbsp;</Form.Label>
+											<br />
+											<input className="my-2" type="checkbox" ref={this.incluirContasPagas} /> &nbsp; Incluir contas pagas										
+										</Form.Group>
+									</Col>
 								</Row>						
 								<Row>
-									<Col className="col-md-6">										
+									<Col>										
 										<Form.Group className="mb-2">													
 											<Row>
 												<Col>
@@ -206,11 +215,8 @@ export default class ContasReceber extends React.Component {
 										</Form.Group>
 									</Col>									
 								</Row>
-								<Row>
-									<Col>
-										<Button type="submit" variant="primary">Filtrar</Button>														
-									</Col>
-								</Row>
+								
+								<Button type="submit" variant="primary">Filtrar</Button>																							
 							</Form>						
 						</Card>							
 					</Col>

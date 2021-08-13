@@ -19,6 +19,10 @@ export default class ContasPagar extends React.Component {
 			
 			contasObj : { contas : [] }
 		};						
+		
+		this.incluirFornecedor = React.createRef();
+		this.fornecedorNomeIni = React.createRef();
+		this.incluirContasPagas = React.createRef();
 	}
 	
 	componentDidMount() {		
@@ -42,6 +46,9 @@ export default class ContasPagar extends React.Component {
 				"Authorization" : "Bearer "+sistema.token
 			},			
 			body : JSON.stringify( { 
+				"incluirPagas" : this.incluirContasPagas.current.checked,
+				"incluirFornecedor" : this.incluirFornecedor.current.checked,
+				"fornecedorNomeIni" : this.fornecedorNomeIni.current.value,
 				"dataIni" : sistema.formataData( this.state.dataIni ),
 				"dataFim" : sistema.formataData( this.state.dataFim )
 			} )
@@ -157,7 +164,7 @@ export default class ContasPagar extends React.Component {
 							<h4>Filtrar contas a pagar</h4>
 							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 								<Row>
-									<Col className="col-sm-4">										
+									<Col>										
 										<Form.Group className="pb-2">													
 											<Form.Label>Data de início: </Form.Label>
 											<br />
@@ -168,7 +175,7 @@ export default class ContasPagar extends React.Component {
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
 									</Col>
-									<Col className="col-sm-4">										
+									<Col>										
 										<Form.Group className="pb-2">													
 											<Form.Label>Data de fim: </Form.Label>
 											<br />
@@ -179,13 +186,34 @@ export default class ContasPagar extends React.Component {
 													minDate={dataIni}
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
-									</Col>							
-									<Col className="col-md-4">
-										<div className="mb-2">&nbsp;</div>
-										<Button type="submit" variant="primary">Filtrar</Button>				
-										<br />
+									</Col>		
+									<Col>
+										<Form.Group className="mb-2">													
+											<Form.Label>&nbsp;</Form.Label>
+											<br />
+											<input className="my-2" type="checkbox" ref={this.incluirContasPagas} /> &nbsp; Incluir contas pagas										
+										</Form.Group>
 									</Col>
-								</Row>								
+								</Row>		
+								<Row>
+									<Col>										
+										<Form.Group className="mb-2">													
+											<Row>
+												<Col>
+													<Form.Label>Fornecedor: </Form.Label>
+													<Form.Control type="text" ref={this.fornecedorNomeIni} name="fornecedorNomeIni" />
+													
+													<input className="my-2" type="checkbox" ref={this.incluirFornecedor} />Incluir fornecedor no filtro
+												</Col>
+											</Row>
+										</Form.Group>
+									</Col>									
+								</Row>
+								<Row>
+									<Col>
+										<Button type="submit" variant="primary">Filtrar</Button>														
+									</Col>
+								</Row>						
 							</Form>					
 						</Card>						
 					</Col>

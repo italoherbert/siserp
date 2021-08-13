@@ -70,6 +70,8 @@ public class ErroResponse {
 	public final static int FUNCIONARIO_NOME_OBRIGATORIO = 328;
 	public final static int USUARIO_GRUPO_OBRIGATORIO = 329;
 	public final static int VALOR_RECEBIDO_OBRIGATORIO = 330;
+	public final static int FLAG_INCLUIR_PARCELAS_PAGAS_OBRIGATORIO = 331;
+	public final static int FLAG_INCLUIR_VENDAS_PAGAS_OBRIGATORIO = 332;
 	
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int PRODUTO_PRECO_UNIT_COMPRA_INVALIDO = 502;
@@ -103,7 +105,7 @@ public class ErroResponse {
 	public final static int PERMISSAO_REMOCAO_INVALIDA = 530;
 	public final static int PERMISSAO_TIPO_INVALIDO = 531;
 	public final static int VALOR_PARCELA_SITUACAO_INVALIDO = 532;
-	public final static int VALOR_RECEBITO_INVALIDO = 533;
+	public final static int VALOR_RECEBIDO_INVALIDO = 533;
 	
 	private int codigo;
 	private String mensagem;
@@ -279,6 +281,12 @@ public class ErroResponse {
 			case VALOR_RECEBIDO_OBRIGATORIO:
 				mensagem = "O valor recebido é um campo de preenchimento obrigatório.";
 				break;
+			case FLAG_INCLUIR_PARCELAS_PAGAS_OBRIGATORIO:
+				mensagem = "O flag de inclusão de parcelas pagas é obrigatório.";
+				break;
+			case FLAG_INCLUIR_VENDAS_PAGAS_OBRIGATORIO:
+				mensagem = "O flag de inclusão de vendas pagas é obrigatório";
+				break;
 					
 			case USERNAME_PASSWORD_NAO_CORRESPONDEM:
 				mensagem = "Nome de usuário e senha não correspondem.";
@@ -376,7 +384,7 @@ public class ErroResponse {
 			case VALOR_PARCELA_SITUACAO_INVALIDO:
 				mensagem = "Valor de situação da parcela inválido";
 				break;
-			case VALOR_RECEBITO_INVALIDO:
+			case VALOR_RECEBIDO_INVALIDO:
 				mensagem = "O valor recebido informado está em formato inválido";
 				break;
 		}		

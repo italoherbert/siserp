@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 public class BuscaContasReceberRequest {
 
+	private String incluirPagas;
+	
 	private String incluirCliente;
 	
 	private String clienteNomeIni;

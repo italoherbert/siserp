@@ -26,9 +26,11 @@ import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.Caixa;
+import italo.siserp.model.FormaPag;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
+import italo.siserp.model.Venda;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
 import italo.siserp.model.request.FechaCaixaRequest;
@@ -119,7 +121,7 @@ public class CaixaService {
 		
 		lancamentoRepository.save( lanc );
 	}
-	
+		
 	public CaixaBalancoResponse geraCaixaBalancoHoje( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
@@ -143,12 +145,25 @@ public class CaixaService {
 		
 		double saldo = credito - debito;
 		
+		double cartaoValorRecebido = 0;
+		double valorTotalVendasAPrazo = 0;
+		List<Venda> vendas = c.getVendas();
+		for( Venda v : vendas ) {
+			double total = v.getSubtotal() * (1.0d - v.getDesconto() );
+			if ( v.getFormaPag() == FormaPag.CARTAO )
+				cartaoValorRecebido += total;			
+			if ( v.getFormaPag() == FormaPag.DEBITO ) 
+				valorTotalVendasAPrazo += total;
+		}
+		
 		CaixaBalancoResponse resp = new CaixaBalancoResponse();
 		resp.setFuncionarioNome( c.getFuncionario().getPessoa().getNome() ); 
 		resp.setDataAbertura( dataUtil.dataParaString( dataAbertura ) );
 		resp.setDebito( numeroUtil.doubleParaString( debito ) );
 		resp.setCredito( numeroUtil.doubleParaString( credito ) );
 		resp.setSaldo( numeroUtil.doubleParaString( saldo ) ); 
+		resp.setCartaoValorRecebido( numeroUtil.doubleParaString( cartaoValorRecebido ) );
+		resp.setValorTotalVendasAPrazo( numeroUtil.doubleParaString( valorTotalVendasAPrazo ) );
 		return resp;
 	}
 	

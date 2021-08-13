@@ -9,7 +9,7 @@ import MensagemPainel from './../../componente/mensagem-painel';
 
 import Vendas from './vendas';
 
-export default class VendaRegistro extends React.Component {
+export default class VendaDetalhes extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -32,6 +32,7 @@ export default class VendaRegistro extends React.Component {
 		} ).then( (resposta) => {
 			if ( resposta.status === 200 ) {
 				resposta.json().then( (dados) => {
+					alert( JSON.stringify( dados ) );
 					this.setState( { venda : dados } );
 				} );
 			} else {

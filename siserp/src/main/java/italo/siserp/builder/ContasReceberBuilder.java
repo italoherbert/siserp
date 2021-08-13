@@ -22,13 +22,16 @@ public class ContasReceberBuilder {
 	
 	public void carregaContasReceberResponse( 
 			ContasReceberResponse response, 
-			List<Venda> vendas, double totalCompleto ) {
+			List<Venda> vendas, double totalCompleto, boolean incluirPagas ) {
 		
 		double totalPeriodo = 0;
 		
 		List<VendaResponse> lista = new ArrayList<>();
 		for( Venda v : vendas ) {
 			if ( v.getCliente() == null )
+				continue;
+			
+			if ( !incluirPagas && v.getDebito() <= 0 )
 				continue;
 			
 			VendaResponse resp = vendaBuilder.novoVendaResponse();

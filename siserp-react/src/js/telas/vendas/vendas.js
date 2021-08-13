@@ -10,6 +10,8 @@ import sistema from './../../logica/sistema';
 import VendaRegistro from './venda-registro';
 import VendaDetalhes from './venda-detalhes';
 
+import VendasPagamento from './vendas-pagamento';
+
 export default class Vendas extends React.Component {
 	
 	constructor( props ) {
@@ -29,6 +31,7 @@ export default class Vendas extends React.Component {
 
 		this.incluirCliente = React.createRef();
 		this.clienteNomeIni = React.createRef();
+		this.incluirVendasPagas = React.createRef();
 	}
 			
 	componentDidMount() {
@@ -54,7 +57,8 @@ export default class Vendas extends React.Component {
 				"dataIni" : sistema.formataData( this.state.dataIni ),
 				"dataFim" : sistema.formataData( this.state.dataFim ),
 				"incluirCliente" : this.incluirCliente.current.checked,
-				"clienteNomeIni" : this.clienteNomeIni.current.value
+				"clienteNomeIni" : this.clienteNomeIni.current.value,
+				"incluirPagas" : this.incluirVendasPagas.current.checked
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
@@ -116,6 +120,10 @@ export default class Vendas extends React.Component {
 		} );
 	}
 	
+	paraTelaPagamentos( e ) {		
+		ReactDOM.render( <VendasPagamento />, sistema.paginaElemento() );
+	}
+	
 	paraRegistroForm( e ) {
 		e.preventDefault();
 		
@@ -148,8 +156,9 @@ export default class Vendas extends React.Component {
 				
 				<Row>
 					<Col>
-						<Form className="float-end">
-							<Button variant="primary"  onClick={ (e) => this.paraRegistroForm(e) }>Registre uma nova venda</Button>
+						<Form>
+							<Button variant="primary" className="float-start" onClick={ (e) => this.paraTelaPagamentos(e) }>Efetue um pagamento</Button>							
+							<Button variant="primary" className="float-end" onClick={ (e) => this.paraRegistroForm(e) }>Registre uma nova venda</Button>
 						</Form>
 					</Col>
 				</Row>
@@ -175,7 +184,7 @@ export default class Vendas extends React.Component {
 										<td>{venda.id}</td>
 										<td>{venda.dataVenda}</td>
 										<td>{venda.cliente.pessoa.nome}</td>
-										<td>{ sistema.formataReal( venda.subtotal * venda.desconto ) }</td>														
+										<td>{ sistema.formataReal( venda.subtotal * ( 1.0 - venda.desconto ) ) }</td>														
 										<td>{ sistema.formataReal( venda.debito ) }</td>														
 										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, venda.id )}>detalhes</button></td>
 										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, venda.id )}>remover</button></td>
@@ -194,7 +203,7 @@ export default class Vendas extends React.Component {
 					<h4>Filtrar vendas</h4>
 					<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 						<Row>
-							<Col className="col-sm-4">										
+							<Col>										
 								<Form.Group className="mb-2">													
 									<Form.Label>Data de início: </Form.Label>
 									<br />
@@ -205,7 +214,7 @@ export default class Vendas extends React.Component {
 											dateFormat="dd/MM/yyyy" className="form-control" />						
 								</Form.Group>									
 							</Col>
-							<Col className="col-sm-4">										
+							<Col>										
 								<Form.Group className="mb-2">													
 									<Form.Label>Data de fim: </Form.Label>
 									<br />
@@ -216,7 +225,14 @@ export default class Vendas extends React.Component {
 											minDate={dataIni}
 											dateFormat="dd/MM/yyyy" className="form-control" />						
 								</Form.Group>									
-							</Col>										
+							</Col>		
+							<Col>
+								<Form.Group className="mb-2">													
+									<Form.Label>&nbsp;</Form.Label>
+									<br />
+									<input className="my-2" type="checkbox" ref={this.incluirVendasPagas} /> &nbsp; Incluir vendas pagas										
+								</Form.Group>
+							</Col>
 						</Row>						
 						<Row>
 							<Col className="col-md-6">										
