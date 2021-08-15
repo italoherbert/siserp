@@ -20,7 +20,7 @@ import italo.siserp.builder.SubCategoriaBuilder;
 import italo.siserp.builder.FiltroCompraBuilder;
 import italo.siserp.exception.CompraNaoEncontradaException;
 import italo.siserp.exception.DataCompraInvalidaException;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataPagamentoInvalidaException;
@@ -241,7 +241,7 @@ public class CompraService {
 	public List<FiltroCompraResponse> filtra( BuscaComprasRequest request ) 
 			throws DataIniInvalidaException, 
 					DataFimInvalidaException, 
-					DataFimAposDataIniException {
+					DataIniAposDataFimException {
 		Date dataIni, dataFim;
 		try {
 			dataIni = dataUtil.stringParaData( request.getDataIni() );
@@ -259,7 +259,7 @@ public class CompraService {
 		}
 		
 		if ( dataIni.after( dataFim ) )
-			throw new DataFimAposDataIniException();
+			throw new DataIniAposDataFimException();
 		
 		List<Compra> compras = compraRepository.filtra( dataIni, dataFim );
 		List<FiltroCompraResponse> responses = new ArrayList<>();

@@ -134,7 +134,7 @@ export default class Caixa extends React.Component {
 									Valor recebido no cartão: <span className="text-danger">{ sistema.formataReal( balanco.cartaoValorRecebido ) }</span>
 								</div>
 								<div className="display-inline mb-2">
-									Total de vendas a prazo: <span className="text-danger">{ sistema.formataReal( balanco.valorTotalVendasAPrazo ) }</span>
+									Total de vendas a prazo: <span className="text-danger">{ sistema.formataReal( balanco.totalVendasAPrazo ) }</span>
 								</div>
 							</div>
 							<div>

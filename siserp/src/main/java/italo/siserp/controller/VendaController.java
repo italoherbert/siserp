@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.ClienteNaoEncontradoException;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataVendaInvalidaException;
@@ -144,7 +144,7 @@ public class VendaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA, e.getParams() ) );						
 		} catch (DataFimInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_INVALIDA, e.getParams() ) );						
-		} catch (DataFimAposDataIniException e) {
+		} catch (DataIniAposDataFimException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_APOS_DATA_FIM ) );						
 		}
 	}

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Container, Row, Col, Card, Form, Table, Button } from 'react-bootstrap';
+import { Container, Card, Form, Table, Button } from 'react-bootstrap';
 import Modal from 'react-bootstrap/Modal';
 	
 import MensagemPainel from './../../componente/mensagem-painel';
@@ -39,7 +39,7 @@ export default class CaixaLancamentos extends React.Component {
 		sistema.showLoadingSpinner();
 		
 		let url;
-		if ( this.props.getTipo == "caixaid" ) {
+		if ( this.props.getTipo === "caixaid" ) {
 			url = '/api/caixa/get/'+this.props.caixaId;
 		} else {
 			url = '/api/caixa/get/uid/hoje/'+sistema.usuario.id;

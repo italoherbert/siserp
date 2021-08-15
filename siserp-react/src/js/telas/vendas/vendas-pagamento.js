@@ -48,7 +48,7 @@ export default class VendasPagamento extends React.Component {
 				"valor" : sistema.paraFloat( this.valorPago.current.value )
 			} )
 		} ).then( (resposta) => {
-			if ( resposta.status == 200 ) {
+			if ( resposta.status === 200 ) {
 				this.valorPago.current.value = '';
 				this.carregaVendas( clienteId );
 				this.setState( { infoMsg : 'Pagamento efetuado com sucesso' } );

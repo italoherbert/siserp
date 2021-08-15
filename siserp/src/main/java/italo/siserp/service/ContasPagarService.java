@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.ContasPagarBuilder;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.ParcelaNaoEncontradaException;
@@ -41,7 +41,7 @@ public class ContasPagarService {
 	public ContasPagarResponse filtra( BuscaContasPagarRequest request ) 
 				throws DataIniInvalidaException,
 					DataFimInvalidaException, 
-					DataFimAposDataIniException {
+					DataIniAposDataFimException {
 		
 		Date dataIni, dataFim;
 		try {
@@ -60,7 +60,7 @@ public class ContasPagarService {
 		}
 		
 		if ( dataIni.after( dataFim ) )
-			throw new DataFimAposDataIniException();
+			throw new DataIniAposDataFimException();
 		
 		boolean incluirFornecedor = request.getIncluirFornecedor().equals( "true" );
 		boolean incluirPagas = request.getIncluirPagas().equals( "true" );

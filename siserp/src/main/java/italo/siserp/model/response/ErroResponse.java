@@ -106,6 +106,7 @@ public class ErroResponse {
 	public final static int PERMISSAO_TIPO_INVALIDO = 531;
 	public final static int VALOR_PARCELA_SITUACAO_INVALIDO = 532;
 	public final static int VALOR_RECEBIDO_INVALIDO = 533;
+	public final static int DATA_DIA_INVALIDA = 534;
 	
 	private int codigo;
 	private String mensagem;
@@ -386,6 +387,9 @@ public class ErroResponse {
 				break;
 			case VALOR_RECEBIDO_INVALIDO:
 				mensagem = "O valor recebido informado está em formato inválido";
+				break;
+			case DATA_DIA_INVALIDA:
+				mensagem = "A data informada está em formato inválido.";
 				break;
 		}		
 	}

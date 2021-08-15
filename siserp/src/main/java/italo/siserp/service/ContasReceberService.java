@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.ContasReceberBuilder;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.model.Venda;
@@ -32,7 +32,7 @@ public class ContasReceberService  {
 	public ContasReceberResponse filtra( BuscaContasReceberRequest request ) 
 				throws DataIniInvalidaException,
 					DataFimInvalidaException, 
-					DataFimAposDataIniException {
+					DataIniAposDataFimException {
 		
 		Date dataIni, dataFim;
 		try {
@@ -51,7 +51,7 @@ public class ContasReceberService  {
 		}
 		
 		if ( dataIni.after( dataFim ) )
-			throw new DataFimAposDataIniException();
+			throw new DataIniAposDataFimException();
 		
 		boolean incluirPagas = request.getIncluirPagas().equals( "true" );
 		boolean incluirCliente = request.getIncluirCliente().equals( "true" );

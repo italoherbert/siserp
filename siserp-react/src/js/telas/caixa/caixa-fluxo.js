@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import CaixaLancamentos from './caixa-lancamentos';
+import CaixaFluxoDia from './caixa-fluxo-dia';
 
 export default class CaixaFluxo extends React.Component {
 	
@@ -16,19 +16,14 @@ export default class CaixaFluxo extends React.Component {
 		this.state = { 
 			erroMsg : null,
 			infoMsg : null,
-			dataIni : '',
-			dataFim : '',
-			caixas : []
+			dataIni : new Date(),
+			dataFim : new Date(),
+			balancosDiarios : []
 		};				
-
-		this.incluirFuncionario = React.createRef();
-		this.funcionarioNomeIni = React.createRef();
 	}
 						
 	componentDidMount() {
-		this.incluirFuncionario.current.checked = false;
-
-		this.setState( { dataIni : new Date(), dataFim : new Date() } );
+		this.filtrar( null );
 	}		
 						
 	filtrar( e ) {
@@ -38,8 +33,8 @@ export default class CaixaFluxo extends React.Component {
 		this.setState( { infoMsg : null, erroMsg : null } );
 				
 		sistema.showLoadingSpinner();
-
-		fetch( "/api/caixa/filtra/", {
+		
+		fetch( "/api/caixa/gera/balancos/diarios", {
 			method : "POST",			
 			headers : {
 				"Content-Type" : "application/json; charset=UTF-8", 
@@ -47,41 +42,12 @@ export default class CaixaFluxo extends React.Component {
 			}, 
 			body : JSON.stringify( {
 				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim ),
-				"incluirFuncionario" : this.incluirFuncionario.current.checked,
-				"funcionarioNomeIni" : this.funcionarioNomeIni.current.value
+				"dataFim" : sistema.formataData( this.state.dataFim ),				
 			} )
 		} ).then( (resposta) => {	
 			if ( resposta.status === 200 ) {						
 				resposta.json().then( (dados) => {		
-					
-					for( let i = 0; i < dados.length; i++ ) {					
-						let caixa = dados[ i ];
-						let debito = 0;
-						let credito = 0;
-					
-						for( let j = 0; j < caixa.lancamentos.length; j++ ) {
-							let lancamento = caixa.lancamentos[ j ];
-							if ( lancamento.tipo === 'CREDITO' ) {
-								credito += sistema.paraFloat( lancamento.valor );
-							} else if ( lancamento.tipo === 'DEBITO' ) {
-								debito += sistema.paraFloat( lancamento.valor );
-							}
-						}
-					
-						let saldo = credito - debito;
-						
-						this.state.caixas.push( {
-							id : caixa.id,
-							dataAbertura : caixa.dataAbertura,
-							funcionarioNome : caixa.funcionario.pessoa.nome,
-							debito : debito,
-							credito : credito,
-							saldo : saldo
-						} );
-						
-						this.setState( {} );
-					}
+					this.setState( { balancosDiarios : dados } );
 					
 					if ( dados.length === 0 )
 						this.setState( { infoMsg : "Nenhum fluxo de caixa encontrado pelos critérios de busca informados" } );					
@@ -101,12 +67,12 @@ export default class CaixaFluxo extends React.Component {
 		this.setState( { dataFim : data } );
 	}
 	
-	paraTelaLancamentos( e, caixaId ) {
-		ReactDOM.render( <CaixaLancamentos getTipo="caixaid" caixaId={caixaId} />, sistema.paginaElemento() );
+	visualizar( e, dataAbertura ) {
+		ReactDOM.render( <CaixaFluxoDia dataDia={dataAbertura} />, sistema.paginaElemento() );
 	}
 				
 	render() {
-		const {	erroMsg, infoMsg, caixas, dataIni, dataFim } = this.state;
+		const {	erroMsg, infoMsg, balancosDiarios, dataIni, dataFim } = this.state;
 				
 		return (
 			<Container>																								
@@ -117,24 +83,22 @@ export default class CaixaFluxo extends React.Component {
 							<Table striped bordered hover>
 								<thead>
 									<tr>
-										<th>Responsável</th>
 										<th>Data de abertura</th>
 										<th>Entrada</th>
 										<th>Saida</th>
 										<th>Saldo</th>
-										<th>Visualizar lançamentos</th>
+										<th>Visualizar</th>
 									</tr>
 								</thead>
 								<tbody>
-									{caixas.map( ( caixa, index ) => {
+									{balancosDiarios.map( ( balancoDia, index ) => {
 										return (
 											<tr key={index}>
-												<td>{ caixa.funcionarioNome }</td>
-												<td>{ caixa.dataAbertura }</td>
-												<td>{ sistema.formataReal( caixa.credito ) }</td>	
-												<td>{ sistema.formataReal( caixa.debito ) }</td>	
-												<td>{ sistema.formataReal( caixa.saldo ) }</td>	
-												<td><button className="btn btn-link p-0" onClick={ (e) => this.paraTelaLancamentos( e, caixa.id ) }>visualizar</button></td>
+												<td>{ balancoDia.dataAbertura }</td>
+												<td>{ sistema.formataReal( balancoDia.credito ) }</td>	
+												<td>{ sistema.formataReal( balancoDia.debito ) }</td>	
+												<td>{ sistema.formataReal( balancoDia.saldo ) }</td>	
+												<td><button className="btn btn-link p-0" onClick={ (e) => this.visualizar( e, balancoDia.dataAbertura ) }>visualizar</button></td>
 											</tr>
 										)
 									} ) }	
@@ -149,7 +113,7 @@ export default class CaixaFluxo extends React.Component {
 				<MensagemPainel cor="primary" msg={infoMsg} />
 				
 				<Row>
-					<Col>
+					<Col className="col-sm-10">
 						<Card className="p-3">
 							<h4>Filtrar</h4>
 							<Form onSubmit={ (e) => this.filtrar( e ) }>
@@ -177,27 +141,15 @@ export default class CaixaFluxo extends React.Component {
 													dateFormat="dd/MM/yyyy" className="form-control" />						
 										</Form.Group>									
 									</Col>
-								</Row>							
-								
-								<Row>
-									<Col className="col-md-6 my-2 mb-2">	
-										<Form.Group className="mb-2">																								
-											<div>
-												<Form.Label>Funcionario</Form.Label> &nbsp;&nbsp;
-												<input className="my-2" type="checkbox" ref={this.incluirFuncionario} />
-												&nbsp; Incluir funcionário no filtro
-											</div> 	
-											<Form.Control type="text" ref={this.funcionarioNomeIni} name="funcionarioNomeIni" />																								
-										</Form.Group>
-									</Col>									
-								</Row>
-							
-								<Row>
-									<Col>										
-										<Button type="submit" variant="primary">Filtrar</Button>				
-										<br />
+									<Col>
+										<Form.Group className="pb-2">													
+											<Form.Label>&nbsp;</Form.Label>
+											<br />
+											<Button type="submit" variant="primary">Filtrar</Button>																					
+										</Form.Group>	
 									</Col>
-								</Row>								
+								</Row>							
+															
 							</Form>						
 						</Card>						
 					</Col>

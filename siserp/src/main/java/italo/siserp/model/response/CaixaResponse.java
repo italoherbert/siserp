@@ -14,9 +14,7 @@ public class CaixaResponse {
 	private Long id;
 	
 	private String dataAbertura;
-		
-	private String valor;
-	
+			
 	private FuncionarioResponse funcionario;
 	
 	private List<LancamentoResponse> lancamentos;

@@ -17,7 +17,7 @@ import italo.siserp.builder.VendaBuilder;
 import italo.siserp.dao.CaixaDAO;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.ClienteNaoEncontradoException;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataVendaInvalidaException;
@@ -201,7 +201,7 @@ public class VendaService {
 	public List<VendaResponse> filtra( BuscaVendasRequest request ) 
 				throws DataIniInvalidaException,
 					DataFimInvalidaException,
-					DataFimAposDataIniException {
+					DataIniAposDataFimException {
 		boolean incluirCliente = request.getIncluirCliente().equals( "true" );				
 		
 		Date dataIni, dataFim;
@@ -221,7 +221,7 @@ public class VendaService {
 		}
 		
 		if ( dataIni.after( dataFim ) )
-			throw new DataFimAposDataIniException();
+			throw new DataIniAposDataFimException();
 		
 		boolean incluirPagas = request.getIncluirPagas().equals( "true" );
 		

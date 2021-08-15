@@ -17,8 +17,9 @@ import italo.siserp.exception.CaixaJaAbertoException;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.CaixaNaoEncontradoException;
 import italo.siserp.exception.CaixaValorInicialInvalidoException;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataDiaInvalidaException;
 import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
@@ -32,8 +33,11 @@ import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Venda;
 import italo.siserp.model.request.AbreCaixaRequest;
+import italo.siserp.model.request.BuscaBalancosDiarios;
+import italo.siserp.model.request.BuscaCaixasPorDataDiaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
 import italo.siserp.model.request.FechaCaixaRequest;
+import italo.siserp.model.response.BalancoDiarioResponse;
 import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.repository.CaixaRepository;
@@ -49,7 +53,7 @@ public class CaixaService {
 	
 	@Autowired
 	private LancamentoRepository lancamentoRepository;
-				
+					
 	@Autowired
 	private CaixaBuilder caixaBuilder;
 	
@@ -121,14 +125,95 @@ public class CaixaService {
 		
 		lancamentoRepository.save( lanc );
 	}
+	
+	public List<BalancoDiarioResponse> geraBalancosDiarios( BuscaBalancosDiarios request ) 
+			throws DataIniInvalidaException, 
+				DataFimInvalidaException, 
+				DataIniAposDataFimException {
+		Date dataIni, dataFim;
+		try {
+			dataIni = dataUtil.apenasData( dataUtil.stringParaData( request.getDataIni() ) );			
+		} catch ( ParseException e ) {
+			throw new DataIniInvalidaException();
+		}
+		try {
+			dataFim = dataUtil.apenasData( dataUtil.stringParaData( request.getDataFim() ) );			
+		} catch ( ParseException e ) {
+			throw new DataFimInvalidaException();
+		}
 		
+		if ( dataIni.after( dataFim ) )
+			throw new DataIniAposDataFimException();
+		
+		Date d = dataIni;
+		
+		List<BalancoDiarioResponse> balancos = new ArrayList<>();
+		while( d.compareTo( dataFim ) <= 0 ) {
+			List<Caixa> caixas = caixaRepository.listaPorDataDia( d );
+			
+			double debito = 0;
+			double credito = 0;
+			double saldo = 0;
+			
+			double totalVendasAPrazo = 0;
+			double cartaoValorRecebido = 0;
+			
+			for( Caixa c : caixas ) {
+				CaixaBalancoResponse resp = this.geraCaixaBalanco( c );
+				debito += Double.parseDouble( resp.getDebito() );
+				credito += Double.parseDouble( resp.getCredito() );
+				saldo += Double.parseDouble( resp.getSaldo() );
+				totalVendasAPrazo += Double.parseDouble( resp.getTotalVendasAPrazo() );
+				cartaoValorRecebido += Double.parseDouble( resp.getCartaoValorRecebido() );
+			}
+			
+			BalancoDiarioResponse balanco = new BalancoDiarioResponse();
+			balanco.setDataAbertura( dataUtil.dataParaString( d ) ); 
+			balanco.setDebito( numeroUtil.doubleParaString( debito ) );
+			balanco.setCredito( numeroUtil.doubleParaString( credito ) );
+			balanco.setSaldo( numeroUtil.doubleParaString( saldo ) );
+			balanco.setTotalVendasAPrazo( numeroUtil.doubleParaString( totalVendasAPrazo ) );
+			balanco.setCartaoValorRecebido( numeroUtil.doubleParaString( cartaoValorRecebido ) ); 
+			
+			balancos.add( balanco );
+			
+			d = dataUtil.addUmDia( d );
+		}
+		
+		return balancos;
+	}
+	
+	public List<CaixaResponse> listaCaixasPorDataDia( BuscaCaixasPorDataDiaRequest request ) throws DataDiaInvalidaException {		
+		try {
+			Date d = dataUtil.stringParaData( request.getDataDia() );
+			
+			List<Caixa> caixas = caixaRepository.listaPorDataDia( d );
+			
+			List<CaixaResponse> lista = new ArrayList<>();
+			for( Caixa c : caixas ) {
+				CaixaResponse resp = caixaBuilder.novoCaixaResponse();
+				caixaBuilder.carregaCaixaResponse( resp, c );
+				
+				lista.add( resp );
+			}
+			return lista;
+		} catch ( ParseException e ) {
+			throw new DataDiaInvalidaException();
+		}
+	}	
+
 	public CaixaBalancoResponse geraCaixaBalancoHoje( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
 				UsuarioNaoEncontradoException, 
-				FuncionarioNaoEncontradoException{
+				FuncionarioNaoEncontradoException {
 		
 		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );						
+		return this.geraCaixaBalanco( c );
+	}
+	
+	public CaixaBalancoResponse geraCaixaBalanco( Caixa c ) {
+		
 		List<Lancamento> lancamentos = c.getLancamentos();
 		
 		Date dataAbertura = c.getDataAbertura();
@@ -146,14 +231,14 @@ public class CaixaService {
 		double saldo = credito - debito;
 		
 		double cartaoValorRecebido = 0;
-		double valorTotalVendasAPrazo = 0;
+		double totalVendasAPrazo = 0;
 		List<Venda> vendas = c.getVendas();
 		for( Venda v : vendas ) {
 			double total = v.getSubtotal() * (1.0d - v.getDesconto() );
 			if ( v.getFormaPag() == FormaPag.CARTAO )
 				cartaoValorRecebido += total;			
 			if ( v.getFormaPag() == FormaPag.DEBITO ) 
-				valorTotalVendasAPrazo += total;
+				totalVendasAPrazo += total;
 		}
 		
 		CaixaBalancoResponse resp = new CaixaBalancoResponse();
@@ -163,14 +248,14 @@ public class CaixaService {
 		resp.setCredito( numeroUtil.doubleParaString( credito ) );
 		resp.setSaldo( numeroUtil.doubleParaString( saldo ) ); 
 		resp.setCartaoValorRecebido( numeroUtil.doubleParaString( cartaoValorRecebido ) );
-		resp.setValorTotalVendasAPrazo( numeroUtil.doubleParaString( valorTotalVendasAPrazo ) );
+		resp.setTotalVendasAPrazo( numeroUtil.doubleParaString( totalVendasAPrazo ) );
 		return resp;
 	}
 	
 	public List<CaixaResponse> filtra( BuscaCaixasRequest request ) 
 			throws DataIniInvalidaException, 
 				DataFimInvalidaException, 
-				DataFimAposDataIniException {
+				DataIniAposDataFimException {
 		Date dataIni, dataFim;
 		
 		try {
@@ -185,7 +270,7 @@ public class CaixaService {
 		}
 		
 		if ( dataIni.after( dataFim ) )
-			throw new DataFimAposDataIniException();
+			throw new DataIniAposDataFimException();
 		
 		List<Caixa> caixas;
 		if ( request.getIncluirFuncionario().equals( "true" ) ) {

@@ -2,6 +2,7 @@ package italo.siserp.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.stereotype.Component;
@@ -31,6 +32,15 @@ public class DataUtil {
 		} catch (ParseException e) {
 			return data;
 		}		
+	}
+	
+	public Date addUmDia( Date data ) {
+		Calendar c = Calendar.getInstance();
+		c.setTime( data );
+		
+		c.add( Calendar.DATE, 1 );
+		
+		return c.getTime();
 	}
 	
 }

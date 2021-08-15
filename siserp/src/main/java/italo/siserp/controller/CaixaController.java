@@ -17,8 +17,9 @@ import italo.siserp.exception.CaixaJaAbertoException;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.CaixaNaoEncontradoException;
 import italo.siserp.exception.CaixaValorInicialInvalidoException;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataDiaInvalidaException;
 import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
@@ -26,8 +27,11 @@ import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.request.AbreCaixaRequest;
+import italo.siserp.model.request.BuscaBalancosDiarios;
+import italo.siserp.model.request.BuscaCaixasPorDataDiaRequest;
 import italo.siserp.model.request.BuscaCaixasRequest;
 import italo.siserp.model.request.FechaCaixaRequest;
+import italo.siserp.model.response.BalancoDiarioResponse;
 import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.model.response.ErroResponse;
@@ -140,6 +144,42 @@ public class CaixaController {
 	}
 	
 	@PreAuthorize("hasAuthority('caixaREAD')")
+	@PostMapping(value="/lista/pordatadia")
+	public ResponseEntity<Object> listaCaixasPorDataDia( @RequestBody BuscaCaixasPorDataDiaRequest request ) {
+		try {
+			List<CaixaResponse> caixas = caixaService.listaCaixasPorDataDia( request );
+			return ResponseEntity.ok( caixas );
+		} catch (DataDiaInvalidaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_DIA_INVALIDA ) );					
+		}
+	}
+	
+	@PreAuthorize("hasAuthority('caixaREAD')")
+	@PostMapping(value="/gera/balancos/diarios")
+	public ResponseEntity<Object> geraBalancosDiarios( @RequestBody BuscaBalancosDiarios request ) {
+		if ( request.getDataIni() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );		
+		if ( request.getDataIni().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_OBRIGATORIA ) );		
+		
+		if ( request.getDataFim() == null )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );		
+		if ( request.getDataFim().isBlank() )
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );		
+		
+		try {
+			List<BalancoDiarioResponse> balancos = caixaService.geraBalancosDiarios( request );
+			return ResponseEntity.ok( balancos );
+		} catch (DataIniInvalidaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA ) );					
+		} catch (DataFimInvalidaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_INVALIDA ) );					
+		} catch (DataIniAposDataFimException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_APOS_DATA_FIM ) );					
+		}
+	}
+	
+	@PreAuthorize("hasAuthority('caixaREAD')")
 	@GetMapping(value="/get/{caixaId}")
 	public ResponseEntity<Object> buscaCaixa( @PathVariable Long caixaId ) {
 		try {
@@ -180,7 +220,7 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA ) );					
 		} catch (DataFimInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_INVALIDA ) );					
-		} catch (DataFimAposDataIniException e) {
+		} catch (DataIniAposDataFimException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_APOS_DATA_FIM ) );					
 		}
 	}

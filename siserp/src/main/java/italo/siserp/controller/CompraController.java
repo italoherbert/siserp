@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CompraNaoEncontradaException;
 import italo.siserp.exception.DataCompraInvalidaException;
-import italo.siserp.exception.DataFimAposDataIniException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataPagamentoInvalidaException;
@@ -168,7 +168,7 @@ public class CompraController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_INVALIDA ) );						
 		} catch (DataFimInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_INVALIDA ) );						
-		} catch (DataFimAposDataIniException e) {
+		} catch (DataIniAposDataFimException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_INI_APOS_DATA_FIM ) );						
 		}
 	}

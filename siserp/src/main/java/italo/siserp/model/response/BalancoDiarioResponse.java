@@ -7,20 +7,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class CaixaBalancoResponse {
+public class BalancoDiarioResponse {
 
-	private String funcionarioNome;
-	
 	private String dataAbertura;
 	
 	private String debito;
 	
 	private String credito;
 	
+	private String saldo;
+	
 	private String cartaoValorRecebido;
 	
 	private String totalVendasAPrazo;
-	
-	private String saldo;
 	
 }
