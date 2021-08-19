@@ -15,10 +15,10 @@ import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.model.Compra;
 import italo.siserp.model.CompraParcela;
 import italo.siserp.model.ItemCompra;
-import italo.siserp.model.request.SaveCompraRequest;
-import italo.siserp.model.response.CompraParcelaResponse;
-import italo.siserp.model.response.CompraResponse;
-import italo.siserp.model.response.ItemCompraResponse;
+import italo.siserp.service.request.SaveCompraRequest;
+import italo.siserp.service.response.CompraParcelaResponse;
+import italo.siserp.service.response.CompraResponse;
+import italo.siserp.service.response.ItemCompraResponse;
 import italo.siserp.util.DataUtil;
 
 @Component

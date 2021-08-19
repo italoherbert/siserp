@@ -10,20 +10,26 @@ import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.LancamentoBuilder;
 import italo.siserp.dao.CaixaDAO;
+import italo.siserp.dao.bean.CaixaBalancoDAOTO;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.CaixaNaoEncontradoException;
+import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Lancamento;
-import italo.siserp.model.request.SaveLancamentoRequest;
-import italo.siserp.model.response.LancamentoResponse;
+import italo.siserp.model.LancamentoTipo;
 import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.LancamentoRepository;
+import italo.siserp.service.request.SaveLancamentoRequest;
+import italo.siserp.service.response.LancamentoResponse;
+import italo.siserp.util.LancamentoEnumConversor;
+import italo.siserp.util.NumeroUtil;
 
 @Service
 public class LancamentoService {
@@ -39,9 +45,15 @@ public class LancamentoService {
 
 	@Autowired
 	private CaixaDAO caixaDAO;
-			
+	
+	@Autowired
+	private NumeroUtil numeroUtil;
+		
+	@Autowired
+	private LancamentoEnumConversor lancamentoEnumConversor;
+	
 	@Transactional
-	public void deletaLancamentos( Long usuarioId ) 
+	public void deletaLancamentosHoje( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
 				UsuarioNaoEncontradoException,
@@ -61,13 +73,19 @@ public class LancamentoService {
 				CaixaNaoAbertoException, 
 				LancamentoTipoInvalidoException, 
 				LancamentoValorInvalidoException, 
+				ValorEmCaixaInsuficienteException,
 				UsuarioNaoEncontradoException, 
 				FuncionarioNaoEncontradoException {
 		
 		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );
-		
+		CaixaBalancoDAOTO caixaBalancoDAOTO = caixaDAO.geraCaixaBalanco( c );
+				
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
 		lancamentoBuilder.carregaLancamento( lanc, request );
+		
+		double valor = lanc.getValor();
+		if ( lanc.getTipo() == LancamentoTipo.DEBITO && valor > caixaBalancoDAOTO.getSaldo() )
+			throw new ValorEmCaixaInsuficienteException();
 		
 		lanc.setCaixa( c );
 		

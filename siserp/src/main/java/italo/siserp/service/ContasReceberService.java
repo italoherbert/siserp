@@ -12,9 +12,9 @@ import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.model.Venda;
-import italo.siserp.model.request.BuscaContasReceberRequest;
-import italo.siserp.model.response.ContasReceberResponse;
 import italo.siserp.repository.VendaRepository;
+import italo.siserp.service.request.BuscaContasReceberRequest;
+import italo.siserp.service.response.ContasReceberResponse;
 import italo.siserp.util.DataUtil;
 
 @Service

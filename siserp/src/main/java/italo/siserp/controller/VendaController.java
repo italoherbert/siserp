@@ -33,13 +33,13 @@ import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.ValorRecebidoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.FormaPag;
-import italo.siserp.model.request.BuscaVendasRequest;
-import italo.siserp.model.request.SaveItemVendaRequest;
-import italo.siserp.model.request.SaveVendaRequest;
-import italo.siserp.model.request.ValorRecebidoRequest;
-import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.VendaResponse;
 import italo.siserp.service.VendaService;
+import italo.siserp.service.request.BuscaVendasRequest;
+import italo.siserp.service.request.SaveItemVendaRequest;
+import italo.siserp.service.request.SaveVendaRequest;
+import italo.siserp.service.request.ValorRecebidoRequest;
+import italo.siserp.service.response.ErroResponse;
+import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.FormaPagEnumConversor;
 
 @RestController

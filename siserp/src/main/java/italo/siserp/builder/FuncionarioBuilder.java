@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.model.Funcionario;
-import italo.siserp.model.request.SaveFuncionarioRequest;
-import italo.siserp.model.response.FuncionarioResponse;
+import italo.siserp.service.request.SaveFuncionarioRequest;
+import italo.siserp.service.response.FuncionarioResponse;
 
 @Component
 public class FuncionarioBuilder {

@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Pessoa;
-import italo.siserp.model.request.SavePessoaRequest;
-import italo.siserp.model.response.PessoaResponse;
+import italo.siserp.service.request.SavePessoaRequest;
+import italo.siserp.service.response.PessoaResponse;
 
 @Component
 public class PessoaBuilder {

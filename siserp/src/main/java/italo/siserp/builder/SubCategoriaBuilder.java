@@ -3,8 +3,8 @@ package italo.siserp.builder;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.SubCategoria;
-import italo.siserp.model.request.SaveSubCategoriaRequest;
-import italo.siserp.model.response.SubCategoriaResponse;
+import italo.siserp.service.request.SaveSubCategoriaRequest;
+import italo.siserp.service.response.SubCategoriaResponse;
 
 @Component
 public class SubCategoriaBuilder {

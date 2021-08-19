@@ -11,10 +11,10 @@ import italo.siserp.builder.UsuarioBuilder;
 import italo.siserp.exception.UsuarioJaExisteException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.Usuario;
-import italo.siserp.model.request.BuscaUsuariosRequest;
-import italo.siserp.model.request.SaveUsuarioRequest;
-import italo.siserp.model.response.UsuarioResponse;
 import italo.siserp.repository.UsuarioRepository;
+import italo.siserp.service.request.BuscaUsuariosRequest;
+import italo.siserp.service.request.SaveUsuarioRequest;
+import italo.siserp.service.response.UsuarioResponse;
 
 @Service
 public class UsuarioService {

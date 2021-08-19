@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.CategoriaNaoEncontradaException;
 import italo.siserp.exception.SubCategoriaJaExisteException;
 import italo.siserp.exception.SubCategoriaNaoEncontradaException;
-import italo.siserp.model.request.BuscaSubCategoriasRequest;
-import italo.siserp.model.request.SaveSubCategoriaRequest;
-import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.IdResponse;
-import italo.siserp.model.response.SubCategoriaResponse;
 import italo.siserp.service.SubCategoriaService;
+import italo.siserp.service.request.BuscaSubCategoriasRequest;
+import italo.siserp.service.request.SaveSubCategoriaRequest;
+import italo.siserp.service.response.ErroResponse;
+import italo.siserp.service.response.IdResponse;
+import italo.siserp.service.response.SubCategoriaResponse;
 
 @RestController
 @RequestMapping(value="/api/subcategoria")

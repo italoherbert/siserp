@@ -15,12 +15,12 @@ import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
 import italo.siserp.model.Cliente;
 import italo.siserp.model.Pessoa;
-import italo.siserp.model.request.BuscaClientesRequest;
-import italo.siserp.model.request.SaveClienteRequest;
-import italo.siserp.model.response.ClienteResponse;
-import italo.siserp.model.response.IdResponse;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.PessoaRepository;
+import italo.siserp.service.request.BuscaClientesRequest;
+import italo.siserp.service.request.SaveClienteRequest;
+import italo.siserp.service.response.ClienteResponse;
+import italo.siserp.service.response.IdResponse;
 
 @Service
 public class ClienteService {

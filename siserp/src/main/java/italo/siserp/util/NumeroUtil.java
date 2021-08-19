@@ -1,5 +1,7 @@
 package italo.siserp.util;
 
+import java.text.DecimalFormat;
+
 import org.springframework.stereotype.Component;
 
 import italo.siserp.exception.DoubleInvalidoException;
@@ -8,7 +10,13 @@ import italo.siserp.exception.LongInvalidoException;
 
 @Component
 public class NumeroUtil {
-		
+	
+	private DecimalFormat df = new DecimalFormat( "R$ 0.00" );
+	
+	public String formatoReal( double valor ) {
+		return df.format( valor );
+	}
+	
 	public String doubleParaString( double numero ) {
 		return String.valueOf( numero );
 	}

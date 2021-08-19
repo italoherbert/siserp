@@ -14,9 +14,9 @@ import italo.siserp.exception.ProdutoJaExisteException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.model.Produto;
-import italo.siserp.model.request.SaveProdutoRequest;
-import italo.siserp.model.response.ProdutoResponse;
 import italo.siserp.repository.ProdutoRepository;
+import italo.siserp.service.request.SaveProdutoRequest;
+import italo.siserp.service.response.ProdutoResponse;
 
 @Service
 public class ProdutoService {

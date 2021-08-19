@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.RecursoJaExisteException;
 import italo.siserp.exception.RecursoNaoEncontradoException;
-import italo.siserp.model.request.BuscaRecursosRequest;
-import italo.siserp.model.request.SaveRecursoRequest;
-import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.RecursoResponse;
 import italo.siserp.service.RecursoService;
+import italo.siserp.service.request.BuscaRecursosRequest;
+import italo.siserp.service.request.SaveRecursoRequest;
+import italo.siserp.service.response.ErroResponse;
+import italo.siserp.service.response.RecursoResponse;
 
 @RestController
 @RequestMapping(value="/api/recurso") 

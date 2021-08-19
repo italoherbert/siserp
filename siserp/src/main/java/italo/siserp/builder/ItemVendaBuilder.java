@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.ItemVenda;
-import italo.siserp.model.response.ItemVendaResponse;
+import italo.siserp.service.response.ItemVendaResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component

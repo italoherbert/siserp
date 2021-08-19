@@ -68,6 +68,9 @@ class Sistema {
 	}
 	
 	paraFloat( valor ) {
+		if ( isNaN( (""+valor).replace( ',', '.' ) ) === true )
+			return valor;
+		
 		if ( (""+valor) === "0" ) 
 			return 0;
 		

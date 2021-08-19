@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.UsernameNaoEncontradoException;
 import italo.siserp.exception.UsernamePasswordNaoCorrespondemException;
-import italo.siserp.model.request.LoginRequest;
-import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.LoginResponse;
 import italo.siserp.service.LoginService;
+import italo.siserp.service.request.LoginRequest;
+import italo.siserp.service.response.ErroResponse;
+import italo.siserp.service.response.LoginResponse;
 
 @RestController
 @RequestMapping(value="/api/login")

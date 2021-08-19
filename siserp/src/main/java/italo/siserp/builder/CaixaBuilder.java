@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Lancamento;
-import italo.siserp.model.request.AbreCaixaRequest;
-import italo.siserp.model.response.CaixaResponse;
-import italo.siserp.model.response.LancamentoResponse;
+import italo.siserp.service.request.AbreCaixaRequest;
+import italo.siserp.service.response.CaixaResponse;
+import italo.siserp.service.response.LancamentoResponse;
 import italo.siserp.util.DataUtil;
 
 @Component

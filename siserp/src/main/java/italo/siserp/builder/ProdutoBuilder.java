@@ -14,10 +14,10 @@ import italo.siserp.model.Categoria;
 import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
 import italo.siserp.model.SubCategoria;
-import italo.siserp.model.request.SaveProdutoRequest;
-import italo.siserp.model.response.CategoriaResponse;
-import italo.siserp.model.response.ProdutoResponse;
-import italo.siserp.model.response.SubCategoriaResponse;
+import italo.siserp.service.request.SaveProdutoRequest;
+import italo.siserp.service.response.CategoriaResponse;
+import italo.siserp.service.response.ProdutoResponse;
+import italo.siserp.service.response.SubCategoriaResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component

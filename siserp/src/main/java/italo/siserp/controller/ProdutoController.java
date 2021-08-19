@@ -18,10 +18,10 @@ import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoJaExisteException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
-import italo.siserp.model.request.SaveProdutoRequest;
-import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.ProdutoResponse;
 import italo.siserp.service.ProdutoService;
+import italo.siserp.service.request.SaveProdutoRequest;
+import italo.siserp.service.response.ErroResponse;
+import italo.siserp.service.response.ProdutoResponse;
 
 @RestController
 @RequestMapping(value="/api/produto")

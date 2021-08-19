@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Usuario;
-import italo.siserp.model.request.SaveUsuarioRequest;
-import italo.siserp.model.response.UsuarioResponse;
+import italo.siserp.service.request.SaveUsuarioRequest;
+import italo.siserp.service.response.UsuarioResponse;
 import italo.siserp.util.HashUtil;
 
 @Component

@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
-import italo.siserp.model.request.BuscaContasReceberRequest;
-import italo.siserp.model.response.ContasReceberResponse;
-import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.ContasReceberService;
+import italo.siserp.service.request.BuscaContasReceberRequest;
+import italo.siserp.service.response.ContasReceberResponse;
+import italo.siserp.service.response.ErroResponse;
 
 @RestController
 @RequestMapping(value="/api/conta/receber")

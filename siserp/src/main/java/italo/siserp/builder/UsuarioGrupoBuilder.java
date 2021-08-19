@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.PermissaoGrupo;
 import italo.siserp.model.UsuarioGrupo;
-import italo.siserp.model.request.SaveUsuarioGrupoRequest;
-import italo.siserp.model.response.PermissaoGrupoResponse;
-import italo.siserp.model.response.UsuarioGrupoResponse;
+import italo.siserp.service.request.SaveUsuarioGrupoRequest;
+import italo.siserp.service.response.PermissaoGrupoResponse;
+import italo.siserp.service.response.UsuarioGrupoResponse;
 
 @Component
 public class UsuarioGrupoBuilder {

@@ -21,10 +21,11 @@ import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
-import italo.siserp.model.request.SaveLancamentoRequest;
-import italo.siserp.model.response.ErroResponse;
-import italo.siserp.model.response.LancamentoResponse;
+import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.service.LancamentoService;
+import italo.siserp.service.request.SaveLancamentoRequest;
+import italo.siserp.service.response.ErroResponse;
+import italo.siserp.service.response.LancamentoResponse;
 import italo.siserp.util.LancamentoEnumConversor;
 
 @RestController
@@ -36,10 +37,10 @@ public class LancamentoController {
 			
 	@Autowired
 	private LancamentoEnumConversor lancamentoTipoEnumConversor;
-			
+				
 	@PreAuthorize("hasAuthority('lancamentoWRITE')")	
 	@PostMapping(value="/novo/hoje/{usuarioId}")
-	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {
+	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {		
 		if ( request.getTipo() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.TIPO_LANCAMENTO_OBRIGATORIO ) );		
 		if ( request.getTipo().isBlank() )
@@ -49,7 +50,7 @@ public class LancamentoController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_LANCAMENTO_OBRIGATORIO ) );		
 		if ( request.getValor().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_LANCAMENTO_OBRIGATORIO ) );		
-		
+				
 		try {			
 			lancamentoService.efetuaLancamento( usuarioId, request );
 			return ResponseEntity.ok().build();
@@ -65,6 +66,8 @@ public class LancamentoController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
+		} catch (ValorEmCaixaInsuficienteException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_EM_CAIXA_INSUFICIENTE ) );					
 		}
 	}
 	
@@ -100,7 +103,7 @@ public class LancamentoController {
 	@DeleteMapping(value="/deletatodos/hoje/{usuarioId}")
 	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
 		try {			
-			lancamentoService.deletaLancamentos( usuarioId );
+			lancamentoService.deletaLancamentosHoje( usuarioId );
 			return ResponseEntity.ok().build();
 		} catch (PerfilCaixaRequeridoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
@@ -129,5 +132,5 @@ public class LancamentoController {
 		String[] tipos = lancamentoTipoEnumConversor.getLancamentoTipos();
 		return ResponseEntity.ok( tipos );
 	}
-	
+		
 }

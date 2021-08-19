@@ -10,9 +10,9 @@ import italo.siserp.exception.PermissaoLeituraException;
 import italo.siserp.exception.PermissaoRemocaoException;
 import italo.siserp.exception.PermissaoTipoInvalidoException;
 import italo.siserp.model.PermissaoGrupo;
-import italo.siserp.model.request.SavePermissaoGrupoRequest;
-import italo.siserp.model.request.SavePermissaoRequest;
 import italo.siserp.repository.PermissaoGrupoRepository;
+import italo.siserp.service.request.SavePermissaoGrupoRequest;
+import italo.siserp.service.request.SavePermissaoRequest;
 
 @Service
 public class PermissaoGrupoService {

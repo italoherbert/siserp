@@ -26,16 +26,16 @@ import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
-import italo.siserp.model.request.AbreCaixaRequest;
-import italo.siserp.model.request.BuscaBalancosDiarios;
-import italo.siserp.model.request.BuscaCaixasPorDataDiaRequest;
-import italo.siserp.model.request.BuscaCaixasRequest;
-import italo.siserp.model.request.FechaCaixaRequest;
-import italo.siserp.model.response.BalancoDiarioResponse;
-import italo.siserp.model.response.CaixaBalancoResponse;
-import italo.siserp.model.response.CaixaResponse;
-import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.CaixaService;
+import italo.siserp.service.request.AbreCaixaRequest;
+import italo.siserp.service.request.BuscaBalancosDiarios;
+import italo.siserp.service.request.BuscaCaixasPorDataDiaRequest;
+import italo.siserp.service.request.BuscaCaixasRequest;
+import italo.siserp.service.request.FechaCaixaRequest;
+import italo.siserp.service.response.BalancoDiarioResponse;
+import italo.siserp.service.response.CaixaBalancoResponse;
+import italo.siserp.service.response.CaixaResponse;
+import italo.siserp.service.response.ErroResponse;
 
 @RestController
 @RequestMapping(value="/api/caixa")

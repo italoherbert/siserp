@@ -10,9 +10,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import italo.siserp.builder.CaixaBalancoBuilder;
 import italo.siserp.builder.CaixaBuilder;
 import italo.siserp.builder.LancamentoBuilder;
 import italo.siserp.dao.CaixaDAO;
+import italo.siserp.dao.bean.CaixaBalancoDAOTO;
 import italo.siserp.exception.CaixaJaAbertoException;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.CaixaNaoEncontradoException;
@@ -27,21 +29,19 @@ import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.model.Caixa;
-import italo.siserp.model.FormaPag;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
-import italo.siserp.model.Venda;
-import italo.siserp.model.request.AbreCaixaRequest;
-import italo.siserp.model.request.BuscaBalancosDiarios;
-import italo.siserp.model.request.BuscaCaixasPorDataDiaRequest;
-import italo.siserp.model.request.BuscaCaixasRequest;
-import italo.siserp.model.request.FechaCaixaRequest;
-import italo.siserp.model.response.BalancoDiarioResponse;
-import italo.siserp.model.response.CaixaBalancoResponse;
-import italo.siserp.model.response.CaixaResponse;
 import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.LancamentoRepository;
+import italo.siserp.service.request.AbreCaixaRequest;
+import italo.siserp.service.request.BuscaBalancosDiarios;
+import italo.siserp.service.request.BuscaCaixasPorDataDiaRequest;
+import italo.siserp.service.request.BuscaCaixasRequest;
+import italo.siserp.service.request.FechaCaixaRequest;
+import italo.siserp.service.response.BalancoDiarioResponse;
+import italo.siserp.service.response.CaixaBalancoResponse;
+import italo.siserp.service.response.CaixaResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 
@@ -56,6 +56,9 @@ public class CaixaService {
 					
 	@Autowired
 	private CaixaBuilder caixaBuilder;
+	
+	@Autowired
+	private CaixaBalancoBuilder caixaBalancoBuilder;
 	
 	@Autowired
 	private LancamentoBuilder lancamentoBuilder;
@@ -155,16 +158,16 @@ public class CaixaService {
 			double credito = 0;
 			double saldo = 0;
 			
-			double totalVendasAPrazo = 0;
+			double vendasAPrazoTotal = 0;
 			double cartaoValorRecebido = 0;
 			
 			for( Caixa c : caixas ) {
-				CaixaBalancoResponse resp = this.geraCaixaBalanco( c );
-				debito += Double.parseDouble( resp.getDebito() );
-				credito += Double.parseDouble( resp.getCredito() );
-				saldo += Double.parseDouble( resp.getSaldo() );
-				totalVendasAPrazo += Double.parseDouble( resp.getTotalVendasAPrazo() );
-				cartaoValorRecebido += Double.parseDouble( resp.getCartaoValorRecebido() );
+				CaixaBalancoDAOTO balanco = caixaDAO.geraCaixaBalanco( c );
+				debito += balanco.getDebito();
+				credito += balanco.getCredito();
+				saldo += balanco.getSaldo();
+				vendasAPrazoTotal += balanco.getVendasAPrazoTotal();
+				cartaoValorRecebido += balanco.getCartaoValorRecebido();
 			}
 			
 			BalancoDiarioResponse balanco = new BalancoDiarioResponse();
@@ -172,7 +175,7 @@ public class CaixaService {
 			balanco.setDebito( numeroUtil.doubleParaString( debito ) );
 			balanco.setCredito( numeroUtil.doubleParaString( credito ) );
 			balanco.setSaldo( numeroUtil.doubleParaString( saldo ) );
-			balanco.setTotalVendasAPrazo( numeroUtil.doubleParaString( totalVendasAPrazo ) );
+			balanco.setTotalVendasAPrazo( numeroUtil.doubleParaString( vendasAPrazoTotal ) );
 			balanco.setCartaoValorRecebido( numeroUtil.doubleParaString( cartaoValorRecebido ) ); 
 			
 			balancos.add( balanco );
@@ -209,48 +212,13 @@ public class CaixaService {
 				FuncionarioNaoEncontradoException {
 		
 		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );						
-		return this.geraCaixaBalanco( c );
-	}
-	
-	public CaixaBalancoResponse geraCaixaBalanco( Caixa c ) {
+		CaixaBalancoDAOTO balanco = caixaDAO.geraCaixaBalanco( c );
 		
-		List<Lancamento> lancamentos = c.getLancamentos();
+		CaixaBalancoResponse resp = caixaBalancoBuilder.novoCaixaBalancoResponse();
+		caixaBalancoBuilder.carregaCaixaBalancoResponse( resp, balanco ); 
 		
-		Date dataAbertura = c.getDataAbertura();
-		
-		double debito = 0;
-		double credito = 0;
-		for( Lancamento l : lancamentos ) {
-			if ( l.getTipo() == LancamentoTipo.DEBITO ) {
-				debito += l.getValor();
-			} else if ( l.getTipo() == LancamentoTipo.CREDITO ) {
-				credito += l.getValor();
-			}
-		}		
-		
-		double saldo = credito - debito;
-		
-		double cartaoValorRecebido = 0;
-		double totalVendasAPrazo = 0;
-		List<Venda> vendas = c.getVendas();
-		for( Venda v : vendas ) {
-			double total = v.getSubtotal() * (1.0d - v.getDesconto() );
-			if ( v.getFormaPag() == FormaPag.CARTAO )
-				cartaoValorRecebido += total;			
-			if ( v.getFormaPag() == FormaPag.DEBITO ) 
-				totalVendasAPrazo += total;
-		}
-		
-		CaixaBalancoResponse resp = new CaixaBalancoResponse();
-		resp.setFuncionarioNome( c.getFuncionario().getPessoa().getNome() ); 
-		resp.setDataAbertura( dataUtil.dataParaString( dataAbertura ) );
-		resp.setDebito( numeroUtil.doubleParaString( debito ) );
-		resp.setCredito( numeroUtil.doubleParaString( credito ) );
-		resp.setSaldo( numeroUtil.doubleParaString( saldo ) ); 
-		resp.setCartaoValorRecebido( numeroUtil.doubleParaString( cartaoValorRecebido ) );
-		resp.setTotalVendasAPrazo( numeroUtil.doubleParaString( totalVendasAPrazo ) );
 		return resp;
-	}
+	}		
 	
 	public List<CaixaResponse> filtra( BuscaCaixasRequest request ) 
 			throws DataIniInvalidaException, 

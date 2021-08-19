@@ -13,12 +13,12 @@ import italo.siserp.exception.SubCategoriaJaExisteException;
 import italo.siserp.exception.SubCategoriaNaoEncontradaException;
 import italo.siserp.model.Categoria;
 import italo.siserp.model.SubCategoria;
-import italo.siserp.model.request.BuscaSubCategoriasRequest;
-import italo.siserp.model.request.SaveSubCategoriaRequest;
-import italo.siserp.model.response.IdResponse;
-import italo.siserp.model.response.SubCategoriaResponse;
 import italo.siserp.repository.CategoriaRepository;
 import italo.siserp.repository.SubCategoriaRepository;
+import italo.siserp.service.request.BuscaSubCategoriasRequest;
+import italo.siserp.service.request.SaveSubCategoriaRequest;
+import italo.siserp.service.response.IdResponse;
+import italo.siserp.service.response.SubCategoriaResponse;
 
 @Service
 public class SubCategoriaService {

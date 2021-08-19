@@ -13,11 +13,11 @@ import italo.siserp.builder.CategoriaBuilder;
 import italo.siserp.exception.CategoriaJaExisteException;
 import italo.siserp.exception.CategoriaNaoEncontradaException;
 import italo.siserp.model.Categoria;
-import italo.siserp.model.request.BuscaCategoriasRequest;
-import italo.siserp.model.request.SaveCategoriaRequest;
-import italo.siserp.model.response.CategoriaResponse;
-import italo.siserp.model.response.IdResponse;
 import italo.siserp.repository.CategoriaRepository;
+import italo.siserp.service.request.BuscaCategoriasRequest;
+import italo.siserp.service.request.SaveCategoriaRequest;
+import italo.siserp.service.response.CategoriaResponse;
+import italo.siserp.service.response.IdResponse;
 
 @Service
 public class CategoriaService {

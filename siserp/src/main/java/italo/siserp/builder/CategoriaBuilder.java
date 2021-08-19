@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Categoria;
 import italo.siserp.model.SubCategoria;
-import italo.siserp.model.request.SaveCategoriaRequest;
-import italo.siserp.model.response.CategoriaResponse;
-import italo.siserp.model.response.SubCategoriaResponse;
+import italo.siserp.service.request.SaveCategoriaRequest;
+import italo.siserp.service.response.CategoriaResponse;
+import italo.siserp.service.response.SubCategoriaResponse;
 
 @Component
 public class CategoriaBuilder {

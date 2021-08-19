@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Compra;
 import italo.siserp.model.ItemCompra;
-import italo.siserp.model.response.FiltroCompraResponse;
+import italo.siserp.service.response.FiltroCompraResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 

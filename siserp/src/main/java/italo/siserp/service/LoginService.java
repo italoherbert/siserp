@@ -11,10 +11,10 @@ import italo.siserp.exception.UsernameNaoEncontradoException;
 import italo.siserp.exception.UsernamePasswordNaoCorrespondemException;
 import italo.siserp.model.PermissaoGrupo;
 import italo.siserp.model.Usuario;
-import italo.siserp.model.request.LoginRequest;
-import italo.siserp.model.response.LoginResponse;
-import italo.siserp.model.response.UsuarioResponse;
 import italo.siserp.repository.UsuarioRepository;
+import italo.siserp.service.request.LoginRequest;
+import italo.siserp.service.response.LoginResponse;
+import italo.siserp.service.response.UsuarioResponse;
 import italo.siserp.util.HashUtil;
 import italo.siserp.util.JwtTokenUtil;
 

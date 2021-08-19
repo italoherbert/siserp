@@ -13,11 +13,11 @@ import italo.siserp.builder.FornecedorBuilder;
 import italo.siserp.exception.FornecedorJaExisteException;
 import italo.siserp.exception.FornecedorNaoEncontradoException;
 import italo.siserp.model.Fornecedor;
-import italo.siserp.model.request.BuscaFornecedoresRequest;
-import italo.siserp.model.request.SaveFornecedorRequest;
-import italo.siserp.model.response.FornecedorResponse;
-import italo.siserp.model.response.IdResponse;
 import italo.siserp.repository.FornecedorRepository;
+import italo.siserp.service.request.BuscaFornecedoresRequest;
+import italo.siserp.service.request.SaveFornecedorRequest;
+import italo.siserp.service.response.FornecedorResponse;
+import italo.siserp.service.response.IdResponse;
 
 @Service
 public class FornecedorService {
