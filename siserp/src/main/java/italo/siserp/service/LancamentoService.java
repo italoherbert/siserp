@@ -13,7 +13,6 @@ import italo.siserp.dao.CaixaDAO;
 import italo.siserp.dao.bean.CaixaBalancoDAOTO;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.CaixaNaoEncontradoException;
-import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
@@ -28,8 +27,6 @@ import italo.siserp.repository.CaixaRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.service.request.SaveLancamentoRequest;
 import italo.siserp.service.response.LancamentoResponse;
-import italo.siserp.util.LancamentoEnumConversor;
-import italo.siserp.util.NumeroUtil;
 
 @Service
 public class LancamentoService {
@@ -45,13 +42,7 @@ public class LancamentoService {
 
 	@Autowired
 	private CaixaDAO caixaDAO;
-	
-	@Autowired
-	private NumeroUtil numeroUtil;
 		
-	@Autowired
-	private LancamentoEnumConversor lancamentoEnumConversor;
-	
 	@Transactional
 	public void deletaLancamentosHoje( Long usuarioId ) 
 			throws PerfilCaixaRequeridoException, 

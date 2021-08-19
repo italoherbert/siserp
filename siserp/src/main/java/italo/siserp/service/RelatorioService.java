@@ -43,7 +43,7 @@ public class RelatorioService {
 	@Autowired
 	private BalancoDiaRelatorio balancoDiaRelatorio;
 	
-	public void geraRelatorioBalancoDia( HttpServletResponse response ) throws GeracaoRelatorioException{
+	public void geraRelatorioBalancoHoje( HttpServletResponse response ) throws GeracaoRelatorioException{
 		Date hoje = dataUtil.apenasData( new Date() );
 		List<Caixa> caixas = caixaRepository.listaPorDataDia( hoje );
 		

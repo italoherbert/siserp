@@ -26,6 +26,7 @@ import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.service.CaixaService;
 import italo.siserp.service.request.AbreCaixaRequest;
 import italo.siserp.service.request.BuscaBalancosDiarios;
@@ -106,6 +107,8 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
+		} catch (ValorEmCaixaInsuficienteException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_EM_CAIXA_INSUFICIENTE ) );					
 		}		
 	}
 	

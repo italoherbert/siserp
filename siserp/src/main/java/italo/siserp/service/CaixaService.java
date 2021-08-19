@@ -28,6 +28,7 @@ import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Lancamento;
@@ -113,9 +114,11 @@ public class CaixaService {
 				UsuarioNaoEncontradoException, 
 				FuncionarioNaoEncontradoException, 
 				LancamentoTipoInvalidoException, 
-				LancamentoValorInvalidoException {
+				LancamentoValorInvalidoException,
+				ValorEmCaixaInsuficienteException {
 		
 		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		CaixaBalancoDAOTO caixaBalancoDAOTO = caixaDAO.geraCaixaBalanco( caixa );
 		
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
 		lancamentoBuilder.carregaLancamento( lanc, request.getLancamento() );
@@ -125,6 +128,10 @@ public class CaixaService {
 		
 		caixa.setLancamentos( Arrays.asList( lanc ) );					
 		lanc.setCaixa( caixa );
+		
+		double valor = lanc.getValor();
+		if ( lanc.getTipo() == LancamentoTipo.DEBITO && valor > caixaBalancoDAOTO.getSaldo() )
+			throw new ValorEmCaixaInsuficienteException();
 		
 		lancamentoRepository.save( lanc );
 	}
