@@ -24,36 +24,16 @@ export default class CaixaAbertura extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.setState( { infoMsg : null, erroMsg : null } );
-		
-		let valorInicial = this.valorInicial.current.value;
-		if ( isNaN( valorInicial ) === true ) {
-			this.setState( { erroMsg : "Valor inicial em formato inválido." } );
-			return;
-		}
-		
-		sistema.showLoadingSpinner();
-
-		fetch( "/api/caixa/abre/"+sistema.usuario.id, {
-			method : "POST",			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8", 
-				"Authorization" : "Bearer "+sistema.token
-			}, 
-			body : JSON.stringify( {
-				lancamento : {
-					"tipo" : "CREDITO",
-					"valor" : sistema.paraFloat( valorInicial )
-				}
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				this.setState( { infoMsg : "Caixa aberto com sucesso." } );																							
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}		
-			sistema.hideLoadingSpinner();			
-		} );
+		sistema.wsPost(	"/api/caixa/abre/"+sistema.usuario.id, {
+			lancamento : {
+				"tipo" : "CREDITO",
+				"valor" : sistema.paraFloat( this.valorInicial.current.value )
+			}
+		}, (request) => {
+			this.setState( { infoMsg : "Caixa aberto com sucesso." } );
+		}, this );			
+					
+		this.setState( { infoMsg : null, erroMsg : null } );			
 	}
 	
 	paraTelaCaixa() {
@@ -74,7 +54,7 @@ export default class CaixaAbertura extends React.Component {
 									<Col className="col-md-6">										
 										<Form.Group className="mb-2">													
 											<Form.Label>Valor inicial: </Form.Label>
-											<Form.Control type="number" step="0.01" ref={this.valorInicial} name="valorInicial" />																									
+											<Form.Control type="text" ref={this.valorInicial} name="valorInicial" />																									
 										</Form.Group>
 									</Col>									
 								</Row>

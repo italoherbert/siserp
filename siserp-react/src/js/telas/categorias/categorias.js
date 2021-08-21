@@ -38,33 +38,17 @@ export default class Categorias extends React.Component {
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
-					
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
-
-		fetch( "/api/categoria/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"descricaoIni" : this.descricaoIni.current.value
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { categorias : dados } );
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma categoria registrada!" } );						
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			
-			sistema.hideLoadingSpinner();	
-		} );
+		
+		sistema.wsPost( "/api/categoria/filtra", {
+			"descricaoIni" : this.descricaoIni.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { categorias : dados } );
+				
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma categoria registrada!" } );						
+			} );
+		}, this );							
 	}
 	
 	detalhes( e, id ) {
@@ -88,23 +72,11 @@ export default class Categorias extends React.Component {
 	
 	remover( e, id ) {
 		e.preventDefault();
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/categoria/deleta/"+id, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				this.filtrar( null, false );																	
-				this.setState( { infoMsg : "Categoria removida com êxito!" } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );				
-			}
-			sistema.hideLoadingSpinner();
-		} );
+				
+		sistema.wsDelete( "/api/categoria/deleta/"+id, (resposta) => {
+			this.filtrar( null, false );																	
+			this.setState( { infoMsg : "Categoria removida com êxito!" } );
+		}, this );		
 	}
 		
 	render() {

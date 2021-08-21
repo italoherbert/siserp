@@ -29,34 +29,18 @@ export default class CaixaFluxo extends React.Component {
 	filtrar( e ) {
 		if ( e != null )
 			e.preventDefault();
-					
-		this.setState( { infoMsg : null, erroMsg : null } );
-				
-		sistema.showLoadingSpinner();
 		
-		fetch( "/api/caixa/gera/balancos/diarios", {
-			method : "POST",			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8", 
-				"Authorization" : "Bearer "+sistema.token
-			}, 
-			body : JSON.stringify( {
-				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim ),				
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {		
-					this.setState( { balancosDiarios : dados } );
-					
-					if ( dados.length === 0 )
-						this.setState( { infoMsg : "Nenhum fluxo de caixa encontrado pelos critérios de busca informados" } );					
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}		
-			sistema.hideLoadingSpinner();			
-		} );
+		sistema.wsPost( "/api/caixa/gera/balancos/diarios", {
+			"dataIni" : sistema.formataData( this.state.dataIni ),
+			"dataFim" : sistema.formataData( this.state.dataFim )
+		}, (resposta) => {			
+			resposta.json().then( (dados) => {		
+				this.setState( { balancosDiarios : dados } );
+				
+				if ( dados.length === 0 )
+					this.setState( { infoMsg : "Nenhum fluxo de caixa encontrado pelos critérios de busca informados" } );
+			} );
+		}, this );		
 	}
 	
 	dataIniOnChange( data ) {

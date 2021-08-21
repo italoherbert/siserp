@@ -39,32 +39,16 @@ export default class Funcionarios extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/funcionario/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				nomeIni : this.nomeIni.current.value,
-				usernameIni : this.usernameIni.current.value
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { funcionarios : dados } );						
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhum funcionário encontrado!" } );												
-				} );							
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}										
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost(	"/api/funcionario/filtra", {
+			nomeIni : this.nomeIni.current.value,
+			usernameIni : this.usernameIni.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { funcionarios : dados } );						
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhum funcionário encontrado!" } );												
+			} );
+		}, this );										
 	}
 		
 	detalhes( e, funcId ) {
@@ -89,22 +73,10 @@ export default class Funcionarios extends React.Component {
 	remover( e, funcId ) {
 		e.preventDefault();
 		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/funcionario/deleta/"+funcId, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {						
-				this.filtrar( null, false );																	
-				this.setState( { infoMsg : "Funcionario removido com êxito!" } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( "/api/funcionario/deleta/"+funcId, (resposta) => {
+			this.filtrar( null, false );																	
+			this.setState( { infoMsg : "Funcionario removido com êxito!" } );
+		}, this );		
 	}
 	
 	paraTelaRegistro() {
@@ -157,7 +129,7 @@ export default class Funcionarios extends React.Component {
 										<td>{func.id}</td>
 										<td>{func.pessoa.nome}</td>
 										<td>{func.usuario.username}</td>
-										<td>{func.usuario.tipo}</td>
+										<td>{func.usuario.grupo.nome}</td>
 										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, func.id )}>detalhes</button></td>
 										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, func.id )}>remover</button></td>
 									</tr>

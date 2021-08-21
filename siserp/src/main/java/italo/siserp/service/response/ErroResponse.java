@@ -11,11 +11,12 @@ public class ErroResponse {
 			
 	public final static int SEM_PERMISSAO = 1;
 	public final static int SEM_PERMISSAO_REG_USUARIO_RAIZ = 2;
+	
+	public final static int FALHA_CRIACAO_ARQUIVO = 3;
+	public final static int FALHA_CARREGAMENTO_ARQUIVO = 4;
+	public final static int FALHA_GRAVACAO_ARQUIVO = 5;
 
-	public final static int FALHA_GERACAO_RELATORIO = 3;
-	public final static int	FALHA_RELATORIO_BD_CON = 4;
-	public final static int FALHA_LEITURA_RECURSO_JASPER = 5;
-	public final static int FALHA_RESPOSTA_RELATORIO_OUTPUT = 6;
+	public final static int FALHA_GERACAO_RELATORIO = 6;
 	
 	public final static int USUARIO_NAO_ENCONTRADO = 100;
 	public final static int FUNCIONARIO_NAO_ENCONTRADO = 101;
@@ -126,17 +127,17 @@ public class ErroResponse {
 			case SEM_PERMISSAO_REG_USUARIO_RAIZ:
 				mensagem = "Você não tem permissão para registrar usuário tipo RAIZ.";
 				break;			
-			case FALHA_LEITURA_RECURSO_JASPER:
-				mensagem = "Houve falha leitura do recurso jasper: "+params[0];
+			case FALHA_CRIACAO_ARQUIVO:
+				mensagem = "Houve falha na criação do arquivo: "+params[0];
+				break;
+			case FALHA_CARREGAMENTO_ARQUIVO:
+				mensagem = "Houve falha no carregamento do arquivo: "+params[0];
+				break;
+			case FALHA_GRAVACAO_ARQUIVO:
+				mensagem = "Houve falha na gravação no arquivo: "+params[0];
 				break;
 			case FALHA_GERACAO_RELATORIO:
-				mensagem = "Houve falha na geração do relatório com base no arquivo jasper: "+params[0];
-				break;
-			case FALHA_RELATORIO_BD_CON:
-				mensagem = "Houve falha na conexão com banco de dados para geração de relatório.";
-				break;
-			case FALHA_RESPOSTA_RELATORIO_OUTPUT:
-				mensagem = "Houve falha no envio dos bytes do relatório de arquivo jasper: "+params[0];
+				mensagem = "Houve falha na geração do relatório: "+params[0];
 				break;
 				
 			case USUARIO_NAO_ENCONTRADO:
@@ -211,7 +212,7 @@ public class ErroResponse {
 				break;
 							
 			case USERNAME_OBRIGATORIO:
-				mensagem = "O username é um campo de preenchimento obrigatório.";
+				mensagem = "O nome de usuário é um campo de preenchimento obrigatório.";
 				break;
 			case PASSWORD_OBRIGATORIO:
 				mensagem = "A senha é um campo de preenchimento obrigatório.";

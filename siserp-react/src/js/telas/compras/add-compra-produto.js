@@ -15,7 +15,6 @@ export default class AddCompraProduto extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null,
-			codbarInfoMsg : null,
 			categorias : []			
 		};		
 		this.descricao = React.createRef();
@@ -30,7 +29,7 @@ export default class AddCompraProduto extends React.Component {
 	addProduto( e ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null, codbarInfoMsg : null } );
+		this.setState( { erroMsg : null, infoMsg : null } );
 		
 		if ( this.descricao.current.value.trim().length === 0 ) {
 			this.setState( { erroMsg : "A descrição é um campo de preenchiento obrigatório." } );
@@ -87,37 +86,23 @@ export default class AddCompraProduto extends React.Component {
 	buscar( e ) {
 		e.preventDefault();
 		
-		this.setState( { codbarInfoMsg : null } );
-		
 		let codbar = this.codigoBarras.current.value;
 		
-		fetch( '/api/produto/busca/'+codbar, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.descricao.current.value = dados.descricao;
-					this.precoUnitCompra.current.value = sistema.formataFloat( dados.precoUnitCompra );
-					this.precoUnitVenda.current.value = sistema.formataFloat( dados.precoUnitVenda );
-					this.unidade.current.value = dados.unidade;
-					this.estoqueQuantidade.current.value = sistema.formataFloat( dados.quantidade );
-										
-					this.setState( { categorias : dados.categorias } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOkCBK( resposta, ( msg ) => {
-					this.setState( { codbarInfoMsg : msg } );					
-				} );
-			}
-		} ); 
-			
+		sistema.wsGet( '/api/produto/busca/'+codbar, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.descricao.current.value = dados.descricao;
+				this.precoUnitCompra.current.value = sistema.formataFloat( dados.precoUnitCompra );
+				this.precoUnitVenda.current.value = sistema.formataFloat( dados.precoUnitVenda );
+				this.unidade.current.value = dados.unidade;
+				this.estoqueQuantidade.current.value = sistema.formataFloat( dados.quantidade );
+									
+				this.setState( { categorias : dados.categorias } );
+			} );
+		}, this );					
 	}
 			
 	render() {
-		const { erroMsg, infoMsg, codbarInfoMsg, categorias } = this.state;
+		const { erroMsg, infoMsg, categorias } = this.state;
 				
 		return(									
 			<Form onSubmit={(e) => this.addProduto( e ) }>																							
@@ -137,14 +122,13 @@ export default class AddCompraProduto extends React.Component {
 							<Form.Group className="mb-2">
 								<Form.Label>Codigo de barras: </Form.Label>
 								<Row className="display-inline mb-2">
-									<Col className="col-sm-10">
+									<Col className="col-sm-6">
 										<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
 									</Col>
 									<Col className="col-sm-2">
 										<Button type="button" variant="primary" onClick={ (e) => this.buscar( e ) }>Buscar</Button>
 									</Col>
 								</Row>
-								<MensagemPainel cor="info" msg={codbarInfoMsg} />
 							</Form.Group>
 							<Form.Group className="mb-2">
 								<Row>
@@ -162,14 +146,18 @@ export default class AddCompraProduto extends React.Component {
 									</Col>
 								</Row>
 							</Form.Group>
-							<Form.Group className="mb-2">						
-								<Form.Label>Quantidade em estoque: </Form.Label>
-								<Form.Control type="text" disabled={true} ref={this.estoqueQuantidade} name="estoqueQuantidade" />							
-							</Form.Group>
-							<Form.Group className="mb-2">						
-								<Form.Label>Quantidade para adicionar: </Form.Label>
-								<Form.Control type="text" ref={this.paraAddQuantidade} name="paraAddQuantidade" />							
-							</Form.Group>
+							<Form.Group className="mb-2">	
+								<Row>
+									<Col className="col-sm-4">								
+										<Form.Label>Quantidade para adicionar: </Form.Label>
+										<Form.Control type="text" ref={this.paraAddQuantidade} name="paraAddQuantidade" />
+									</Col>
+									<Col className="col-sm-4">								
+										<Form.Label>Quantidade em estoque: </Form.Label>
+										<Form.Control type="text" disabled={true} ref={this.estoqueQuantidade} name="estoqueQuantidade" />
+									</Col>
+								</Row>																					
+							</Form.Group>							
 						</Card>
 					</TabPanel>
 					<TabPanel>							

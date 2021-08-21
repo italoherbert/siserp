@@ -83,11 +83,11 @@ public class RelatorioService {
 			
 			response.getOutputStream().flush();
 			response.getOutputStream().close();
-		} catch (GeracaoRelatorioException e) {
-			throw e;
-		} catch (IOException e) {
-			throw new GeracaoRelatorioException();
-		}
+		} catch (GeracaoRelatorioException | IOException e) {
+			GeracaoRelatorioException ex = new GeracaoRelatorioException();
+			ex.setParams( "Relatório Balanço do Dia" );
+			throw ex;
+		} 
 	}
 	
 }

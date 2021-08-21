@@ -54,7 +54,12 @@ public class ProdutoBuilder {
 		}
 		
 		try {
-			p.setQuantidade( p.getQuantidade() + numeroUtil.stringParaDouble( req.getQuantidade() ) );
+			double quant = 0;
+			if ( req.getQuantidade() != null )
+				if ( !req.getQuantidade().isBlank() )
+					quant = numeroUtil.stringParaDouble( req.getQuantidade() );
+			
+			p.setQuantidade( p.getQuantidade() + quant );
 		} catch ( DoubleInvalidoException e ) {
 			QuantidadeInvalidaException ex = new QuantidadeInvalidaException();
 			ex.setParams( req.getQuantidade() );

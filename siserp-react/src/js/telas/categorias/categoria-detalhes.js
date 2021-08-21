@@ -38,26 +38,12 @@ export default class CategoriaDetalhes extends React.Component {
 	carregar( e ) {
 		if ( e != null )
 			e.preventDefault();
-			
-		let categoriaId = this.props.categoriaId;
-		
-		sistema.showLoadingSpinner();
-				
-		fetch( "/api/categoria/get/"+categoriaId, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {		
-					this.setState( { categoria : dados } );									
-				} );		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );				
-			}
-			sistema.hideLoadingSpinner();
-		} );	
+							
+		sistema.wsGet( "/api/categoria/get/"+this.props.categoriaId, (resposta) => {
+			resposta.json().then( (dados) => {		
+				this.setState( { categoria : dados } );									
+			} );
+		}, this );						
 	}
 			
 	editar( e ) {
@@ -67,7 +53,6 @@ export default class CategoriaDetalhes extends React.Component {
 			<CategoriaForm op="editar"
 				titulo="Altere a categoria" 
 				categoriaId={this.props.categoriaId} 
-				descricao={this.state.categoria.descricao} 
 			/>,
 			sistema.paginaElemento() );
 	}
@@ -76,35 +61,19 @@ export default class CategoriaDetalhes extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 			
-		let categoriaId = this.props.categoriaId;
-		
-		this.setState( { erroMsg : null, infoMsg : null } );		
-		
-		sistema.showLoadingSpinner();
+		sistema.wsPost(	"/api/subcategoria/filtra/"+this.props.categoriaId, {
+			"descricaoIni" : this.subcatDescricaoIni.current.value		
+		}, (resposta) => {
+			resposta.json().then( (dados) => {		
+				let cat = this.state.categoria;
+				cat.subcategorias = dados;
+			
+				this.setState( { categoria : cat } );
 				
-		fetch( "/api/subcategoria/filtra/"+categoriaId, {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"descricaoIni" : this.subcatDescricaoIni.current.value
-			} )
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {					
-					this.setState( { categoria : { subcategorias : dados } } );
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma subcategoria encontrada pelos critérios de busca informados." } );					
-				} );		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );				
-			}			
-			sistema.hideLoadingSpinner();
-		} );		
-		
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma subcategoria encontrada pelos critérios de busca informados." } );					
+			} );
+		}, this );					
 	}
 	
 	editarSubcategoria( e, subcat ) {
@@ -116,7 +85,6 @@ export default class CategoriaDetalhes extends React.Component {
 				titulo="Altere a subcategoria"
 				categoriaId={this.state.categoria.id}
 				subcategoriaId={subcat.id} 
-				descricao={subcat.descricao} 
 			/>, sistema.paginaElemento() ); 
 	}
 	
@@ -138,20 +106,10 @@ export default class CategoriaDetalhes extends React.Component {
 
 		sistema.showLoadingSpinner();
 
-		fetch( "/api/subcategoria/deleta/"+subcatId, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {	
-				this.setState( { infoMsg : "Subcategoria removida com êxito!" } );
-				this.filtrarSubcategorias( e, null );																	
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );				
-			}
-			sistema.hideLoadingSpinner();
-		} );		
+		sistema.wsDelete( "/api/subcategoria/deleta/"+subcatId, (resposta) => {
+			this.setState( { infoMsg : "Subcategoria removida com êxito!" } );
+			this.filtrarSubcategorias( e, null );
+		}, this );	
 	}
 	
 	paraTelaCategorias() {

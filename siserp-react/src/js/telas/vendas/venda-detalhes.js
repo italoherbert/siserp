@@ -22,24 +22,11 @@ export default class VendaDetalhes extends React.Component {
 	}				
 	
 	componentDidMount() {	
-		sistema.showLoadingSpinner();
-	
-		fetch( '/api/venda/get/'+this.props.vendaId, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					alert( JSON.stringify( dados ) );
-					this.setState( { venda : dados } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();			
-		} );
+		sistema.wsGet( '/api/venda/get/'+this.props.vendaId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { venda : dados } );
+			} );
+		}, this );	
 	}
 	
 	paraTelaVendas() {

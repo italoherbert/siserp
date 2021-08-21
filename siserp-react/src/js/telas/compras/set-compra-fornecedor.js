@@ -17,28 +17,19 @@ export default class SetCompraFornecedor extends React.Component {
 		};		
 	}
 		
-	fornecedorOnChange( item ) {										
-		fetch( '/api/fornecedor/filtra/limit/5', {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				"empresaIni" : item
-			} )
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { fornecedoresLista : [] } );
-					
-					for( let i = 0; i < dados.length; i++ )
-						this.state.fornecedoresLista.push( dados[ i ].empresa );					
-					
-					this.setState( {} );
-				} );
-			}
-		} );
+	fornecedorOnChange( item ) {			
+		sistema.wsPost( '/api/fornecedor/filtra/limit/5', {
+			"empresaIni" : item
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { fornecedoresLista : [] } );
+				
+				for( let i = 0; i < dados.length; i++ )
+					this.state.fornecedoresLista.push( dados[ i ].empresa );					
+				
+				this.setState( {} );
+			} );
+		}, this );	
 	}
 			
 	render() {

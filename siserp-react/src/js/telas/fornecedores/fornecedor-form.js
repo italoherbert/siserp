@@ -22,14 +22,20 @@ export default class FornecedorForm extends React.Component {
 	
 	componentDidMount() {			
 		if ( this.props.op === 'editar' )
-			this.empresa.current.value = this.props.empresa;					
+			this.carrega();							
+	}
+	
+	carrega() {
+		sistema.wsGet( '/api/fornecedor/get/'+this.props.fornecedorId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.empresa.current.value = dados.empresa;
+			} );
+		}, this );
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
-		
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
+				
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
@@ -39,26 +45,12 @@ export default class FornecedorForm extends React.Component {
 			url = "/api/fornecedor/registra";
 			metodo = 'POST';
 		}
-			
-		sistema.showLoadingSpinner();
 		
-		fetch( url, {
-			method : metodo,			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"empresa" : this.empresa.current.value
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Fornecedor salvo com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsSave( url, metodo, {
+			"empresa" : this.empresa.current.value
+		}, (resposta) => {
+			this.setState( { infoMsg : "Fornecedor salvo com sucesso." } );
+		}, this );						
 	}
 	
 	paraTelaFornecedores() {

@@ -43,54 +43,38 @@ export default class FuncionarioForm extends React.Component {
 	}
 	
 	carregaFuncionario() {
-		fetch( '/api/funcionario/get/'+this.props.funcId, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.nome.current.value = dados.pessoa.nome;
-					this.telefone.current.value = dados.pessoa.telefone;
-					this.email.current.value = dados.pessoa.email;
-					
-					this.ender.current.value = dados.pessoa.endereco.ender;
-					this.numero.current.value = dados.pessoa.endereco.numero;
-					this.logradouro.current.value = dados.pessoa.endereco.logradouro;
-					this.bairro.current.value = dados.pessoa.endereco.bairro;
-					this.cidade.current.value = dados.pessoa.endereco.cidade;
-					this.uf.current.value = dados.pessoa.endereco.uf;
-					
-					this.username.current.value = dados.usuario.username;
-					this.usuarioGrupo.current.value = dados.usuario.grupo.nome;
-					
-					this.setState( {} );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-		} );
+		sistema.wsGet( '/api/funcionario/get/'+this.props.funcId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.nome.current.value = dados.pessoa.nome;
+				this.telefone.current.value = dados.pessoa.telefone;
+				this.email.current.value = dados.pessoa.email;
+				
+				this.ender.current.value = dados.pessoa.endereco.ender;
+				this.numero.current.value = dados.pessoa.endereco.numero;
+				this.logradouro.current.value = dados.pessoa.endereco.logradouro;
+				this.bairro.current.value = dados.pessoa.endereco.bairro;
+				this.cidade.current.value = dados.pessoa.endereco.cidade;
+				this.uf.current.value = dados.pessoa.endereco.uf;
+				
+				this.username.current.value = dados.usuario.username;
+				this.usuarioGrupo.current.value = dados.usuario.grupo.nome;
+				
+				this.setState( {} );
+			} );
+		}, this );		
 	}
 		
 	carregaGrupos() {
-		fetch( "/api/usuario/grupo/lista", {
-			method : "GET",			
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
+		sistema.wsGet( "/api/usuario/grupo/lista", (resposta) => {
 			resposta.json().then( (dados) => {
 				this.setState( { usuarioGrupos : dados } );										
-			} );			 
-		} );
+			} );
+		}, this );		
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
-		
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
+				
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
@@ -101,46 +85,32 @@ export default class FuncionarioForm extends React.Component {
 			metodo = 'POST';
 		}
 				
-		sistema.showLoadingSpinner();
-		
-		fetch( url, {
-			method : metodo,			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"pessoa" : {
-					"nome" : this.nome.current.value,
-					"telefone" : this.telefone.current.value,				
-					"email" : this.email.current.value,
-					
-					"endereco" : {
-						"ender" : this.ender.current.value,
-						"numero" : this.numero.current.value,
-						"bairro" : this.bairro.current.value,
-						"cidade" : this.cidade.current.value,
-						"uf" : this.uf.current.value,
-						"logradouro" : this.logradouro.current.value				
-					}
-				},
+		sistema.wsSave( url, metodo, {
+			"pessoa" : {
+				"nome" : this.nome.current.value,
+				"telefone" : this.telefone.current.value,				
+				"email" : this.email.current.value,
 				
-				"usuario" : {
-					"username" : this.username.current.value,
-					"password" : this.password.current.value,
-					"grupo" : {
-						"nome" : this.usuarioGrupo.current.value	
-					}
+				"endereco" : {
+					"ender" : this.ender.current.value,
+					"numero" : this.numero.current.value,
+					"bairro" : this.bairro.current.value,
+					"cidade" : this.cidade.current.value,
+					"uf" : this.uf.current.value,
+					"logradouro" : this.logradouro.current.value				
 				}
-			} )		
-		} ).then( (resposta) => {						
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Funcionario salvo com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
+			},
+			
+			"usuario" : {
+				"username" : this.username.current.value,
+				"password" : this.password.current.value,
+				"grupo" : {
+					"nome" : this.usuarioGrupo.current.value	
+				}
 			}
-			sistema.hideLoadingSpinner();
-		} );				
+		}, (resposta) => {
+			this.setState( { infoMsg : "Funcionario salvo com sucesso." } );
+		}, this );						
 	}
 	
 	paraTelaFuncionarios() {

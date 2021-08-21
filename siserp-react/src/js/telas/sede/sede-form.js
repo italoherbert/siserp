@@ -22,37 +22,28 @@ export default class SedeForm extends React.Component {
 	}
 	
 	componentDidMount() {			
-		if ( this.props.op === 'editar' ) {
-			this.cnpj.current.value = this.props.cnpj;
-			this.inscricaoEstadual.current.value = this.props.inscricaoEstadual;
-		}										
+		if ( this.props.op === 'editar' )
+			this.carrega();				
+	}
+	
+	carrega() {
+		sistema.wsGet( '/api/sede/get', (resposta) => {
+			resposta.json().then( (dados) => {
+				this.cnpj.current.value = dados.cnpj;
+				this.inscricaoEstadual.current.value = dados.inscricaoEstadual;
+			} );
+		}, this );
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null } );
-						
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/sede/salva', {
-			method : 'PUT',			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"cnpj" : this.cnpj.current.value,	
-				"inscricaoEstadual" : this.inscricaoEstadual.current.value				
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Dados da sede salvos com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsPut( '/api/sede/salva', {
+			"cnpj" : this.cnpj.current.value,	
+			"inscricaoEstadual" : this.inscricaoEstadual.current.value	
+		}, (resposta) => {
+			this.setState( { infoMsg : "Dados da sede salvos com sucesso." } );			
+		}, this );			
 	}
 	
 	paraTelaSedeDetalhes() {

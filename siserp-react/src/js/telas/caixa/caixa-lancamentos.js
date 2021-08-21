@@ -44,59 +44,57 @@ export default class CaixaLancamentos extends React.Component {
 		} else {
 			url = '/api/caixa/get/uid/hoje/'+sistema.usuario.id;
 		}
-				 				
-		fetch( url, {
-			method : "GET",			
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {										
-					this.setState( { lancamentos : [] } );
+				
+		sistema.wsGet( url, (resposta) => {
+			resposta.json().then( (dados) => {										
+				this.setState( { lancamentos : [] } );
+				
+				let caixa = dados;					
+				
+				let creditoAcumulado = 0;
+				let debitoAcumulado = 0;
+				for( let i = 0; i < caixa.lancamentos.length; i++ ) {
+					let lanc = caixa.lancamentos[ i ];
 					
-					let caixa = dados;					
-					
-					let creditoAcumulado = 0;
-					let debitoAcumulado = 0;
-					for( let i = 0; i < caixa.lancamentos.length; i++ ) {
-						let lanc = caixa.lancamentos[ i ];
-						
-						let debito = 0;
-						let credito = 0;
-																	
-						if ( lanc.tipo === 'CREDITO' ) {
-							credito = sistema.paraFloat( lanc.valor );							
-						} else if ( lanc.tipo === 'DEBITO' ) {
-							debito = sistema.paraFloat( lanc.valor );
-						}
-						
-						debitoAcumulado += debito;
-						creditoAcumulado += credito;
-						let saldo = creditoAcumulado - debitoAcumulado;
-
-						this.state.lancamentos.push( {
-							id : lanc.id,
-							dataOperacao : lanc.dataOperacao,
-							obs : lanc.obs,
-							debito : debito,
-							credito : credito,
-							saldo : saldo
-						} );
+					let debito = 0;
+					let credito = 0;
+																
+					if ( lanc.tipo === 'CREDITO' ) {
+						credito = sistema.paraFloat( lanc.valor );							
+					} else if ( lanc.tipo === 'DEBITO' ) {
+						debito = sistema.paraFloat( lanc.valor );
 					}
 					
-					this.setState( { caixaFuncNome : caixa.funcionario.pessoa.nome, caixaDataAbertura : caixa.dataAbertura } );
-					
-					if ( dados.length === 0 && listarBTClicado === true )
-						this.setState( { infoMsg : "Nenhum lançamento até agora" } );					
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}		
-			sistema.hideLoadingSpinner();			
-		} );
+					debitoAcumulado += debito;
+					creditoAcumulado += credito;
+					let saldo = creditoAcumulado - debitoAcumulado;
+
+					this.state.lancamentos.push( {
+						id : lanc.id,
+						dataOperacao : lanc.dataOperacao,
+						obs : lanc.obs,
+						debito : debito,
+						credito : credito,
+						saldo : saldo
+					} );
+				}
+				
+				this.setState( { caixaFuncNome : caixa.funcionario.pessoa.nome, caixaDataAbertura : caixa.dataAbertura } );
+				
+				if ( dados.length === 0 && listarBTClicado === true )
+					this.setState( { infoMsg : "Nenhum lançamento até agora" } );					
+			} );
+		}, this ); 				
 	}
-		
+					
+	remover( e, lancId ) {
+		e.preventDefault();
+				
+		sistema.wsDelete( '/api/lancamento/deleta/'+lancId, (resposta) => {
+			this.listar( e, false );
+		}, this );		
+	}
+	
 	removerSeConfirmado( e, lancId ) {
 		this.setState( { 
 			remocaoModalVisivel : true, 
@@ -108,26 +106,6 @@ export default class CaixaLancamentos extends React.Component {
 				this.setState( { remocaoModalVisivel : false } );
 			} 
 		} )
-	}
-		
-	remover( e, lancId ) {
-		e.preventDefault();
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/lancamento/deleta/'+lancId, {
-			method : 'DELETE',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				this.listar( e, false );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
 	}
 		
 	paraTelaRegistro() {

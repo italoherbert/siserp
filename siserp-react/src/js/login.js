@@ -21,33 +21,20 @@ export default class Login extends React.Component {
 		
 	entrar(e) {			
 		e.preventDefault();	
-												
-		this.setState( { erroMsg : null } );
-
-		fetch( "/api/login/entrar", {
-			method : "POST",			
-			credentials : "include",
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-			},				
-			body : JSON.stringify( { 
-				username : this.username.current.value,
-				password : this.password.current.value
-			} )
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					sistema.token = dados.token;
-					sistema.usuario = dados.usuario;
-															
-					ReactDOM.render( <Layout />, sistema.rootElemento() );				
-					ReactDOM.render( <NavegBar />, sistema.menuNavegElemento() );				
-					ReactDOM.render( <Inicial />, sistema.paginaElemento() );								
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			 
-		} );
+														
+		sistema.wsPostNoAuthorization( "/api/login/entrar", {
+			username : this.username.current.value,
+			password : this.password.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				sistema.token = dados.token;
+				sistema.usuario = dados.usuario;
+														
+				ReactDOM.render( <Layout />, sistema.rootElemento() );				
+				ReactDOM.render( <NavegBar />, sistema.menuNavegElemento() );				
+				ReactDOM.render( <Inicial />, sistema.paginaElemento() );								
+			} );
+		}, this );
 	}
 	
 	

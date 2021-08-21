@@ -39,32 +39,20 @@ export default class ContasPagar extends React.Component {
 
 		sistema.showLoadingSpinner();
 		
-		fetch( "/api/conta/pagar/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"incluirPagas" : this.incluirContasPagas.current.checked,
-				"incluirFornecedor" : this.incluirFornecedor.current.checked,
-				"fornecedorNomeIni" : this.fornecedorNomeIni.current.value,
-				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim )
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { contasObj : dados } );
-										
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma conta encontrada pelos critérios de filtro informados!" } );																							
-				} );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost( "/api/conta/pagar/filtra", {
+			"incluirPagas" : this.incluirContasPagas.current.checked,
+			"incluirFornecedor" : this.incluirFornecedor.current.checked,
+			"fornecedorNomeIni" : this.fornecedorNomeIni.current.value,
+			"dataIni" : sistema.formataData( this.state.dataIni ),
+			"dataFim" : sistema.formataData( this.state.dataFim )
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { contasObj : dados } );
+									
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma conta encontrada pelos critérios de filtro informados!" } );																							
+			} );
+		}, this );		
 	}
 	
 	alterarSituacao( e, index, parcelaId ) {
@@ -74,25 +62,11 @@ export default class ContasPagar extends React.Component {
 		
 		let parcelaPaga = this.state.contasObj.contas[ index ].parcela.paga;
 
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/conta/pagar/altera/situacao/'+parcelaId, {
-			method : 'PATCH',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				paga : ( parcelaPaga === 'true' ? false : true )
-			} )
-		} ).then( (resposta) => {			
-			if ( resposta.status === 200 ) {
-				this.filtrar( e, false );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );			
+		sistema.wsPatch( '/api/conta/pagar/altera/situacao/'+parcelaId, {
+			paga : ( parcelaPaga === 'true' ? false : true )
+		}, (resposta) => {
+			this.filtrar( e, false );	
+		}, this );		
 	}
 	
 	changeDataIni( date ) {

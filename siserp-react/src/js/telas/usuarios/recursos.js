@@ -36,33 +36,17 @@ export default class Recursos extends React.Component {
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
-
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
+		
+		sistema.wsPost( "/api/recurso/filtra", {
+			"nomeIni" : this.nomeIni.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { recursos : dados } );
 				
-		fetch( "/api/recurso/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"nomeIni" : this.nomeIni.current.value,
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { recursos : dados } );
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhum recurso registrado!" } );																							
-				} );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhum recurso registrado!" } );																							
+			} );
+		}, this );
 	}
 		
 	removerSeConfirmado( e, recursoId ) {
@@ -81,22 +65,10 @@ export default class Recursos extends React.Component {
 	remover( e, recursoId ) {
 		e.preventDefault();
 		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/recurso/deleta/"+recursoId, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {						
-				this.filtrar( null, false );																	
-				this.setState( { infoMsg : "Recurso removido com êxito!" } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}						
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( "/api/recurso/deleta/"+recursoId, (resposta) => {
+			this.filtrar( null, false );																	
+			this.setState( { infoMsg : "Recurso removido com êxito!" } );
+		}, this );
 	}
 		
 	editar( e, recursoId ) {

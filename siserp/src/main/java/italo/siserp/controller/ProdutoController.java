@@ -32,11 +32,7 @@ public class ProdutoController {
 	
 	@PreAuthorize("hasAuthority('produtoWRITE')")
 	@PostMapping("/salva")
-	public ResponseEntity<Object> registra( @RequestBody SaveProdutoRequest request ) {
-		if ( request.getQuantidade() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );		
-		if ( request.getQuantidade().isBlank() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );		
+	public ResponseEntity<Object> salva( @RequestBody SaveProdutoRequest request ) {	
 		if ( request.getCodigoBarras() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );		
 		if ( request.getCodigoBarras().isBlank() )

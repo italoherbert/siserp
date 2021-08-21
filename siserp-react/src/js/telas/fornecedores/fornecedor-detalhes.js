@@ -20,37 +20,19 @@ export default class FornecedorDetalhes extends React.Component {
 		};
 	}
 	
-	componentDidMount() {
-		let fornecedorId = this.props.fornecedorId;
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/fornecedor/get/"+fornecedorId, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {											
-					this.setState( { fornecedor : dados } );				
-				} );		
-			} else {				
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			 
-			sistema.hideLoadingSpinner();
-		} );
+	componentDidMount() {		
+		sistema.wsGet( '/api/fornecedor/get/'+this.props.fornecedorId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { fornecedor : dados } );
+			} );
+		}, this );		
 	}
 	
 	editar( e ) {
 		e.preventDefault();
 					
 		ReactDOM.render( 
-			<FornecedorForm op="editar"
-				fornecedorId={this.props.fornecedorId} 
-				empresa={this.state.fornecedor.empresa} 
-			/>,
-			sistema.paginaElemento() );
+			<FornecedorForm op="editar"	fornecedorId={this.props.fornecedorId} />, sistema.paginaElemento() );
 	}
 		
 	paraTelaFornecedores() {

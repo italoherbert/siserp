@@ -36,16 +36,16 @@ public class ProdutoService {
 		String codigoBarras = req.getCodigoBarras();
 		Optional<Produto> pop = produtoRepository.findByCodigoBarras( codigoBarras );
 		
-		Produto ip;
+		Produto p;
 		if ( pop.isPresent() ) {
-			ip = pop.get();
+			p = pop.get();
 		} else {
-			ip = produtoBuilder.novoProduto();
+			p = produtoBuilder.novoProduto();
 		}
 								
-		produtoBuilder.carregaProduto( ip, req );
+		produtoBuilder.carregaProduto( p, req );
 		
-		produtoRepository.save( ip );		
+		produtoRepository.save( p );		
 	}		
 	
 	public List<ProdutoResponse> buscaProdutosPorDescIni( String descricaoIni ) {

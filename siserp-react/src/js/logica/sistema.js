@@ -89,6 +89,85 @@ class Sistema {
 		
 		return ( frac === 0 ? v[0] : v[0]+','+v[1] );				
 	}
+	
+	wsPostNoAuthorization( url, requestDados, responseOk, compRef ) {
+		this.ws( url, {
+			method : 'POST',
+			headers : {
+				'Content-Type' : 'application/json; charset=UTF-8'
+			},
+			body : JSON.stringify( requestDados )
+		}, responseOk, compRef );
+	}
+	
+	wsGetPDF( url, responseOk, compRef ) {
+		this.ws( url, {
+			method : 'GET',
+			headers : {
+				'Accept' : 'application/pdf',
+				'Authorization' : 'Bearer '+this.token
+			}
+		}, responseOk, compRef );
+	}
+	
+	wsGet( url, responseOk, compRef ) {
+		this.wsGetOrDelete( url, 'GET', responseOk, compRef );
+	}
+	
+	wsDelete( url, responseOk, compRef ) {
+		this.wsGetOrDelete( url, 'DELETE', responseOk, compRef );
+	}
+	
+	wsPost( url, requestDados, responseOk, compRef ) {
+		this.wsSave( url, 'POST', requestDados, responseOk, compRef );
+	}
+	
+	wsPut( url, requestDados, responseOk, compRef ) {
+		this.wsSave( url, 'PUT', requestDados, responseOk, compRef );
+	}
+	
+	wsPatch( url, requestDados, responseOk, compRef ) {
+		this.wsSave( url, 'PATCH', requestDados, responseOk, compRef );
+	}
+			
+	wsSave( url, method, requestDados, responseOk, compRef ) {
+		this.ws( url, {
+			method : method,
+			headers : {
+				'Content-Type' : 'application/json; charset=UTF-8',
+				'Authorization' : 'Bearer '+this.token
+			},
+			body : JSON.stringify( requestDados )
+		}, responseOk, compRef );
+	}
+	
+	wsGetOrDelete( url, method, responseOk, compRef ) {
+		this.ws( url, {
+			method : method,
+			headers : {
+				'Authorization' : 'Bearer '+this.token
+			}
+		}, responseOk, compRef );
+	}
+		
+	ws( url, request, responseOk, compRef ) {
+		compRef.setState( { erroMsg : null, infoMsg : null } );
+		
+		this.showLoadingSpinner();						
+				
+		fetch( url, request ).then( ( resposta ) => {
+			if ( resposta.status === 200 ) {
+				if ( typeof( responseOk ) === 'function' )
+					responseOk.call( this, resposta );
+			} else {
+				this.trataRespostaNaoOk( resposta, compRef );
+			}
+			this.hideLoadingSpinner();
+		} ).catch( (error) => {
+			this.hideLoadingSpinner();
+			compRef.setState( { erroMsg : "Servidor indisponível." } );
+		} );		
+	}		
 
 	trataRespostaNaoOk( resposta, compRef ) {
 		if ( resposta.status === 400 ) {

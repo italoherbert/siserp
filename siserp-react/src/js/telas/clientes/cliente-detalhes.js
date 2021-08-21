@@ -25,23 +25,11 @@ export default class ClienteDetalhes extends React.Component {
 	}
 	
 	componentDidMount() {		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/cliente/get/"+this.props.clienteId, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {											
-					this.setState( { cliente : dados } );
-				} );		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			 
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( "/api/cliente/get/"+this.props.clienteId, (resposta) => {
+			resposta.json().then( (dados) => {											
+				this.setState( { cliente : dados } );
+			} );
+		}, this );		
 	}
 		
 	editar( e ) {

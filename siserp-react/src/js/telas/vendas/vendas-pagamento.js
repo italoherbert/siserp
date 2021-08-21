@@ -32,31 +32,15 @@ export default class VendasPagamento extends React.Component {
 	efetuarPagamento( e ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		sistema.showLoadingSpinner();
-		
 		let clienteId = this.state.clienteId;
 		
-		fetch( '/api/venda/efetuarecebimento/'+clienteId, {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				"valor" : sistema.paraFloat( this.valorPago.current.value )
-			} )
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.valorPago.current.value = '';
-				this.carregaVendas( clienteId );
-				this.setState( { infoMsg : 'Pagamento efetuado com sucesso' } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} )
+		sistema.wsPost( '/api/venda/efetuarecebimento/'+clienteId, {
+			"valor" : sistema.paraFloat( this.valorPago.current.value )
+		}, (resposta) => {
+			this.valorPago.current.value = '';
+			this.carregaVendas( clienteId );
+			this.setState( { infoMsg : 'Pagamento efetuado com sucesso' } );
+		}, this );		
 	}
 						
 	clienteNomeItemClicado( item, index ) {
@@ -70,69 +54,46 @@ export default class VendasPagamento extends React.Component {
 	}	
 
 	carregaVendas( clienteId ) {
-		sistema.showLoadingSpinner();
-						
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		fetch( '/api/venda/lista/porcliente/'+clienteId, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					let vendas = dados;
-					
-					let debito = 0;
-					for( let i = 0; i < vendas.length; i++ ) {
-						let subtotal = sistema.paraFloat( vendas[ i ].subtotal );
-						let desconto = sistema.paraFloat( vendas[ i ].desconto );
-						vendas[ i ].total = subtotal * ( 1.0 - desconto );
+		sistema.wsGet( '/api/venda/lista/porcliente/'+clienteId, (resposta) => {
+			resposta.json().then( (dados) => {
+				let vendas = dados;
+				
+				let debito = 0;
+				for( let i = 0; i < vendas.length; i++ ) {
+					let subtotal = sistema.paraFloat( vendas[ i ].subtotal );
+					let desconto = sistema.paraFloat( vendas[ i ].desconto );
+					vendas[ i ].total = subtotal * ( 1.0 - desconto );
 
-						debito += sistema.paraFloat( vendas[ i ].debito );
-					}
+					debito += sistema.paraFloat( vendas[ i ].debito );
+				}
 
-					this.setState( { debito : debito, vendas : vendas } );
-					
-					if ( dados.length === 0 ) 
-						this.setState( { infoMsg : 'O cliente está adimplente.' } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+				this.setState( { debito : debito, vendas : vendas } );
+				
+				if ( dados.length === 0 ) 
+					this.setState( { infoMsg : 'O cliente está adimplente.' } );
+			} );
+		}, this );		
 	}
 				
-	clienteNomeOnChange( item ) {		
-		fetch( '/api/cliente/filtra/limit/5', {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				"nomeIni" : item
-			} )
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { clientes : [], clientesNomeLista : [] } );
-															
-					for( let i = 0; i < dados.length; i++ ) {
-						this.state.clientes.push( {
-							clienteId : dados[ i ].id,
-							clienteNome : dados[ i ].pessoa.nome 
-						} );	
-						
-						this.state.clientesNomeLista.push( dados[ i ].pessoa.nome );
-					}
+	clienteNomeOnChange( item ) {	
+		sistema.wsPost( '/api/cliente/filtra/limit/5', {
+			"nomeIni" : item
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { clientes : [], clientesNomeLista : [] } );
+														
+				for( let i = 0; i < dados.length; i++ ) {
+					this.state.clientes.push( {
+						clienteId : dados[ i ].id,
+						clienteNome : dados[ i ].pessoa.nome 
+					} );	
+					
+					this.state.clientesNomeLista.push( dados[ i ].pessoa.nome );
+				}
 
-					this.setState( {} );
-				} );
-			}
-		} );
+				this.setState( {} );
+			} );
+		}, this );
 	}
 				
 	paraTelaVendas() {

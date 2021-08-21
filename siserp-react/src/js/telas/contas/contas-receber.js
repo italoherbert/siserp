@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {Container, Row, Col, Card, Form, Table, Button} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
@@ -38,71 +39,39 @@ export default class ContasReceber extends React.Component {
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
-
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
 		
-		fetch( "/api/conta/receber/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"incluirPagas" : this.incluirContasPagas.current.checked,
-				"incluirCliente" : this.incluirCliente.current.checked,
-				"clienteNomeIni" : this.clienteNomeIni.current.value,
-				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim )
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					let contasObj = dados;
-					
-					for( let i = 0; i < contasObj.vendas.length; i++ ) {
-						let subtotal = sistema.paraFloat( contasObj.vendas[ i ].subtotal );
-						let desconto = sistema.paraFloat( contasObj.vendas[ i ].desconto );
-						contasObj.vendas[ i ].total = subtotal * ( 1.0 - desconto );
-					}
-										
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma conta encontrada pelos critérios de filtro informados!" } );																							
-					
-					this.setState( { contasObj : contasObj } );
-				} );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost( "/api/conta/receber/filtra", {
+			"incluirPagas" : this.incluirContasPagas.current.checked,
+			"incluirCliente" : this.incluirCliente.current.checked,
+			"clienteNomeIni" : this.clienteNomeIni.current.value,
+			"dataIni" : sistema.formataData( this.state.dataIni ),
+			"dataFim" : sistema.formataData( this.state.dataFim )
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				let contasObj = dados;
+				
+				for( let i = 0; i < contasObj.vendas.length; i++ ) {
+					let subtotal = sistema.paraFloat( contasObj.vendas[ i ].subtotal );
+					let desconto = sistema.paraFloat( contasObj.vendas[ i ].desconto );
+					contasObj.vendas[ i ].total = subtotal * ( 1.0 - desconto );
+				}
+									
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma conta encontrada pelos critérios de filtro informados!" } );																							
+				
+				this.setState( { contasObj : contasObj } );
+			} );	
+		}, this );
 	}
 			
 	efetuarRecebimento( e, index, clienteId ) {
 		e.preventDefault();
 				
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/conta/receber/efetuarecebimento/'+clienteId, {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				valorRecebido : this.valorRecebido.current.value
-			} )
-		} ).then( (resposta) => {			
-			if ( resposta.status === 200 ) {
-				this.filtrar( e, false );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );			
+		sistema.wsPost(	'/api/conta/receber/efetuarecebimento/'+clienteId, {
+			valorRecebido : this.valorRecebido.current.value
+		}, (resposta) => {
+			this.filtrar( e, false );
+		}, this );								
 	}
 	
 	changeDataIni( date ) {

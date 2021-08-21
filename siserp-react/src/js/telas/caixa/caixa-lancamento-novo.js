@@ -32,52 +32,24 @@ export default class CaixaLancamentoNovo extends React.Component {
 	}
 	
 	carregaTipos() {
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/lancamento/tipos', {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { tipos : dados } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( '/api/lancamento/tipos', (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { tipos : dados } );
+			} );
+		}, this );		
 	}
 						
 	novo( e ) {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.setState( { infoMsg : null, erroMsg : null } );
-		
-		sistema.showLoadingSpinner();
-
-		fetch( "/api/lancamento/novo/hoje/"+sistema.usuario.id, {
-			method : "POST",			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8", 
-				"Authorization" : "Bearer "+sistema.token
-			}, 
-			body : JSON.stringify( {
-				tipo : this.tipo.current.value,
-				valor : sistema.paraFloat( this.valor.current.value ),				
-				obs : this.obs.current.value
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				this.setState( { infoMsg : "Lançamento efetuado com sucesso." } );																							
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}		
-			sistema.hideLoadingSpinner();			
-		} );
+		sistema.wsPost( "/api/lancamento/novo/hoje/"+sistema.usuario.id, {
+			tipo : this.tipo.current.value,
+			valor : sistema.paraFloat( this.valor.current.value ),				
+			obs : this.obs.current.value
+		}, (response) => {
+			this.setState( { infoMsg : "Lançamento efetuado com sucesso." } );
+		}, this );							
 	}
 	
 	paraTelaLancamentos() {

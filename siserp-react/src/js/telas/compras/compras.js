@@ -35,34 +35,18 @@ export default class Compras extends React.Component {
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
-					
-		this.setState( { infoMsg : null, erroMsg : null } );
 		
-		sistema.showLoadingSpinner();
-
-		fetch( "/api/compra/filtra", {
-			method : "POST",			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8", 
-				"Authorization" : "Bearer "+sistema.token
-			}, 
-			body : JSON.stringify( {
-				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim )
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { compras : dados } );	
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma compra encontrada pelos critérios de busca informados!" } );																							
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}		
-			sistema.hideLoadingSpinner();			
-		} );
+		sistema.wsPost( "/api/compra/filtra", {
+			"dataIni" : sistema.formataData( this.state.dataIni ),
+			"dataFim" : sistema.formataData( this.state.dataFim )
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { compras : dados } );	
+				
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma compra encontrada pelos critérios de busca informados!" } );																							
+			} );
+		}, this );				
 	}
 	
 	changeDataIni( date ) {
@@ -93,22 +77,10 @@ export default class Compras extends React.Component {
 	remover( e, compraId, instance ) {
 		e.preventDefault();
 
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/compra/deleta/'+compraId, {
-			method : 'DELETE',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.filtrar( null, false );
-				this.setState( { infoMsg : 'Compra deletada com êxito.' } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( '/api/compra/deleta/'+compraId, (resposta) => {
+			this.filtrar( null, false );
+			this.setState( { infoMsg : 'Compra deletada com êxito.' } );
+		}, this );
 	}
 	
 	paraRegistroForm( e ) {

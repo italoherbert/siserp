@@ -22,14 +22,20 @@ export default class CategoriaForm extends React.Component {
 	
 	componentDidMount() {			
 		if ( this.props.op === 'editar' )
-			this.descricao.current.value = this.props.descricao;					
+			this.carrega();				
+	}
+	
+	carrega() {
+		sistema.wsGet( "/api/categoria/get/"+this.props.categoriaId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.descricao.current.value = dados.descricao;											
+			} );
+		}, this );
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
-		
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
+				
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
@@ -40,28 +46,14 @@ export default class CategoriaForm extends React.Component {
 			metodo = 'POST';
 		}
 	
-		sistema.showLoadingSpinner();
-				
-		fetch( url, {
-			method : metodo,			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"descricao" : this.descricao.current.value
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Categoria cadastrada com sucesso." } );
-				
-				if ( typeof( this.props.registrou ) === "function" )
-					this.props.registrou.call();
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsSave( url, metodo, {
+			"descricao" : this.descricao.current.value			
+		}, (resposta) => {
+			this.setState( { infoMsg : "Categoria cadastrada com sucesso." } );
+			
+			if ( typeof( this.props.registrou ) === "function" )
+				this.props.registrou.call();
+		}, this );						
 	}
 		
 	paraTelaCategoriaDetalhes() {

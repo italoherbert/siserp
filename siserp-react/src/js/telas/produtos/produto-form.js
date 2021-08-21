@@ -30,94 +30,52 @@ export default class ProdutoForm extends React.Component {
 	}
 	
 	carrega() {
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/produto/get/"+this.props.produtoId, {
-			method : "GET",			
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}	
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.descricao.current.value = dados.descricao;
-					this.precoUnitCompra.current.value = dados.precoUnitCompra;
-					this.precoUnitVenda.current.value = dados.precoUnitVenda;
-					this.unidade.current.value = dados.unidade;
+		sistema.wsGet( "/api/produto/get/"+this.props.produtoId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.descricao.current.value = dados.descricao;
+				this.precoUnitCompra.current.value = dados.precoUnitCompra;
+				this.precoUnitVenda.current.value = dados.precoUnitVenda;
+				this.unidade.current.value = dados.unidade;
 
-					this.codigoBarras.current.value = dados.codigoBarras;
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );		
+				this.codigoBarras.current.value = dados.codigoBarras;
+			} );
+		}, this );					
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null } );		
-				
-		sistema.showLoadingSpinner();				
-		
-		fetch( "/api/produto/salva", {
-			method : "POST",			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"codigoBarras" : this.codigoBarras.current.value,
-				"descricao" : this.descricao.current.value,
-				"precoUnitCompra" : sistema.paraFloat( this.precoUnitCompra.current.value ),
-				"precoUnitVenda" : sistema.paraFloat( this.precoUnitVenda.current.value ),
-				"unidade" : this.unidade.current.value
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Produto cadastrado com sucesso." } );
-				
-				if ( typeof( this.props.registrou ) === "function" )
-					this.props.registrou.call( this );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsPost( "/api/produto/salva", {
+			"codigoBarras" : this.codigoBarras.current.value,
+			"descricao" : this.descricao.current.value,
+			"precoUnitCompra" : sistema.paraFloat( this.precoUnitCompra.current.value ),
+			"precoUnitVenda" : sistema.paraFloat( this.precoUnitVenda.current.value ),
+			"unidade" : this.unidade.current.value
+		}, (resposta) => {
+			this.setState( { infoMsg : "Produto cadastrado com sucesso." } );
+			
+			if ( typeof( this.props.registrou ) === "function" )
+				this.props.registrou.call( this );
+		}, this );				
 	}		
 	
 	buscar( e ) {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.setState( { erroMsg : null, infoMsg : null } );		
+		let codBarras = this.codigoBarras.current.value; 
 
-		let codBarras = this.codigoBarras.value; 
-
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/produto/busca/"+codBarras, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.codigoBarras.current.value = dados.codigoBarras;
-					this.descricao.current.value = dados.descricao;
-					this.precoUnitCompra.current.value = dados.precoUnitCompra;
-					this.precoUnitVenda.current.value = dados.precoUnitVenda;
-					this.unidade.current.value = dados.unidade;
-														
-					this.setState({});
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( "/api/produto/busca/"+codBarras, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.codigoBarras.current.value = dados.codigoBarras;
+				this.descricao.current.value = dados.descricao;
+				this.precoUnitCompra.current.value = dados.precoUnitCompra;
+				this.precoUnitVenda.current.value = dados.precoUnitVenda;
+				this.unidade.current.value = dados.unidade;
+													
+				this.setState({});
+			} );
+		}, this );					
 	}
 	
 	paraTelaProdutos( e ) {
@@ -139,10 +97,6 @@ export default class ProdutoForm extends React.Component {
 								<h4 className="card-title">Salvar produto</h4>
 								
 								<Form.Group className="mb-2">
-									<Form.Label>Descrição: </Form.Label>
-									<Form.Control type="text" ref={this.descricao} name="descricao" />
-								</Form.Group>
-								<Form.Group className="mb-2">
 									<Form.Label>Codigo de barras: </Form.Label>
 									<Row className="display-inline">
 										<Col className="col-sm-10">
@@ -154,14 +108,22 @@ export default class ProdutoForm extends React.Component {
 									</Row>
 								</Form.Group>
 								<Form.Group className="mb-2">
-									<Form.Label>Preço Compra por Unidade: </Form.Label>
-									<Form.Control type="text" ref={this.precoUnitCompra} name="precoUnitCompra" />
-								</Form.Group>
+									<Form.Label>Descrição: </Form.Label>
+									<Form.Control type="text" ref={this.descricao} name="descricao" />
+								</Form.Group>								
 								<Form.Group className="mb-2">
-									<Form.Label>Preço Venda por Unidade: </Form.Label>
-									<Form.Control type="text" ref={this.precoUnitVenda} name="precoUnitVenda" />
+									<Row>
+										<Col>
+											<Form.Label>Preço Compra por Unidade: </Form.Label>
+											<Form.Control type="text" ref={this.precoUnitCompra} name="precoUnitCompra" />
+										</Col>
+										<Col>
+											<Form.Label>Preço Venda por Unidade: </Form.Label>
+											<Form.Control type="text" ref={this.precoUnitVenda} name="precoUnitVenda" />
+										</Col>
+									</Row>
 								</Form.Group>
-								<Form.Group className="mb-2">
+								<Form.Group className="mb-2 col-md-6">
 									<Form.Label>Unidade: </Form.Label>
 									<Form.Control type="text" ref={this.unidade} name="unidade" />
 								</Form.Group>

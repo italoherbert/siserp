@@ -36,41 +36,25 @@ export default class Clientes extends React.Component {
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
-					
-		this.setState( { erroMsg : null, infoMsg : null } );
 		
-		sistema.showLoadingSpinner();
-
-		fetch( "/api/cliente/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				nomeIni : this.nomeIni.current.value
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { clientes : dados } );				
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhum cliente encontrado!" } );												
-				} );							
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}					
-			sistema.hideLoadingSpinner();	
-		} );
+		sistema.wsPost( "/api/cliente/filtra", {
+			nomeIni : this.nomeIni.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { clientes : dados } );				
+				
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhum cliente encontrado!" } );												
+			} );
+		}, this );			
 	}
-		
+			
 	detalhes( e, clienteId ) {
 		e.preventDefault();
 		
 		ReactDOM.render( <ClienteDetalhes clienteId={clienteId} />, sistema.paginaElemento() );
 	}
-	
+			
 	removerSeConfirmado( e, clienteId ) {
 		this.setState( { 
 			remocaoModalVisivel : true, 
@@ -87,22 +71,10 @@ export default class Clientes extends React.Component {
 	remover( e, clienteId ) {
 		e.preventDefault();
 		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/cliente/deleta/"+clienteId, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {						
-				this.setState( { infoMsg : "Cliente removido com êxito!" } );
-				this.filtrar( null, false );																	
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}						
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( "/api/cliente/deleta/"+clienteId, (resposta) => {
+			this.setState( { infoMsg : "Cliente removido com êxito!" } );
+			this.filtrar( null, false );	
+		}, this );		
 	}
 	
 	paraTelaRegistro() {

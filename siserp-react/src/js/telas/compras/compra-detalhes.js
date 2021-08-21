@@ -26,40 +26,24 @@ export default class CompraRegistro extends React.Component {
 	}				
 	
 	componentDidMount() {	
-		sistema.showLoadingSpinner();
-	
-		fetch( '/api/compra/get/'+this.props.compraId, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					let total = 0;
-					let valorPago = 0;					
-					for( let i = 0; i < dados.parcelas.length; i++ ) {
-						let valor = sistema.paraFloat( dados.parcelas[ i ].valor );
-						
-						if ( dados.parcelas[ i ].paga === 'true' )
-							valorPago += valor;
-						
-						total += valor;						
-					}
-										
-					let debito = total - valorPago;					
+		sistema.wsGet( '/api/compra/get/'+this.props.compraId, (resposta) => {
+			resposta.json().then( (dados) => {
+				let total = 0;
+				let valorPago = 0;					
+				for( let i = 0; i < dados.parcelas.length; i++ ) {
+					let valor = sistema.paraFloat( dados.parcelas[ i ].valor );
 					
-					this.setState( { compra : dados, total : total, valorPago : valorPago, debito : debito } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();			
-		} );
-	}
-	
-	pagarParcela( e, parcelaId ) {
-		
+					if ( dados.parcelas[ i ].paga === 'true' )
+						valorPago += valor;
+					
+					total += valor;						
+				}
+									
+				let debito = total - valorPago;					
+				
+				this.setState( { compra : dados, total : total, valorPago : valorPago, debito : debito } );
+			} );
+		}, this );	
 	}
 	
 	paraTelaCompras() {
@@ -147,11 +131,11 @@ export default class CompraRegistro extends React.Component {
 							<br />
 							
 							<Form.Group style={{fontSize: '1.6em'}}>
-								<Form.Label>Total: &nbsp;<span className="text-danger">{ sistema.formataReal( total ) }</span></Form.Label>
+								<Form.Label>Total: &nbsp;<span className="text-primary">{ sistema.formataReal( total ) }</span></Form.Label>
 								<br />
 								<Row>
 									<Col>
-										<Form.Label>Valor pago: &nbsp;<span className="text-danger">{ sistema.formataReal( valorPago ) }</span></Form.Label>
+										<Form.Label>Valor pago: &nbsp;<span className="text-primary">{ sistema.formataReal( valorPago ) }</span></Form.Label>
 									</Col>
 									<Col>
 										<Form.Label>Débito: &nbsp;<span className="text-danger">{ sistema.formataReal( debito ) }</span></Form.Label>

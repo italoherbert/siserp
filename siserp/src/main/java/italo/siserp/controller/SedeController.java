@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import italo.siserp.exception.FalhaCarregamentoArquivoException;
+import italo.siserp.exception.FalhaCriacaoArquivoException;
+import italo.siserp.exception.FalhaGravacaoArquivoException;
 import italo.siserp.service.SedeService;
 import italo.siserp.service.request.SaveSedeRequest;
 import italo.siserp.service.response.ErroResponse;
@@ -34,16 +37,28 @@ public class SedeController {
 		if ( request.getInscricaoEstadual().trim().isEmpty() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.INSCRICAO_ESTADUAL_OBRIGATORIA ) );
 		
-		sedeService.salvaSede( request );
+		try {
+			sedeService.salvaSede( request );
+		} catch (FalhaCriacaoArquivoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FALHA_CRIACAO_ARQUIVO ) );
+		} catch (FalhaCarregamentoArquivoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FALHA_CARREGAMENTO_ARQUIVO ) );
+		} catch (FalhaGravacaoArquivoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FALHA_GRAVACAO_ARQUIVO ) );
+		}
 		return ResponseEntity.ok().build();		
 	}
 	
 	
 	@PreAuthorize("hasAuthority('sedeREAD')")	
 	@GetMapping(value="/get")
-	public ResponseEntity<Object> get() {		
-		SedeResponse resp = sedeService.getSede();
-		return ResponseEntity.ok( resp );			
+	public ResponseEntity<Object> get() {
+		try {
+			SedeResponse resp = sedeService.getSede();
+			return ResponseEntity.ok( resp );
+		} catch (FalhaCarregamentoArquivoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FALHA_CARREGAMENTO_ARQUIVO ) );
+		}
 	}
 		
 }

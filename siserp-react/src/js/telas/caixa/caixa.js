@@ -16,7 +16,12 @@ export default class Caixa extends React.Component {
 		this.state = { 
 			erroMsg : null,
 			infoMsg : null,
-			balanco : { valor : 0, debito : 0, credito : 0, saldo : 0 }
+			balanco : { 
+				debito : 0, 
+				credito : 0, 
+				saldo : 0, 
+				cartaoValorRecebido : 0, 
+				totalVendasAPrazo : 0 }
 		};		
 		
 		this.valorFechamento = React.createRef();
@@ -26,57 +31,27 @@ export default class Caixa extends React.Component {
 		this.atualizaDadosHoje();
 	}		
 		
-	atualizaDadosHoje() {
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		sistema.showLoadingSpinner();				
-		
-		fetch( '/api/caixa/balanco/hoje/'+sistema.usuario.id, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { balanco : dados } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+	atualizaDadosHoje() {				
+		sistema.wsGet( '/api/caixa/balanco/hoje/'+sistema.usuario.id, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { balanco : dados } );				
+			} )
+		}, this );		
 	}
 		
 	fecharCaixa( e ) {
 		if ( e != null )
 			e.preventDefault();
-				
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/caixa/fecha/'+sistema.usuario.id, {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				lancamento : {
-					tipo : "DEBITO",
-					valor : sistema.paraFloat( this.valorFechamento.current.value )
-				}
-			} )
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				this.valorFechamento.current.value = '';
-				this.atualizaDadosHoje();
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
+								
+		sistema.wsPost( '/api/caixa/fecha/'+sistema.usuario.id, {
+			lancamento : {
+				tipo : "DEBITO",
+				valor : sistema.paraFloat( this.valorFechamento.current.value )
 			}
-			sistema.hideLoadingSpinner();
-		} );
+		}, (resposta) => {
+			this.valorFechamento.current.value = '';
+			this.atualizaDadosHoje();
+		}, this );		
 	}
 		
 	paraTelaAbrirCaixa( e ) {

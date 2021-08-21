@@ -31,33 +31,17 @@ export default class RecursoForm extends React.Component {
 	}
 	
 	carregar() {
-		this.setState( { erroMsg : null, infoMsg : null } );
-				
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/recurso/get/'+this.props.recursoId, {
-			method : 'GET',			
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.nome.current.value = dados.nome;					
-					this.setState( {} );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );	
+		sistema.wsGet( '/api/recurso/get/'+this.props.recursoId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.nome.current.value = dados.nome;					
+				this.setState( {} );
+			} );
+		}, this );
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
-		
-		this.setState( { erroMsg : null, infoMsg : null } );
-					
+							
 		let url, method;
 		if ( this.props.op === 'editar' ) {
 			url = "/api/recurso/atualiza/"+this.props.recursoId;
@@ -67,25 +51,11 @@ export default class RecursoForm extends React.Component {
 			method = 'POST';
 		}
 					
-		sistema.showLoadingSpinner();
-		
-		fetch( url, {
-			method : method,			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"nome" : this.nome.current.value
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Recurso salvo com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsSave( url, method, {
+			"nome" : this.nome.current.value
+		}, (resposta) => {
+			this.setState( { infoMsg : "Recurso salvo com sucesso." } );
+		}, this );				
 	}
 			
 	paraTelaRecursos() {

@@ -36,39 +36,23 @@ export default class Fornecedores extends React.Component {
 	filtrar( e, filtrarBTClicado ) {
 		if ( e != null )
 			e.preventDefault();
-
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
 		
-		fetch( "/api/fornecedor/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"empresaIni" : this.empresaIni.current.value,
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { fornecedores : dados } );
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhum fornecedor registrado!" } );																							
-				} );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost( "/api/fornecedor/filtra", {
+			"empresaIni" : this.empresaIni.current.value,
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { fornecedores : dados } );
+				
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhum fornecedor registrado!" } );																							
+			} );
+		}, this );					
 	}
 		
 	detalhes( e, id ) {
 		e.preventDefault();
 		
-		ReactDOM.render( <FornecedorDetalhes fornecedorId={id}/>, sistema.paginaElemento() );
+		ReactDOM.render( <FornecedorDetalhes fornecedorId={id} />, sistema.paginaElemento() );
 	}
 	
 	removerSeConfirmado( e, id ) {
@@ -86,23 +70,11 @@ export default class Fornecedores extends React.Component {
 	
 	remover( e, id ) {
 		e.preventDefault();
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/fornecedor/deleta/"+id, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				this.filtrar( null, false );																	
-				this.setState( { infoMsg : "Fornecedor removido com êxito!" } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+				
+		sistema.wsDelete( "/api/fornecedor/deleta/"+id, (resposta) => {
+			this.filtrar( null, false );																	
+			this.setState( { infoMsg : "Fornecedor removido com êxito!" } );
+		}, this );		
 	}
 	
 	paraTelaRegistro() {

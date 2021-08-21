@@ -20,36 +20,19 @@ export default class ProdutoDetalhes extends React.Component {
 		};
 	}
 	
-	componentDidMount() {					
-		let produtoId = this.props.produtoId;
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/produto/get/"+produtoId, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {											
-					this.setState( { produto : dados } );				
-				} );		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );				
-			}			
-			sistema.hideLoadingSpinner();
-		} );	
+	componentDidMount() {			
+		sistema.wsGet( "/api/produto/get/"+this.props.produtoId, (resposta) => {
+			resposta.json().then( (dados) => {											
+				this.setState( { produto : dados } );				
+			} );
+		}, this );	
 	}
 			
 	editar( e ) {
 		e.preventDefault();
 					
 		ReactDOM.render( 
-			<ProdutoForm op="editar"
-				titulo="Altere a produto" 
-				produtoId={this.props.produtoId} />,
-			sistema.paginaElemento() );
+			<ProdutoForm op="editar" titulo="Altere a produto" produtoId={this.props.produtoId} />,	sistema.paginaElemento() );
 	}
 	
 	paraTelaProdutos() {

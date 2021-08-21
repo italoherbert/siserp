@@ -26,75 +26,32 @@ export default class GrupoFormEdit extends React.Component {
 	}
 	
 	carregar() {
-		this.setState( { erroMsg : null, infoMsg : null } );
-				
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/usuario/grupo/get/'+this.props.grupoId, {
-			method : 'GET',			
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.nome.current.value = dados.nome;					
-					this.setState( { grupo : dados } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );	
+		sistema.wsGet( '/api/usuario/grupo/get/'+this.props.grupoId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.nome.current.value = dados.nome;					
+				this.setState( { grupo : dados } );
+			} );
+		}, this );		
 	}
 	
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null } );
-					
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/usuario/grupo/atualiza/"+this.props.grupoId, {
-			method : 'PUT',			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"nome" : this.nome.current.value
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Grupo salvo com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsPut( "/api/usuario/grupo/atualiza/"+this.props.grupoId, {
+			"nome" : this.nome.current.value
+		}, (resposta) => {
+			this.setState( { infoMsg : "Grupo salvo com sucesso." } );
+		}, this );				
 	}
 	
 	sincronizarRecursos( e ) {
 		e.preventDefault();
 
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/usuario/grupo/recursos/sincroniza/'+this.props.grupoId, {
-			method : 'POST',
-			headers : {
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.carregar();
-				this.setState( { infoMsg : "Recursos sincronizados com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost( '/api/usuario/grupo/recursos/sincroniza/'+this.props.grupoId, {
+		}, (resposta) => {
+			this.carregar();
+			this.setState( { infoMsg : "Recursos sincronizados com sucesso." } );
+		}, this );
 	}
 	
 	permissaoLeituraOnChange( e, id ) {
@@ -111,29 +68,13 @@ export default class GrupoFormEdit extends React.Component {
 	
 	permissaoOnChange( e, id, tipo ) {
 		e.preventDefault();
-
-		this.setState( { erroMsg : null, infoMsg : null } );
 		
-		sistema.showLoadingSpinner();
-				
-		fetch( '/api/permissao/salva/'+id, {
-			method : 'PATCH',
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				tipo : tipo,
-				valor : e.target.checked
-			} )
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.carregar();
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPatch( '/api/permissao/salva/'+id, {
+			tipo : tipo,
+			valor : e.target.checked
+		}, (resposta) => {
+			this.carregar();
+		}, this );			
 	}
 		
 	paraTelaGrupos() {

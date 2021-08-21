@@ -101,61 +101,42 @@ export default class AddCompraProdutoCategorias extends React.Component {
 	}
 			
 	categoriaOnChange( item ) {
-		this.setState( { categoria : item } );		
+		this.setState( { categoria : item } );	
 		
-		if ( item.length === 0 )
-			return;
-								
-		fetch( '/api/categoria/filtra/limit/5', {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				"descricaoIni" : item
-			} )
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { categoriasLista : [] } );
-					
-					for( let i = 0; i < dados.length; i++ )
-						this.state.categoriasLista.push( dados[ i ].descricao );					
+		sistema.wsPost( '/api/categoria/filtra/limit/5', {
+			"descricaoIni" : item
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { categoriasLista : [] } );
+				
+				for( let i = 0; i < dados.length; i++ )
+					this.state.categoriasLista.push( dados[ i ].descricao );					
 
-					this.setState( {} );
-				} );
-			}
-		} );
+				this.setState( {} );
+			} );
+		}, this );				
 	}
 	
-	subcategoriaOnChange( item ) {						
-		this.setState( { subcategoria : item } );		
-
-		if ( item.length === 0 )
+	subcategoriaOnChange( item ) {								
+		if ( this.state.categoria.length === 0 ) {
+			this.setState( { erroMsg : 'Nenhuma categoria selecionada ou informada.' } );
 			return;
+		}
+		
+		this.setState( { subcategoria : item } );
 				
-		fetch( '/api/subcategoria/filtra/limit/'+this.state.categoria+'/5', {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				"descricaoIni" : item
-			} )
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { subcategoriasLista : [] } );
-					
-					for( let i = 0; i < dados.length; i++ )
-						this.state.subcategoriasLista.push( dados[ i ].descricao );					
-					
-					this.setState( {} );
-				} );
-			}
-		} );
+		sistema.wsPost(	'/api/subcategoria/filtra/limit/'+this.state.categoria+'/5', {
+			"descricaoIni" : item
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { subcategoriasLista : [] } );
+				
+				for( let i = 0; i < dados.length; i++ )
+					this.state.subcategoriasLista.push( dados[ i ].descricao );					
+				
+				this.setState( {} );
+			} );
+		}, this );							
 	}
 		
 	render() {

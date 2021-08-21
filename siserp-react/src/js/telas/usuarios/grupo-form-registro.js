@@ -23,27 +23,11 @@ export default class GrupoFormRegistro extends React.Component {
 	salvar( e ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null } );
-					
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/usuario/grupo/registra", {
-			method : 'POST',			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"nome" : this.nome.current.value
-			} )		
-		} ).then( (resposta) => {				
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Grupo salvo com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsPost( "/api/usuario/grupo/registra", {
+			"nome" : this.nome.current.value
+		}, (resposta) => {
+			this.setState( { infoMsg : "Grupo salvo com sucesso." } );
+		}, this );				
 	}
 	
 	paraTelaGrupos() {

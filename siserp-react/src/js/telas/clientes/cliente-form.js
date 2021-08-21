@@ -35,41 +35,27 @@ export default class ClienteForm extends React.Component {
 	}
 	
 	carregaCliente() {
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/cliente/get/'+this.props.clienteId, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.nome.current.value = dados.pessoa.nome;
-					this.telefone.current.value = dados.pessoa.telefone;
-					this.email.current.value = dados.pessoa.email;
-					
-					this.ender.current.value = dados.pessoa.endereco.ender;
-					this.numero.current.value = dados.pessoa.endereco.numero;
-					this.logradouro.current.value = dados.pessoa.endereco.logradouro;
-					this.bairro.current.value = dados.pessoa.endereco.bairro;
-					this.cidade.current.value = dados.pessoa.endereco.cidade;
-					this.uf.current.value = dados.pessoa.endereco.uf;
-										
-					this.setState( {} );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( '/api/cliente/get/'+this.props.clienteId, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.nome.current.value = dados.pessoa.nome;
+				this.telefone.current.value = dados.pessoa.telefone;
+				this.email.current.value = dados.pessoa.email;
+				
+				this.ender.current.value = dados.pessoa.endereco.ender;
+				this.numero.current.value = dados.pessoa.endereco.numero;
+				this.logradouro.current.value = dados.pessoa.endereco.logradouro;
+				this.bairro.current.value = dados.pessoa.endereco.bairro;
+				this.cidade.current.value = dados.pessoa.endereco.cidade;
+				this.uf.current.value = dados.pessoa.endereco.uf;
+									
+				this.setState( {} );
+			} );
+		}, this );		
 	}
 			
 	salvar( e ) {
 		e.preventDefault();
-		
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
+				
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
@@ -80,38 +66,24 @@ export default class ClienteForm extends React.Component {
 			metodo = 'POST';
 		}
 		
-		sistema.showLoadingSpinner();
-		
-		fetch( url, {
-			method : metodo,			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},
-			body : JSON.stringify( {
-				"pessoa" : {
-					"nome" : this.nome.current.value,
-					"telefone" : this.telefone.current.value,				
-					"email" : this.email.current.value,
-					
-					"endereco" : {
-						"ender" : this.ender.current.value,
-						"numero" : this.numero.current.value,
-						"bairro" : this.bairro.current.value,
-						"cidade" : this.cidade.current.value,
-						"uf" : this.uf.current.value,
-						"logradouro" : this.logradouro.current.value				
-					}
-				}				
-			} )		
-		} ).then( (resposta) => {						
-			if ( resposta.status === 200 ) {
-				this.setState( { infoMsg : "Cliente salvo com sucesso." } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );				
+		sistema.wsSave( url, metodo, {
+			"pessoa" : {
+				"nome" : this.nome.current.value,
+				"telefone" : this.telefone.current.value,				
+				"email" : this.email.current.value,
+				
+				"endereco" : {
+					"ender" : this.ender.current.value,
+					"numero" : this.numero.current.value,
+					"bairro" : this.bairro.current.value,
+					"cidade" : this.cidade.current.value,
+					"uf" : this.uf.current.value,
+					"logradouro" : this.logradouro.current.value				
+				}
+			}	
+		}, (resposta) => {
+			this.setState( { infoMsg : "Cliente salvo com sucesso." } );
+		}, this );					
 	}
 	
 	

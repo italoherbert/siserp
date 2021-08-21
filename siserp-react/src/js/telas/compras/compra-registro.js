@@ -81,39 +81,25 @@ export default class CompraRegistro extends React.Component {
 			} );
 		}
 				
-		sistema.showLoadingSpinner();				
-				
-		fetch( '/api/compra/registra', {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
+		sistema.wsPost( '/api/compra/registra', {
+			dataCompra : sistema.formataData( new Date() ),
+			fornecedor : {
+				empresa : this.fornecedorEmpresaRef.current.value
 			},
-			body : JSON.stringify( {
-				dataCompra : sistema.formataData( new Date() ),
-				fornecedor : {
-					empresa : this.fornecedorEmpresaRef.current.value
-				},
-				itensCompra : itensCompra,
-				parcelas : parcelasList
-			} )
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.fornecedorEmpresaRef.current.value = '';
-				this.quantParcelasRef.current.value = '';
-				this.setState( { 
-					infoMsg : 'Compra registrada com êxito',
-					produtos : [],
-					parcelas : [],
-					geraParcelasConfig : {
-						valorTotal : 0
-					}
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+			itensCompra : itensCompra,
+			parcelas : parcelasList
+		}, (resposta) => {
+			this.fornecedorEmpresaRef.current.value = '';
+			this.quantParcelasRef.current.value = '';
+			this.setState( { 
+				infoMsg : 'Compra registrada com êxito',
+				produtos : [],
+				parcelas : [],
+				geraParcelasConfig : {
+					valorTotal : 0
+				}
+			} );
+		}, this );							
 	}
 			
 	paraTelaCompras() {

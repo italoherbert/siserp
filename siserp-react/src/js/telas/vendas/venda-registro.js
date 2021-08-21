@@ -43,63 +43,37 @@ export default class VendaRegistro extends React.Component {
 	}
 	
 	carregaFormasPagamento() {
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/pagamento/formas/', {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { formasPag : dados } );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( '/api/pagamento/formas/', (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { formasPag : dados } );
+			} );
+		}, this );
 	}
 
 	addItemVenda( e ) {
 		let codigoBarras = this.codigoBarras.current.value;
 			
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/produto/busca/'+codigoBarras, {
-			method : 'GET',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.state.itens.unshift( {
-						codigoBarras : codigoBarras,
-						descricao : dados.descricao,
-						categorias : dados.categorias,
-						precoUnitario : dados.precoUnitVenda, 	
-						unidade : dados.unidade,
-						estoqueQuantidade : dados.quantidade,
-						quantidade : 1
-					} );			
-					
-					this.codigoBarras.current.value = '';
-					
-					this.calcularTotal( e );		
-					
-					sistema.scrollTo( 'produtos-tbl-pnl' );
-					
-					this.setState( {} );
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( '/api/produto/busca/'+codigoBarras, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.state.itens.unshift( {
+					codigoBarras : codigoBarras,
+					descricao : dados.descricao,
+					categorias : dados.categorias,
+					precoUnitario : dados.precoUnitVenda, 	
+					unidade : dados.unidade,
+					estoqueQuantidade : dados.quantidade,
+					quantidade : this.state.quantValorPadrao
+				} );			
+				
+				this.codigoBarras.current.value = '';
+				
+				this.calcularTotal( e );		
+				
+				sistema.scrollTo( 'produtos-tbl-pnl' );
+				
+				this.setState( {} );
+			} );
+		}, this );
 	}		
 			
 	removerItemVenda( e, index ) {
@@ -144,57 +118,42 @@ export default class VendaRegistro extends React.Component {
 			} );
 		}
 		
-		sistema.showLoadingSpinner();			
-							
-		fetch( '/api/venda/efetua/'+sistema.usuario.id, {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				subtotal : sistema.paraFloat( this.state.subtotal ),
-				desconto : sistema.paraFloat( this.state.desconto ),
-				formaPag : this.formaPag.current.value,
-				incluirCliente : this.state.incluirCliente,
-				clienteNome : this.state.clienteNome,
-				itensVenda : itensVenda
-			} )
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.valorPago.current.value = '';
-				this.desconto.current.value = '';
-				this.formaPag.current.value = '';
-										
-				this.setState( { 
-					infoMsg : 'Venda registrada com êxito',
-					itens : [],
-					subtotal : 0,
-					total : 0,
-					troco : 0
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost( '/api/venda/efetua/'+sistema.usuario.id, {
+			subtotal : sistema.paraFloat( this.state.subtotal ),
+			desconto : sistema.paraFloat( this.state.desconto ),
+			formaPag : this.formaPag.current.value,
+			incluirCliente : this.state.incluirCliente,
+			clienteNome : this.state.clienteNome,
+			itensVenda : itensVenda
+		}, (resposta) => {
+			this.valorPago.current.value = '';
+			this.desconto.current.value = '';
+			this.formaPag.current.value = '';
+									
+			this.setState( { 
+				infoMsg : 'Venda registrada com êxito',
+				itens : [],
+				subtotal : 0,
+				total : 0,
+				troco : 0
+			} );
+		}, this );		
 	}
 		
 	quantidadeItemProdOnChange( e, index ) {		
 		let itens = this.state.itens;				
 		
-		this.setState( { erroMsg : null, infoMsg : null } );
-		
-		let quant = sistema.paraFloat( e.target.value );
-		itens[ index ].quantidade = quant;
+		this.setState( { erroMsg : null, infoMsg : null } );				
 		
 		if ( e.target.value.trim().length > 0 )	{
 			let estoqueQuant = parseFloat( itens[ index ].estoqueQuantidade );
 
+			let quant = sistema.paraFloat( e.target.value );
 			if ( isNaN( quant ) === false ) {
-				if ( quant <= estoqueQuant ) {					
+				if ( quant <= estoqueQuant ) {		
+					itens[ index ].quantidade = quant;
+					
 					this.calcularTotal( e );
-					this.setState( { itens : itens } );
 				} else {					
 					let descricao = itens[ index ].descricao;
 					this.setState( { erroMsg : "Quantidade informada maior que a quantidade em estoque. Produto="+descricao } );
@@ -211,28 +170,19 @@ export default class VendaRegistro extends React.Component {
 		
 	clienteNomeOnChange( item ) {	
 		this.setState( { clienteNome : item } );
-	
-		fetch( '/api/cliente/filtra/limit/5', {
-			method : 'POST',
-			headers : {
-				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+sistema.token
-			},
-			body : JSON.stringify( {
-				"nomeIni" : item
-			} )
-		} ).then( ( resposta ) => {
-			if ( resposta.status === 200 ) {
-				resposta.json().then( (dados) => {
-					this.setState( { clientesNomeLista : [] } );
-															
-					for( let i = 0; i < dados.length; i++ )
-						this.state.clientesNomeLista.push( dados[ i ].pessoa.nome );					
+		
+		sistema.wsPost( '/api/cliente/filtra/limit/5', {
+			"nomeIni" : item
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { clientesNomeLista : [] } );
+														
+				for( let i = 0; i < dados.length; i++ )
+					this.state.clientesNomeLista.push( dados[ i ].pessoa.nome );					
 
-					this.setState( {} );
-				} );
-			}
-		} );
+				this.setState( {} );
+			} );
+		}, this );
 	}
 	
 	calcularTotal( e ) {
@@ -310,7 +260,7 @@ export default class VendaRegistro extends React.Component {
 										<td>{ sistema.formataFloat( item.estoqueQuantidade ) }</td>
 										<td>
 											<Form>
-												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } defaultValue={quantValorPadrao} />
+												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } value={item.quantidade} />
 											</Form>
 										</td>
 										<td>{ item.unidade }</td>
@@ -335,6 +285,27 @@ export default class VendaRegistro extends React.Component {
 					</Table>
 				</div>			
 
+				<br />
+				
+				<Card className="p-3 col-sm-6">
+					<h4>Incluir produtos</h4>
+					<Row>
+						<Col className="col-sm-8">
+							<Form.Group className="mb-2">
+								<Form.Label>Codigo de barras</Form.Label>
+								<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
+							</Form.Group>
+						</Col>
+						<Col className="col-sm-4">
+							<Form.Group className="mb-2">
+								<Form.Label>&nbsp;</Form.Label>
+								<br />
+								<Button variant="primary" onClick={ (e) => this.addItemVenda( e ) }>Adicionar produto</Button>
+							</Form.Group>								
+						</Col>
+					</Row>					
+				</Card>
+				
 				<br />
 				
 				<MensagemPainel cor="danger" msg={erroMsg} />
@@ -377,27 +348,7 @@ export default class VendaRegistro extends React.Component {
 				<br />
 
 				<Form onSubmit={ (e) => this.efetuarVenda( e ) }>
-					<Row>
-						<Col>
-							<Card className="p-3">
-								<h4>Incluir produtos</h4>
-								<Row>
-									<Col className="col-sm-8">
-										<Form.Group className="mb-2">
-											<Form.Label>Codigo de barras</Form.Label>
-											<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
-										</Form.Group>
-									</Col>
-									<Col className="col-sm-4">
-										<Form.Group className="mb-2">
-											<Form.Label>&nbsp;</Form.Label>
-											<br />
-											<Button variant="primary" onClick={ (e) => this.addItemVenda( e ) }>Adicionar produto</Button>
-										</Form.Group>								
-									</Col>
-								</Row>					
-							</Card>
-						</Col>
+					<Row>						
 						<Col>												
 							<Card className="p-3">
 								<h4>Forma de pagamento</h4>									
@@ -415,13 +366,8 @@ export default class VendaRegistro extends React.Component {
 									</Col>									
 								</Row>
 							</Card>
-						</Col>												
-					</Row>
-					
-					<br />
-					
-					<Row>
-						<Col className="col-sm-6">
+						</Col>																	
+						<Col>
 							<Card className="p-3">
 								<Form.Group className="mb-2">
 									<input type="checkbox" defaultValue={incluirCliente} onChange={ (e) => this.incluirClienteOnChange( e ) } /> 

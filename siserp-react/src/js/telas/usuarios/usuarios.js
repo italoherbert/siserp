@@ -32,32 +32,16 @@ export default class Usuarios extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
+		sistema.wsPost( "/api/usuario/filtra", {
+			"usernameIni" : this.usernameIni.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { usuarios : dados } );
 				
-		fetch( "/api/usuario/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"usernameIni" : this.usernameIni.current.value,
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { usuarios : dados } );
-					
-					if ( dados.length === 0 )
-						this.setState( { infoMsg : "Nenhum usuario registrado!" } );																							
-				} );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+				if ( dados.length === 0 )
+					this.setState( { infoMsg : "Nenhum usuario registrado!" } );																							
+			} );
+		}, this );		
 	}
 				
 	paraTelaGrupos( e ) {

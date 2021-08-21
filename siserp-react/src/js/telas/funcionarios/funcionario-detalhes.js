@@ -26,31 +26,17 @@ export default class FuncionarioDetalhes extends React.Component {
 	}
 	
 	componentDidMount() {		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/funcionario/get/"+this.props.funcId, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {											
-					this.setState( { funcionario : dados } );
-				} );		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			 
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( "/api/funcionario/get/"+this.props.funcId, (resposta) => {
+			resposta.json().then( (dados) => {											
+				this.setState( { funcionario : dados } );
+			} );
+		}, this );		
 	}
 	
 	editar( e ) {
 		e.preventDefault();
 					
-		ReactDOM.render( 
-			<FuncionarioForm op="editar" funcId={this.props.funcId} />,
-				sistema.paginaElemento() );
+		ReactDOM.render( <FuncionarioForm op="editar" funcId={this.props.funcId} />, sistema.paginaElemento() );
 	}
 	
 	paraTelaFuncionarios() {

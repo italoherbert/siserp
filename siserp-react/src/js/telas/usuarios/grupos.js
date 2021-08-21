@@ -39,32 +39,16 @@ export default class Grupos extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/usuario/grupo/filtra", {
-			method : "POST",			
-			headers : { 
-				"Content-Type" : "application/json; charset=UTF-8",
-				"Authorization" : "Bearer "+sistema.token
-			},			
-			body : JSON.stringify( { 
-				"nomeIni" : this.nomeIni.current.value,
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { grupos : dados } );
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhum grupo registrado!" } );																							
-				} );				
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsPost( "/api/usuario/grupo/filtra", {
+			"nomeIni" : this.nomeIni.current.value
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { grupos : dados } );
+				
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhum grupo registrado!" } );																							
+			} );
+		}, this );	
 	}
 		
 	editar( e, id ) {
@@ -89,24 +73,10 @@ export default class Grupos extends React.Component {
 	remover( e, id ) {
 		e.preventDefault();
 		
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/usuario/grupo/deleta/"+id, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				this.filtrar( null, false );																	
-				this.setState( { infoMsg : "Grupo removido com êxito!" } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( "/api/usuario/grupo/deleta/"+id, (resposta) => {
+			this.filtrar( null, false );																	
+			this.setState( { infoMsg : "Grupo removido com êxito!" } );
+		}, this );		
 	}
 	
 	paraTelaRegistro() {

@@ -39,60 +39,34 @@ export default class Produtos extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.setState( { erroMsg : null, infoMsg : null } );
-
 		let descIni = this.descricaoIni.current.value;
 
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/produto/filtra/"+descIni, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { produtos : dados } );
-					
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( "/api/produto/filtra/"+descIni, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { produtos : dados } );
+				
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
+			} );
+		}, this );
 	}
 	
 	buscar( e ) {
 		if ( e != null )
 			e.preventDefault();
 							
-		this.setState( { erroMsg : null, infoMsg : null } );
-
 		let codBarras = this.codigoBarras.current.value; 
 
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/produto/busca/"+codBarras, {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {										
-					this.state.produtos.push( dados );
-											
-					if ( dados.length === 0 )
-						this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}			
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( "/api/produto/busca/"+codBarras, (resposta) => {	
+			resposta.json().then( (dados) => {										
+				this.codigoBarras.current.value = "";
+				
+				this.setState( { produtos : [ dados ] } );
+														
+				if ( dados.length === 0 )
+					this.setState( { infoMsg : "Nenhuma produto encontrado!" } );						
+			} );
+		}, this );
 	}
 	
 	detalhes( e, id ) {
@@ -117,30 +91,17 @@ export default class Produtos extends React.Component {
 	remover( e, id ) {
 		e.preventDefault();
 		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/produto/deleta/"+id, {
-			method : "DELETE",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				this.filtrar( null, false );																	
-				this.setState( { infoMsg : "Produto removido com êxito!" } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );				
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( "/api/produto/deleta/"+id, (resposta) => {
+			this.filtrar( null, false );																	
+			this.setState( { infoMsg : "Produto removido com êxito!" } );
+		}, this );		
 	}
 	
 	paraCadastroForm( e ) {
 		e.preventDefault();
 		
 		ReactDOM.render( 
-			<ProdutoForm op="cadastrar" titulo="Cadastre um novo produto" />, 
-			sistema.paginaElemento() );
+			<ProdutoForm op="cadastrar" titulo="Cadastre um novo produto" />, sistema.paginaElemento() );
 	}
 	
 	paraCategorias( e ) {

@@ -20,34 +20,17 @@ export default class SedeDetalhes extends React.Component {
 	}
 	
 	componentDidMount() {		
-		sistema.showLoadingSpinner();
-		
-		fetch( "/api/sede/get", {
-			method : "GET",			
-			headers : { 
-				"Authorization" : "Bearer "+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {											
-					this.setState( { sede : dados } );		
-				} );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}				
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsGet( "/api/sede/get", (resposta) => {
+			resposta.json().then( (dados) => {											
+				this.setState( { sede : dados } );		
+			} );
+		}, this );	
 	}
 	
 	editar( e ) {
 		e.preventDefault();
 					
-		ReactDOM.render( 
-			<SedeForm op="editar" 
-				cnpj={this.state.sede.cnpj} 
-				inscricaoEstadual={this.state.sede.inscricaoEstadual}
-			/>,
-			sistema.paginaElemento() );
+		ReactDOM.render( <SedeForm op="editar" />, sistema.paginaElemento() );
 	}
 		
 	render() {

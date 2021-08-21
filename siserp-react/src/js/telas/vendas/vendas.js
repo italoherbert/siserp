@@ -43,35 +43,19 @@ export default class Vendas extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		this.setState( { infoMsg : null, erroMsg : null } );
-		
-		sistema.showLoadingSpinner();
-
-		fetch( "/api/venda/filtra", {
-			method : "POST",			
-			headers : {
-				"Content-Type" : "application/json; charset=UTF-8", 
-				"Authorization" : "Bearer "+sistema.token
-			}, 
-			body : JSON.stringify( {
-				"dataIni" : sistema.formataData( this.state.dataIni ),
-				"dataFim" : sistema.formataData( this.state.dataFim ),
-				"incluirCliente" : this.incluirCliente.current.checked,
-				"clienteNomeIni" : this.clienteNomeIni.current.value,
-				"incluirPagas" : this.incluirVendasPagas.current.checked
-			} )
-		} ).then( (resposta) => {	
-			if ( resposta.status === 200 ) {						
-				resposta.json().then( (dados) => {
-					this.setState( { vendas : dados } );	
-					if ( dados.length === 0 && filtrarBTClicado === true )
-						this.setState( { infoMsg : "Nenhuma venda encontrada pelos critérios de busca informados!" } );																							
-				} );																		
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}		
-			sistema.hideLoadingSpinner();			
-		} );
+		sistema.wsPost( "/api/venda/filtra", {
+			"dataIni" : sistema.formataData( this.state.dataIni ),
+			"dataFim" : sistema.formataData( this.state.dataFim ),
+			"incluirCliente" : this.incluirCliente.current.checked,
+			"clienteNomeIni" : this.clienteNomeIni.current.value,
+			"incluirPagas" : this.incluirVendasPagas.current.checked
+		}, (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { vendas : dados } );	
+				if ( dados.length === 0 && filtrarBTClicado === true )
+					this.setState( { infoMsg : "Nenhuma venda encontrada pelos critérios de busca informados!" } );																							
+			} );
+		}, this );
 	}
 	
 	changeDataIni( date ) {
@@ -102,22 +86,10 @@ export default class Vendas extends React.Component {
 	remover( e, vendaId, instance ) {
 		e.preventDefault();
 
-		sistema.showLoadingSpinner();
-		
-		fetch( '/api/venda/deleta/'+vendaId, {
-			method : 'DELETE',
-			headers : {
-				'Authorization' : 'Bearer '+sistema.token
-			}
-		} ).then( (resposta) => {
-			if ( resposta.status === 200 ) {
-				this.filtrar( null, false );
-				this.setState( { infoMsg : 'Venda deletada com êxito.' } );
-			} else {
-				sistema.trataRespostaNaoOk( resposta, this );
-			}
-			sistema.hideLoadingSpinner();
-		} );
+		sistema.wsDelete( '/api/venda/deleta/'+vendaId, (resposta) => {
+			this.filtrar( null, false );
+			this.setState( { infoMsg : 'Venda deletada com êxito.' } );
+		}, this );
 	}
 	
 	paraTelaPagamentos( e ) {		

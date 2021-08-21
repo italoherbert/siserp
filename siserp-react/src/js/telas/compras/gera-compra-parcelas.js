@@ -78,9 +78,9 @@ export default class GeraCompraParcelas extends React.Component {
 							</span>
 						</Form.Label>							
 					</Form.Group>
-					<Form.Group className="my-2">
+					<Form.Group className="my-2 col-sm-6">
 						<Form.Label>Numero de parcelas</Form.Label>
-						<Form.Control type="number" ref={quantParcelasRef} name="quantParcelas" />	
+						<Form.Control type="text" ref={quantParcelasRef} name="quantParcelas" />	
 					</Form.Group>
 					
 					<Button type="submit" variant="primary">Calcular parcelas</Button>						
