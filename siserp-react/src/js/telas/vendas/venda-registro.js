@@ -311,36 +311,37 @@ export default class VendaRegistro extends React.Component {
 				<MensagemPainel cor="danger" msg={erroMsg} />
 				<MensagemPainel cor="primary" msg={infoMsg} />
 				
-				<div className="p-3 bg-light">
+				<div className="bg-light">
 					<Form.Group>
 						<div style={{fontSize : '1.6em' }}>
-							<Row>
-								<Col>
-									<Form.Label>Subtotal: &nbsp; <span className="text-danger">{ sistema.formataReal( subtotal ) }</span></Form.Label>
-								</Col>
-								<Col>
-									<Form.Group className="mb-2">
+							<Card className="p-3">
+								<Row>
+									<Col>
+										<Form.Label>Subtotal: &nbsp; <span className="text-danger">{ sistema.formataReal( subtotal ) }</span></Form.Label>
+									</Col>
+									<Col>
 										<Form.Label>Desconto (%): &nbsp;</Form.Label>
-										<input className="border-light rounded text-danger" type="text" ref={this.desconto} name="desconto" onChange={ (e) => this.calcularTotal( e ) } />										
-									</Form.Group>								
-								</Col>	
-							</Row>
-							<Row>
-								<Col>
-									<Form.Label>Total: &nbsp; <span className="text-danger">{ sistema.formataReal( total ) }</span></Form.Label>										
-								</Col>
-								<Col>
-									<Form>
-										<span>Valor pago (R$): </span> 
-										<input className="border-light rounded text-danger" type="text" ref={this.valorPago} name="valorPago" onChange={ (e) => this.calcularTotal( e ) } />									
-									</Form>
-								</Col>	
-							</Row>
-							<Row>
-								<Col>
-									<Form.Label>Troco: &nbsp; <span className="text-danger">{ sistema.formataReal( troco ) }</span></Form.Label>										
-								</Col>
-							</Row>
+										<Form>
+											<Form.Control className="text-danger" type="text" ref={this.desconto} name="desconto" onChange={ (e) => this.calcularTotal( e ) } />										
+										</Form>
+									</Col>	
+									<Col>
+										<Form>
+											<Form.Label>Valor pago (R$): </Form.Label> 
+											<Form.Control className="text-danger" type="text" ref={this.valorPago} name="valorPago" onChange={ (e) => this.calcularTotal( e ) } />									
+										</Form>
+									</Col>
+								</Row>
+								<Row>
+									<Col></Col>
+									<Col>
+										<Form.Label>Total: &nbsp; <span className="text-danger">{ sistema.formataReal( total ) }</span></Form.Label>										
+									</Col>								
+									<Col>
+										<Form.Label>Troco: &nbsp; <span className="text-danger">{ sistema.formataReal( troco ) }</span></Form.Label>										
+									</Col>
+								</Row>
+							</Card>							
 						</div>
 					</Form.Group>
 				</div>
