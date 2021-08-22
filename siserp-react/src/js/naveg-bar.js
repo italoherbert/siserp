@@ -16,6 +16,7 @@ import CaixaFluxo from './telas/caixa/caixa-fluxo';
 import Usuarios from './telas/usuarios/usuarios';
 import ContasPagar from './telas/contas/contas-pagar';
 import ContasReceber from './telas/contas/contas-receber';
+import Configs from './telas/configs/configs';
 
 import caixaImagem from './../imgs/caixa.png';
 import vendasImagem from './../imgs/vendas.png';
@@ -27,6 +28,7 @@ import funcionariosImagem from './../imgs/funcionarios.png';
 import clientesImagem from './../imgs/clientes.png';
 import fornecedoresImagem from './../imgs/fornecedores.png';
 import usuariosImagem from './../imgs/usuarios.png';
+import configsImagem from './../imgs/configs.png';
 
 import sairImagem from './../imgs/sair.png';
 
@@ -34,9 +36,25 @@ import sistema from './logica/sistema.js';
 
 export default class NavegBar extends React.Component {
 		
+	constructor( props ) {
+		super( props );
+		
+		this.state = {
+			logoBase64 : null
+		};
+	}		
+		
 	mostraEscondeMenu( elementoId ) {
 		sistema.showHide( elementoId );
 		this.setState( this.state );
+	}
+	
+	componentDidMount() {
+		sistema.wsGet( '/api/config/logo/get', (resposta) => {
+			resposta.json().then( (dados) => {
+				this.setState( { logoBase64 : dados.logoBase64 } );
+			} );
+		}, this );
 	}
 	
 	paraTelaLogin() {
@@ -95,17 +113,20 @@ export default class NavegBar extends React.Component {
 		ReactDOM.render( <Usuarios />, sistema.paginaElemento() );
 	}
 	
+	paraTelaConfigs() {
+		ReactDOM.render( <Configs />, sistema.paginaElemento() );
+	}
+	
 	render() {
 		return(
 			<Navbar bg="dark" variant="dark">
-				<Navbar.Brand className="mx-3">Sistema ERP</Navbar.Brand>
 				<Navbar.Toggle aria-controls="basic-navbar-nav" />
-				<Navbar.Collapse id="basic-navbar.nav">
+				<Navbar.Collapse id="basic-navbar.nav" className="mx-3">
 					<Nav className="mr-auto">						
 						{ ( sistema.usuario.grupo.nome === 'CAIXA' ) && (
 							<Nav.Link onClick={ () => this.paraTelaCaixa() }>
 								<Row className="text-center">
-									<img src={caixaImagem} />
+									<img src={caixaImagem} alt="Imagem de caixa" />
 								</Row>
 								<Row className="p-2">									
 									<span className="text-center">Caixa</span>
@@ -116,7 +137,7 @@ export default class NavegBar extends React.Component {
 							<div className="m-2">
 								<Row>
 									<Col className="text-center">
-										<img src={financeiroImagem} />
+										<img src={financeiroImagem} alt="Imagem de finanças" />
 									</Col>
 								</Row>
 								<Row className="m-0 p-0">							
@@ -142,7 +163,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaSedeDetalhes() }>
 								<Row>
 									<Col className="text-center">
-										<img src={empresaImagem} />
+										<img src={empresaImagem} alt="Imagem de sede de empresa" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -154,7 +175,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaVendas() }>
 								<Row>
 									<Col className="text-center">
-										<img src={vendasImagem} />
+										<img src={vendasImagem} alt="Imagem de vendas" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -166,7 +187,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaCompras() }>
 								<Row>
 									<Col className="text-center">
-										<img src={comprasImagem} />
+										<img src={comprasImagem} alt="Imagem de compras" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -178,7 +199,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaProdutos() }>
 								<Row>
 									<Col className="text-center">
-										<img src={produtosImagem} />
+										<img src={produtosImagem} alt="Imagem de produtos" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -190,7 +211,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaFuncionarios() }>
 								<Row>
 									<Col className="text-center">
-										<img src={funcionariosImagem} />
+										<img src={funcionariosImagem} alt="Imagem de funcionario" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -202,7 +223,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaClientes() }>
 								<Row>
 									<Col className="text-center">
-										<img src={clientesImagem} />
+										<img src={clientesImagem} alt="Imagem de cliente" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -214,7 +235,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaFornecedores() }>
 								<Row>
 									<Col className="text-center">
-										<img src={fornecedoresImagem} />
+										<img src={fornecedoresImagem} alt="Imagem de fornecedor" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -226,7 +247,7 @@ export default class NavegBar extends React.Component {
 							<Nav.Link onClick={ () => this.paraTelaUsuarios() }>
 								<Row>
 									<Col className="text-center">
-										<img src={usuariosImagem} />
+										<img src={usuariosImagem} alt="Imagem de usuario" />
 									</Col>
 								</Row>
 								<Row className="p-2 text-center">									
@@ -234,10 +255,22 @@ export default class NavegBar extends React.Component {
 								</Row>
 							</Nav.Link>
 						) }
+						{ ( sistema.usuario.grupo.nome === 'ADMIN' ) && (
+							<Nav.Link onClick={ () => this.paraTelaConfigs() }>
+								<Row>
+									<Col className="text-center">
+										<img src={configsImagem} alt="Imagem de configurações" />
+									</Col>
+								</Row>
+								<Row className="p-2 text-center">									
+									<span>Configurações</span>
+								</Row>
+							</Nav.Link>
+						) }
 						<Nav.Link onClick={ () => this.paraTelaLogin() }>
 							<Row>
 								<Col className="text-center">
-									<img src={sairImagem} />
+									<img src={sairImagem} alt="Imagem de sair" />
 								</Col>
 							</Row>
 							<Row className="p-2 text-center">									
@@ -246,7 +279,9 @@ export default class NavegBar extends React.Component {
 						</Nav.Link>
 					</Nav>
 				</Navbar.Collapse>
-			</Navbar>
+
+				<img className="float-end" src={this.state.logoBase64} alt="Logomarca" />
+			</Navbar>				
 		);
 	}
 	

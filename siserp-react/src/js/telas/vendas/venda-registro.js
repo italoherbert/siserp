@@ -19,9 +19,7 @@ export default class VendaRegistro extends React.Component {
 
 			itens : [],
 			formasPag : [],
-			
-			quantValorPadrao : 1,
-			
+						
 			clientesNomeLista : [],
 			clienteId : -1,
 			clienteNome : '',
@@ -62,7 +60,7 @@ export default class VendaRegistro extends React.Component {
 					precoUnitario : dados.precoUnitVenda, 	
 					unidade : dados.unidade,
 					estoqueQuantidade : dados.quantidade,
-					quantidade : this.state.quantValorPadrao
+					quantidade : 1
 				} );			
 				
 				this.codigoBarras.current.value = '';
@@ -231,7 +229,7 @@ export default class VendaRegistro extends React.Component {
 	}	
 		
 	render() {
-		const { infoMsg, erroMsg, itens, formasPag, quantValorPadrao, subtotal, total, troco, clientesNomeLista, incluirCliente } = this.state;
+		const { infoMsg, erroMsg, itens, formasPag, subtotal, total, troco, clientesNomeLista, incluirCliente } = this.state;
 							
 		return(	
 			<div>												

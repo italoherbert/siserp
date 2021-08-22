@@ -12,11 +12,7 @@ public class ErroResponse {
 	public final static int SEM_PERMISSAO = 1;
 	public final static int SEM_PERMISSAO_REG_USUARIO_RAIZ = 2;
 	
-	public final static int FALHA_CRIACAO_ARQUIVO = 3;
-	public final static int FALHA_CARREGAMENTO_ARQUIVO = 4;
-	public final static int FALHA_GRAVACAO_ARQUIVO = 5;
-
-	public final static int FALHA_GERACAO_RELATORIO = 6;
+	public final static int FALHA_GERACAO_RELATORIO = 3;
 	
 	public final static int USUARIO_NAO_ENCONTRADO = 100;
 	public final static int FUNCIONARIO_NAO_ENCONTRADO = 101;
@@ -78,6 +74,8 @@ public class ErroResponse {
 	public final static int VALOR_RECEBIDO_OBRIGATORIO = 330;
 	public final static int FLAG_INCLUIR_PARCELAS_PAGAS_OBRIGATORIO = 331;
 	public final static int FLAG_INCLUIR_VENDAS_PAGAS_OBRIGATORIO = 332;
+	public final static int EMPRESA_NOME_CAMPO_OBRIGATORIO = 333;
+	public final static int LOGO_BASE64_OBRIGATORIA = 334;
 	
 	public final static int USERNAME_PASSWORD_NAO_CORRESPONDEM = 500;
 	public final static int PRODUTO_PRECO_UNIT_COMPRA_INVALIDO = 502;
@@ -126,16 +124,7 @@ public class ErroResponse {
 				break;
 			case SEM_PERMISSAO_REG_USUARIO_RAIZ:
 				mensagem = "Você não tem permissão para registrar usuário tipo RAIZ.";
-				break;			
-			case FALHA_CRIACAO_ARQUIVO:
-				mensagem = "Houve falha na criação do arquivo: "+params[0];
-				break;
-			case FALHA_CARREGAMENTO_ARQUIVO:
-				mensagem = "Houve falha no carregamento do arquivo: "+params[0];
-				break;
-			case FALHA_GRAVACAO_ARQUIVO:
-				mensagem = "Houve falha na gravação no arquivo: "+params[0];
-				break;
+				break;						
 			case FALHA_GERACAO_RELATORIO:
 				mensagem = "Houve falha na geração do relatório: "+params[0];
 				break;
@@ -307,6 +296,13 @@ public class ErroResponse {
 			case FLAG_INCLUIR_VENDAS_PAGAS_OBRIGATORIO:
 				mensagem = "O flag de inclusão de vendas pagas é obrigatório";
 				break;
+			case EMPRESA_NOME_CAMPO_OBRIGATORIO:
+				mensagem = "O nome da empresa é um campo obrigatório.";
+				break;
+			case LOGO_BASE64_OBRIGATORIA:
+				mensagem = "A imagem codificada em Base 64 é um campo obrigatório.";
+				break;
+				
 					
 			case USERNAME_PASSWORD_NAO_CORRESPONDEM:
 				mensagem = "Nome de usuário e senha não correspondem.";

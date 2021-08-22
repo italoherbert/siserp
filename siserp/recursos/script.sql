@@ -30,13 +30,15 @@ insert into recurso ( nome ) values
 ( 'venda' ),
 ( 'contasPagar' ),
 ( 'contasReceber' ),
-( 'balancoHoje');
+( 'balancoHoje' ),
+( 'config' );
 
 insert into permissao_grupo ( grupo_id, recurso_id, leitura, escrita, remocao ) values 
 ( (select id from usuario_grupo where nome='ADMIN'), (select id from recurso where nome='usuario'), true, true, true ),
 ( (select id from usuario_grupo where nome='ADMIN'), (select id from recurso where nome='usuarioGrupo'), true, true, true ),
 ( (select id from usuario_grupo where nome='ADMIN'), (select id from recurso where nome='recurso'), true, true, true ),
 ( (select id from usuario_grupo where nome='ADMIN'), (select id from recurso where nome='permissaoGrupo'), true, true, true ),
+( (select id from usuario_grupo where nome='ADMIN'), (select id from recurso where nome='config'), true, true, true ),
 
 ( (select id from usuario_grupo where nome='SUPERVISOR'), (select id from recurso where nome='sede'), true, true, true ),
 ( (select id from usuario_grupo where nome='SUPERVISOR'), (select id from recurso where nome='caixa'), true, false, true ),

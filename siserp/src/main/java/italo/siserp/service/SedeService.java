@@ -1,75 +1,47 @@
 package italo.siserp.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.exception.FalhaCarregamentoArquivoException;
-import italo.siserp.exception.FalhaCriacaoArquivoException;
-import italo.siserp.exception.FalhaGravacaoArquivoException;
+import italo.siserp.builder.SedeBuilder;
+import italo.siserp.model.Sede;
+import italo.siserp.repository.SedeRepository;
 import italo.siserp.service.request.SaveSedeRequest;
 import italo.siserp.service.response.SedeResponse;
 
 @Service
 public class SedeService {
-		
-	private final String arquivoConfig = "config.properties";
+			
+	@Autowired
+	private SedeRepository sedeRepository;
 	
-	public void salvaSede( SaveSedeRequest request )
-			throws FalhaCriacaoArquivoException, 
-				FalhaCarregamentoArquivoException, 
-				FalhaGravacaoArquivoException {
-		Properties p = new Properties();
-		File f = new File( arquivoConfig );
-		if ( !f.exists() ) {
-			try {
-				f.createNewFile();
-			} catch ( IOException e ) {
-				FalhaCriacaoArquivoException ex = new FalhaCriacaoArquivoException();
-				ex.setParams( arquivoConfig ); 
-				throw ex;
-			}
-		}
+	@Autowired
+	private SedeBuilder sedeBuilder;
+	
+	public void salvaSede( SaveSedeRequest request ) {
+		Sede sede = this.getSedeBean();
+		sedeBuilder.carregaSede( sede, request );
 		
-		try {
-			p.load( new FileInputStream( f ) ) ;			
-		} catch (IOException e) {
-			FalhaCarregamentoArquivoException ex = new FalhaCarregamentoArquivoException();
-			ex.setParams( arquivoConfig ); 
-			throw ex;
-		}
-		
-		try {
-			p.setProperty( "cnpj", request.getCnpj() );
-			p.setProperty( "inscricaoEstadual", request.getInscricaoEstadual() );
-			p.store( new FileOutputStream( f ), "" );
-		} catch ( IOException e ) {
-			FalhaGravacaoArquivoException ex = new FalhaGravacaoArquivoException();
-			ex.setParams( arquivoConfig ); 
-			throw ex;
-		}
+		sedeRepository.save( sede );
 	}
 		
-	public SedeResponse getSede() throws FalhaCarregamentoArquivoException {
-		Properties p = new Properties();
-		try {
-			p.load( new FileInputStream( arquivoConfig ) ) ;			
-		} catch (IOException e) {
-			FalhaCarregamentoArquivoException ex = new FalhaCarregamentoArquivoException();
-			ex.setParams( arquivoConfig ); 
-			throw ex;
-		}
-		
+	public SedeResponse getSede() {
+		Sede sede = this.getSedeBean();
 		
 		SedeResponse resp = new SedeResponse();
-		resp.setCnpj( p.getProperty( "cnpj" ) );
-		resp.setInscricaoEstadual( p.getProperty( "inscricaoEstadual" ) ); 
+		sedeBuilder.carregaSedeResponse( resp, sede );
+		
 		return resp;
 	}
 		
+	public Sede getSedeBean() {
+		List<Sede> lista = sedeRepository.findAll();
+		if ( lista.isEmpty() )		
+			return new Sede();
+		
+		return lista.get( 0 );	
+	}
 	
 }

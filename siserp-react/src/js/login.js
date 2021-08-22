@@ -55,7 +55,7 @@ export default class Login extends React.Component {
 								<Form onSubmit={(e) => this.entrar( e )}>
 									<Row>
 										<Col className="col-md-4 py-4 px-5">
-											<img src={loginImagem} />
+											<img src={loginImagem} alt="Imagem de login" />
 										</Col>
 										<Col className="col-md-7">
 											<Form.Group className="mb-3">
