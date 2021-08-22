@@ -13,6 +13,7 @@ public class ErroResponse {
 	public final static int SEM_PERMISSAO_REG_USUARIO_RAIZ = 2;
 	
 	public final static int FALHA_GERACAO_RELATORIO = 3;
+	public final static int FALHA_LEITURA_OU_AJUSTE_LOGO = 4;
 	
 	public final static int USUARIO_NAO_ENCONTRADO = 100;
 	public final static int FUNCIONARIO_NAO_ENCONTRADO = 101;
@@ -127,6 +128,9 @@ public class ErroResponse {
 				break;						
 			case FALHA_GERACAO_RELATORIO:
 				mensagem = "Houve falha na geração do relatório: "+params[0];
+				break;
+			case FALHA_LEITURA_OU_AJUSTE_LOGO:
+				mensagem = "Falha na leitura ou ajuste da logomarca.";
 				break;
 				
 			case USUARIO_NAO_ENCONTRADO:

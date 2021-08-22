@@ -20,6 +20,10 @@ class Sistema {
 	rootElemento() {
 		return document.getElementById( "root" );
 	}
+	
+	logoElemento() {
+		return document.getElementById( "logo" );
+	}
 		
 	scrollTo( strEL ) {
 		let el = document.querySelector( "#"+strEL );

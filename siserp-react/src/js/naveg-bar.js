@@ -32,7 +32,8 @@ import configsImagem from './../imgs/configs.png';
 
 import sairImagem from './../imgs/sair.png';
 
-import sistema from './logica/sistema.js';
+import sistema from './logica/sistema';
+import LogoPainel from './componente/logo-painel';
 
 export default class NavegBar extends React.Component {
 		
@@ -52,7 +53,8 @@ export default class NavegBar extends React.Component {
 	componentDidMount() {
 		sistema.wsGet( '/api/config/logo/get', (resposta) => {
 			resposta.json().then( (dados) => {
-				this.setState( { logoBase64 : dados.logoBase64 } );
+				if ( dados.logoBase64 !== null && dados.logoBase64 !== undefined )
+					ReactDOM.render( <LogoPainel src={dados.logoBase64} />, sistema.logoElemento() );
 			} );
 		}, this );
 	}
@@ -280,7 +282,7 @@ export default class NavegBar extends React.Component {
 					</Nav>
 				</Navbar.Collapse>
 
-				<img className="float-end" src={this.state.logoBase64} alt="Logomarca" />
+				<span id="logo"></span>
 			</Navbar>				
 		);
 	}

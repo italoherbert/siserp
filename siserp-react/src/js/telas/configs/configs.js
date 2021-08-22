@@ -1,7 +1,9 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 
 import MensagemPainel from './../../componente/mensagem-painel';
+import LogoPainel from './../../componente/logo-painel';
 import sistema from './../../logica/sistema';
 
 export default class ConfigsForm extends React.Component {
@@ -30,8 +32,12 @@ export default class ConfigsForm extends React.Component {
 		reader.onload = (e) => {			
 			sistema.wsPut( '/api/config/logo/salva', {
 				"logoBase64" : e.target.result
-			}, (resposta) => {
-				this.setState( { infoMsg : 'Logomarca salva com sucesso!' } );
+			}, (resposta) => {		
+				resposta.json().then( (dados) => {
+					this.setState( { infoMsg : 'Logomarca salva com sucesso!' } );
+				
+					ReactDOM.render( <LogoPainel src={dados.logoBase64} />, sistema.logoElemento() );
+				} );
 			}, this );
 		};
 		reader.readAsDataURL( files[0] );		

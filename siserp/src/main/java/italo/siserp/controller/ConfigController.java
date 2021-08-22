@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import italo.siserp.exception.FalhaLeituraLogoException;
 import italo.siserp.service.ConfigService;
 import italo.siserp.service.request.SaveLogoConfigRequest;
 import italo.siserp.service.response.ConfigLogoResponse;
@@ -29,8 +30,12 @@ public class ConfigController {
 		if ( request.getLogoBase64().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LOGO_BASE64_OBRIGATORIA ) );
 		
-		configService.salvaLogoBase64( request );
-		return ResponseEntity.ok().build();
+		try {
+			ConfigLogoResponse resp = configService.salvaLogoBase64( request );
+			return ResponseEntity.ok( resp );
+		} catch (FalhaLeituraLogoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FALHA_LEITURA_OU_AJUSTE_LOGO ) );
+		}
 	}
 	
 	@GetMapping(value="/logo/get")	
