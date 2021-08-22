@@ -9,6 +9,8 @@ import Layout from './layout.js';
 import NavegBar from './naveg-bar.js';
 import Inicial from './telas/inicial/inicial.js';
 
+import loginImagem from './../imgs/login.png';
+
 export default class Login extends React.Component {
 
 	constructor( props ) {
@@ -46,30 +48,36 @@ export default class Login extends React.Component {
 				<h1 className="text-center bg-dark text-white p-4">Sistema ERP</h1>						
 				<Container className="my-5">
 					<Row>
-						<Col></Col>
-						<Col>
-							<Card body>
-								<h4 className="card-title">Tela de login</h4>														
+						<Col className="col-md-3"></Col>
+						<Col className="col-md-6">
+							<Card className="p-3">
+								<h4>Tela de login</h4>														
 								<Form onSubmit={(e) => this.entrar( e )}>
-									<Form.Group className="mb-3">
-										<Form.Label>Nome de usuário</Form.Label>
-										<Form.Control type="text" ref={this.username} id="username" name="username" />						
-									</Form.Group>
-									<Form.Group className="mb-3">
-										<Form.Label>Senha</Form.Label>
-										<Form.Control type="password" ref={this.password} id="password" name="password" />						
-									</Form.Group>
-									<Form.Group className="mb-3">
-										<Button type="submit" color="primary">Entrar</Button>				
-									</Form.Group>
-													
-									<Form.Group className="mb-3">
-										<MensagemPainel cor="danger" msg={erroMsg} />
-									</Form.Group>
+									<Row>
+										<Col className="col-md-4 py-4 px-5">
+											<img src={loginImagem} />
+										</Col>
+										<Col className="col-md-7">
+											<Form.Group className="mb-3">
+												<Form.Label>Nome de usuário</Form.Label>
+												<Form.Control type="text" ref={this.username} id="username" name="username" />						
+											</Form.Group>
+											<Form.Group className="mb-3">
+												<Form.Label>Senha</Form.Label>
+												<Form.Control type="password" ref={this.password} id="password" name="password" />						
+											</Form.Group>
+											<Form.Group className="mb-3">
+												<Button type="submit" color="primary">Entrar</Button>				
+											</Form.Group>
+															
+											<Form.Group className="mb-3">
+												<MensagemPainel cor="danger" msg={erroMsg} />
+											</Form.Group>									
+										</Col>
+									</Row>
 								</Form>	
 							</Card>
 						</Col>
-						<Col></Col>
 					</Row>			
 				</Container>	
 			</div>

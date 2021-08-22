@@ -36,6 +36,7 @@ export default class Vendas extends React.Component {
 			
 	componentDidMount() {
 		this.incluirCliente.current.checked = false;
+		this.incluirVendasPagas.current.checked = true;
 		this.filtrar( null, false );	
 	}		
 			
