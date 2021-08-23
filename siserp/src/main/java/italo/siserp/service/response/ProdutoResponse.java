@@ -25,6 +25,6 @@ public class ProdutoResponse {
 	
 	private String codigoBarras;
 	
-	private List<CategoriaResponse> categorias;
-		
+	private List<CategoriaMapResponse> categoriaMaps;
+			
 }

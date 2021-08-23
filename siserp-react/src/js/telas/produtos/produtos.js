@@ -27,6 +27,8 @@ export default class Produtos extends React.Component {
 		};		
 		this.descricaoIni = React.createRef();
 		this.codigoBarras = React.createRef();
+		
+		this.catsSubcats = React.createRef();
 	}
 	
 	componentDidMount() {
@@ -40,8 +42,12 @@ export default class Produtos extends React.Component {
 			e.preventDefault();
 					
 		let descIni = this.descricaoIni.current.value;
+		let catsSubcats = this.catsSubcats.current.value;
 
-		sistema.wsGet( "/api/produto/filtra/"+descIni, (resposta) => {
+		sistema.wsPost( "/api/produto/filtra/", {
+			"descricaoIni" : descIni,
+			"catsSubcats" : catsSubcats
+		}, (resposta) => {
 			resposta.json().then( (dados) => {
 				this.setState( { produtos : dados } );
 				
@@ -149,7 +155,8 @@ export default class Produtos extends React.Component {
 										<th>Código de barras</th>
 										<th>Preço compra</th>
 										<th>Preço venda</th>
-										<th>Quantidade</th>											
+										<th>Quantidade</th>		
+										<th>Categorias</th>
 										<th>Detalhes</th>
 										<th>Remover</th>
 									</tr>
@@ -164,6 +171,15 @@ export default class Produtos extends React.Component {
 												<td>{ sistema.formataReal( item.precoUnitCompra ) }</td>
 												<td>{ sistema.formataReal( item.precoUnitVenda ) }</td>
 												<td>{ sistema.formataFloat( item.quantidade ) } {item.unidade}</td>
+												<td>
+													<select>
+														{ item.categoriaMaps.map( (map, index2 ) => {
+															return (
+																<option key={index2} value={map.subcategoria}>{map.categoria} - {map.subcategoria}</option>
+															)
+														} ) }
+													</select>
+												</td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, item.id )}>detalhes</button></td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, item.id )}>remover</button></td>
 											</tr>
@@ -178,35 +194,40 @@ export default class Produtos extends React.Component {
 						<MensagemPainel cor="danger" msg={erroMsg} />
 						<MensagemPainel cor="primary" msg={infoMsg} />
 						
+						
 						<Row>
-							<Col>
+							<Col className="col-sm-6">
 								<Card className="p-3">
 									<h4>Filtrar produtos</h4>
-									<Row>
-										<Col className="col-sm-6">
-											<Form onSubmit={ (e) => this.filtrar( e, true ) }>
-												<Form.Group className="mb-2">
-													<Form.Label>Descrição:</Form.Label>
-													<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
-												</Form.Group>	
-												
-												<Button type="submit" variant="primary">Filtrar</Button>				
-											</Form>
-										</Col>
-										<Col className="col-sm-6">
-											<Form onSubmit={ (e) => this.buscar( e ) }>
-												<Form.Group className="mb-2">
-													<Form.Label>Codigo de barras:</Form.Label>
-													<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />						
-												</Form.Group>	
-												
-												<Button type="submit"variant="primary">Buscar</Button>				
-											</Form>
-										</Col>
-									</Row>									
+									<Form onSubmit={ (e) => this.filtrar( e, true ) }>
+										<Form.Group className="mb-2">
+											<Form.Label>Descrição:</Form.Label>
+											<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
+										</Form.Group>
+
+										<Form.Group className="mb-2">
+											<Form.Label>Categorias e subcategorias</Form.Label>
+											<Form.Control type="text" ref={this.catsSubcats} name="catsSubcats" />
+										</Form.Group>
+										
+										<Button type="submit" variant="primary">Filtrar</Button>				
+									</Form>
 								</Card>
 							</Col>
-						</Row>
+							<Col className="col-sm-6">
+								<Card className="p-3">
+									<h4>Buscar produto</h4>
+									<Form onSubmit={ (e) => this.buscar( e ) }>
+										<Form.Group className="mb-2">
+											<Form.Label>Codigo de barras:</Form.Label>
+											<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />						
+										</Form.Group>	
+										
+										<Button type="submit"variant="primary">Buscar</Button>				
+									</Form>
+								</Card>
+							</Col>
+						</Row>																
 					</Col>
 				</Row>
 			</Container>					

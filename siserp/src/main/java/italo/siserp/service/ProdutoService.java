@@ -13,8 +13,10 @@ import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoJaExisteException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
+import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
 import italo.siserp.repository.ProdutoRepository;
+import italo.siserp.service.request.BuscaProdutosRequest;
 import italo.siserp.service.request.SaveProdutoRequest;
 import italo.siserp.service.response.ProdutoResponse;
 
@@ -48,16 +50,45 @@ public class ProdutoService {
 		produtoRepository.save( p );		
 	}		
 	
-	public List<ProdutoResponse> buscaProdutosPorDescIni( String descricaoIni ) {
-		String dini = (descricaoIni.equals( "*" ) ? "" : descricaoIni );
+	public List<ProdutoResponse> filtra( BuscaProdutosRequest request ) {
+		String dini = (request.getDescricaoIni().equals( "*" ) ? "" : request.getDescricaoIni() );
+		String catsSubcats = request.getCatsSubcats();
+		
+		String[] catsSubcatsLista = null;
+		if ( catsSubcats != null )
+			if ( !catsSubcats.isBlank() )
+				catsSubcatsLista = catsSubcats.split( "\\b" );
 		
 		List<Produto> itens = produtoRepository.filtraPorDescIni( dini+"%" );
 		
 		List<ProdutoResponse> responses = new ArrayList<>();
 		
-		for( Produto ip : itens ) {			
+		for( Produto p : itens ) {
+			boolean achou = true;
+			if ( catsSubcatsLista != null ) {
+				achou = false;
+				
+				List<CategoriaMap> maps = p.getCategoriaMaps();
+				int size = maps.size();
+				for( int i = 0; !achou && i < size; i++ ) {
+					CategoriaMap map = maps.get( i );
+					String catdesc = map.getCategoria().getDescricao();
+					String subcatdesc = map.getSubcategoria().getDescricao();
+					
+					for( int j = 0; !achou && j < catsSubcatsLista.length; j++ ) {
+						if ( catsSubcatsLista[ j ].equalsIgnoreCase( catdesc ) || 
+								catsSubcatsLista[ j ].equalsIgnoreCase( subcatdesc ) ) {
+							achou = true;
+						}
+					}
+				}								
+			}
+			
+			if ( !achou )
+				continue;
+			
 			ProdutoResponse resp = produtoBuilder.novoProdutoResponse();
-			produtoBuilder.carregaProdutoResponse( resp, ip );
+			produtoBuilder.carregaProdutoResponse( resp, p );
 			
 			responses.add( resp );
 		}

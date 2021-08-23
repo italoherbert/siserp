@@ -15,17 +15,13 @@ import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
 import italo.siserp.model.SubCategoria;
 import italo.siserp.service.request.SaveProdutoRequest;
-import italo.siserp.service.response.CategoriaResponse;
+import italo.siserp.service.response.CategoriaMapResponse;
 import italo.siserp.service.response.ProdutoResponse;
-import italo.siserp.service.response.SubCategoriaResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component
 public class ProdutoBuilder {
-	
-	@Autowired
-	private CategoriaBuilder categoriaBuilder;	
-	
+		
 	@Autowired
 	private NumeroUtil numeroUtil;
 	
@@ -79,39 +75,19 @@ public class ProdutoBuilder {
 		
 		resp.setQuantidade( numeroUtil.doubleParaString( p.getQuantidade() ) );
 				
-		List<CategoriaResponse> categorias = new ArrayList<>();
+		List<CategoriaMapResponse> maps = new ArrayList<>();
 		for( CategoriaMap map : p.getCategoriaMaps() ) {
 			Categoria c = map.getCategoria();
 			SubCategoria sc = map.getSubcategoria();
+						
+			CategoriaMapResponse mapresp = new CategoriaMapResponse();
+			mapresp.setCategoria( c.getDescricao() );
+			mapresp.setSubcategoria( sc.getDescricao() );
 			
-			String catDesc = c.getDescricao();
-			String subcatDesc = sc.getDescricao();
-			
-			CategoriaResponse cresp = null;
-			int size = categorias.size();
-			for( int i = 0; resp == null && i < size; i++ ) {
-				CategoriaResponse cresp2 = categorias.get( i );
-				if ( cresp2.getDescricao().equalsIgnoreCase( catDesc ) )
-					cresp = cresp2;
-			}
-			
-			if ( cresp == null ) {
-				cresp = categoriaBuilder.novoCategoriaResponse();												
-				cresp.setId( c.getId() );
-				cresp.setDescricao( catDesc );
-				cresp.setSubcategorias( new ArrayList<>() );
-				
-				categorias.add( cresp );
-			}
-			
-			SubCategoriaResponse scResp = new SubCategoriaResponse();
-			scResp.setId( sc.getId() );
-			scResp.setDescricao( subcatDesc );
-			
-			cresp.getSubcategorias().add( scResp );
-		}
+			maps.add( mapresp );
+		}		
 		
-		resp.setCategorias( categorias );
+		resp.setCategoriaMaps( maps ); 
 	}	
 	
 	public ProdutoResponse novoProdutoResponse() {

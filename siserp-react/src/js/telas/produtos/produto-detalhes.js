@@ -16,13 +16,13 @@ export default class ProdutoDetalhes extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null, 
-			produto : { subcategorias : [] } 
+			produto : { categoriaMaps : [] } 
 		};
 	}
 	
 	componentDidMount() {			
 		sistema.wsGet( "/api/produto/get/"+this.props.produtoId, (resposta) => {
-			resposta.json().then( (dados) => {											
+			resposta.json().then( (dados) => {		
 				this.setState( { produto : dados } );				
 			} );
 		}, this );	
@@ -75,6 +75,17 @@ export default class ProdutoDetalhes extends React.Component {
 							<div className="display-inline">
 								<span className="text-dark font-weight-bold">Unidade: </span>
 								<span className="text-info">{produto.unidade}</span>
+							</div>
+							
+							<div className="display-inline">
+								<span className="text-dark font-weight-bold">Categorias: &nbsp;</span>
+								<select>
+									{ produto.categoriaMaps.map( (map, index2 ) => {
+										return (
+											<option key={index2} value={map.subcategoria}>{map.categoria} - {map.subcategoria}</option>
+										)
+									} ) }
+								</select>
 							</div>
 							
 							<br />

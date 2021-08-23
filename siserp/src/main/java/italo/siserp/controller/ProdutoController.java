@@ -19,6 +19,7 @@ import italo.siserp.exception.ProdutoJaExisteException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.service.ProdutoService;
+import italo.siserp.service.request.BuscaProdutosRequest;
 import italo.siserp.service.request.SaveProdutoRequest;
 import italo.siserp.service.response.ErroResponse;
 import italo.siserp.service.response.ProdutoResponse;
@@ -67,14 +68,14 @@ public class ProdutoController {
 	}		
 
 	@PreAuthorize("hasAuthority('produtoREAD')")
-	@GetMapping("/filtra/{descricaoIni}")
-	public ResponseEntity<Object> filtraPorDescIni( @PathVariable String descricaoIni ) {
-		if ( descricaoIni == null )
+	@PostMapping("/filtra")
+	public ResponseEntity<Object> filtra( @RequestBody BuscaProdutosRequest request ) {
+		if ( request.getDescricaoIni() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
-		if ( descricaoIni.isBlank() )
+		if ( request.getDescricaoIni().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );		
 				
-		List<ProdutoResponse> produtos = produtoService.buscaProdutosPorDescIni( descricaoIni );
+		List<ProdutoResponse> produtos = produtoService.filtra( request );
 		return ResponseEntity.ok( produtos );		
 	}
 	
