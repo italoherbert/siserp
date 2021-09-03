@@ -72,8 +72,8 @@ public class ProdutoService {
 				int size = maps.size();
 				for( int i = 0; !achou && i < size; i++ ) {
 					CategoriaMap map = maps.get( i );
-					String catdesc = map.getCategoria().getDescricao();
-					String subcatdesc = map.getSubcategoria().getDescricao();
+					String catdesc = map.getCategoria();
+					String subcatdesc = map.getSubcategoria();
 					
 					for( int j = 0; !achou && j < catsSubcatsLista.length; j++ ) {
 						if ( catsSubcatsLista[ j ].equalsIgnoreCase( catdesc ) || 

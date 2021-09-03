@@ -1,16 +1,16 @@
 package italo.siserp.service.request;
 
-import lombok.Setter;
-
 import lombok.Getter;
-
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @Getter
 @Setter
-public class BuscaSubCategoriasRequest {
+public class SaveCategoriaMapRequest {
 
-	private String descricaoIni;
+	private String categoria;
+	
+	private String subcategoria;
 	
 }

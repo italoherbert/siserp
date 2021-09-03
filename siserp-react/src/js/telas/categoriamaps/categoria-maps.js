@@ -6,10 +6,10 @@ import Modal from 'react-bootstrap/Modal';
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
 
-import CategoriaDetalhes from './categoria-detalhes';
-import CategoriaForm from './categoria-form';
+import CategoriaMapDetalhes from './categoria-map-detalhes';
+import CategoriaMapForm from './categoria-map-form';
 
-export default class Categorias extends React.Component {
+export default class CategoriaMaps extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -19,18 +19,20 @@ export default class Categorias extends React.Component {
 			addInfoMsg : null,
 			erroMsg : null,
 			infoMsg : null,
-			categorias : [],			
+			categoriaMaps : [],			
 			
 			remocaoModalVisivel : false,
 			remocaoModalOkFunc : () => {},
 			remocaoModalCancelaFunc : () => {}
 		};			
 		
-		this.descricaoIni = React.createRef();
+		this.categoriaIni = React.createRef();
+		this.subcategoriaIni = React.createRef();
 	}
 	
 	componentDidMount() {
-		this.descricaoIni.current.value = "*";
+		this.categoriaIni.current.value = "*";
+		this.subcategoriaIni.current.value = "*";
 		
 		this.filtrar( null, true );		
 	}
@@ -39,14 +41,15 @@ export default class Categorias extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 		
-		sistema.wsPost( "/api/categoria/filtra", {
-			"descricaoIni" : this.descricaoIni.current.value
+		sistema.wsPost( "/api/categoriamap/filtra", {
+			"categoriaIni" : this.categoriaIni.current.value,
+			"subcategoriaIni" : this.subcategoriaIni.current.value
 		}, (resposta) => {
 			resposta.json().then( (dados) => {
-				this.setState( { categorias : dados } );
+				this.setState( { categoriaMaps : dados } );
 				
 				if ( dados.length === 0 && filtrarBTClicado === true )
-					this.setState( { infoMsg : "Nenhuma categoria registrada!" } );						
+					this.setState( { infoMsg : "Nenhuma categoria encontrada pelos critérios de busca informados!" } );						
 			} );
 		}, this );							
 	}
@@ -54,7 +57,7 @@ export default class Categorias extends React.Component {
 	detalhes( e, id ) {
 		e.preventDefault();
 		
-		ReactDOM.render( <CategoriaDetalhes categoriaId={id}/>, sistema.paginaElemento() );
+		ReactDOM.render( <CategoriaMapDetalhes categoriaMapId={id}/>, sistema.paginaElemento() );
 	}
 	
 	removerSeConfirmado( e, id ) {
@@ -73,14 +76,14 @@ export default class Categorias extends React.Component {
 	remover( e, id ) {
 		e.preventDefault();
 				
-		sistema.wsDelete( "/api/categoria/deleta/"+id, (resposta) => {
+		sistema.wsDelete( "/api/categoriamap/deleta/"+id, (resposta) => {
 			this.filtrar( null, false );																	
-			this.setState( { infoMsg : "Categoria removida com êxito!" } );
+			this.setState( { infoMsg : "Mapeamento de categoria removida com êxito!" } );
 		}, this );		
 	}
 		
 	render() {
-		const { erroMsg, infoMsg, categorias, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
+		const { erroMsg, infoMsg, categoriaMaps, remocaoModalVisivel, remocaoModalCancelaFunc, remocaoModalOkFunc } = this.state;
 		
 		return (
 			<Container>				
@@ -103,19 +106,20 @@ export default class Categorias extends React.Component {
 						<thead>
 							<tr>
 								<th>ID</th>
-								<th>Descrição</th>
-								<th>Detalhes</th>
+								<th>Categoria</th>
+								<th>Subcategoria</th>
 								<th>Remover</th>
 							</tr>
 						</thead>
 						<tbody>
-							{categorias.map( ( categoria, index ) => {
+							{categoriaMaps.map( ( map, index ) => {
 								return (
 									<tr key={index}>
-										<td>{categoria.id}</td>
-										<td>{categoria.descricao}</td>
-										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, categoria.id )}>detalhes</button></td>
-										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, categoria.id )}>remover</button></td>
+										<td>{map.id}</td>
+										<td>{map.categoria}</td>
+										<td>{map.subcategoria}</td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, map.id )}>detalhes</button></td>
+										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, map.id )}>remover</button></td>
 									</tr>
 								)
 							} ) }	
@@ -134,8 +138,13 @@ export default class Categorias extends React.Component {
 							<h4>Filtro de categorias</h4>
 							<Form onSubmit={ (e) => this.filtrar( e, true ) }>
 								<Form.Group className="mb-2">
-									<Form.Label>Descrição:</Form.Label>
-									<Form.Control type="text" ref={this.descricaoIni} name="descricaoIni" />						
+									<Form.Label>Categoria:</Form.Label>
+									<Form.Control type="text" ref={this.categoriaIni} name="categoriaIni" />						
+								</Form.Group>
+								
+								<Form.Group className="mb-2">
+									<Form.Label>Subcategoria:</Form.Label>
+									<Form.Control type="text" ref={this.subcategoriaIni} name="subcategoriaIni" />						
 								</Form.Group>
 																																						
 								<Button type="submit" variant="primary">Filtrar</Button>				
@@ -143,10 +152,10 @@ export default class Categorias extends React.Component {
 						</Card>
 					</Col>
 					<Col>								
-						<CategoriaForm 
+						<CategoriaMapForm 
 							op="cadastrar"
 							titulo="Cadastre nova categoria" 
-							registrou={ () => this.filtrar( null, false) } />							
+							registrou={ () => this.filtrar( null, false ) } />							
 					</Col>
 				</Row>
 																													

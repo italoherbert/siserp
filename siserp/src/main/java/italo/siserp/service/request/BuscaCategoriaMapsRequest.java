@@ -7,12 +7,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class EfetuarPagamentoRequest {
+public class BuscaCategoriaMapsRequest {
 
-	private Long clienteId;
+	private String categoriaIni;
 	
-	private String valorPago;
-	
-	private String formaPag;
+	private String subcategoriaIni;
 	
 }

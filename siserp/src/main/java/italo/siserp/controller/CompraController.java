@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CompraNaoEncontradaException;
 import italo.siserp.exception.DataCompraInvalidaException;
-import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataPagamentoInvalidaException;
 import italo.siserp.exception.DataVencimentoInvalidaException;
@@ -26,11 +26,10 @@ import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.service.CompraService;
 import italo.siserp.service.request.BuscaComprasRequest;
-import italo.siserp.service.request.SaveCategoriaRequest;
+import italo.siserp.service.request.SaveCategoriaMapRequest;
 import italo.siserp.service.request.SaveCompraParcelaRequest;
 import italo.siserp.service.request.SaveCompraRequest;
 import italo.siserp.service.request.SaveItemCompraRequest;
-import italo.siserp.service.request.SaveSubCategoriaRequest;
 import italo.siserp.service.response.CompraResponse;
 import italo.siserp.service.response.ErroResponse;
 import italo.siserp.service.response.FiltroCompraResponse;
@@ -47,12 +46,12 @@ public class CompraController {
 	public ResponseEntity<Object> registraCompra( @RequestBody SaveCompraRequest request ) {
 		if ( request.getDataCompra() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA ) );						
-		if ( request.getDataCompra().trim().isEmpty() )
+		if ( request.getDataCompra().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA ) );
 		
 		if ( request.getFornecedor().getEmpresa() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );						
-		if ( request.getFornecedor().getEmpresa().trim().isEmpty() )
+		if ( request.getFornecedor().getEmpresa().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORNECEDOR_NAO_ENCONTRADO ) );
 
 		if ( request.getItensCompra().isEmpty() )
@@ -61,27 +60,27 @@ public class CompraController {
 		for( SaveItemCompraRequest icreq : request.getItensCompra() ) {			
 			if ( icreq.getPrecoUnitario() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );								
-			if ( icreq.getPrecoUnitario().trim().isEmpty() )
+			if ( icreq.getPrecoUnitario().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );
 			
 			if ( icreq.getQuantidade() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
-			if ( icreq.getQuantidade().trim().isEmpty() )
+			if ( icreq.getQuantidade().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );
 			
 			if ( icreq.getProduto().getDescricao() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );								
-			if ( icreq.getProduto().getDescricao().trim().isEmpty() )
+			if ( icreq.getProduto().getDescricao().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_DESCRICAO_OBRIGATORIA ) );
 			
 			if ( icreq.getProduto().getPrecoUnitCompra() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );								
-			if ( icreq.getProduto().getPrecoUnitCompra().trim().isEmpty() )
+			if ( icreq.getProduto().getPrecoUnitCompra().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_COMPRA_OBRIGATORIO ) );
 			
 			if ( icreq.getProduto().getPrecoUnitVenda() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_VENDA_OBRIGATORIO ) );								
-			if ( icreq.getProduto().getPrecoUnitVenda().trim().isEmpty() )
+			if ( icreq.getProduto().getPrecoUnitVenda().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_PRECO_UNIT_VENDA_OBRIGATORIO ) );
 			
 			if ( icreq.getProduto().getUnidade() == null )
@@ -89,26 +88,24 @@ public class CompraController {
 			
 			if ( icreq.getProduto().getQuantidade() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );								
-			if ( icreq.getProduto().getQuantidade().trim().isEmpty() )
+			if ( icreq.getProduto().getQuantidade().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_QUANTIDADE_OBRIGATORIA ) );
 			
 			if ( icreq.getProduto().getCodigoBarras() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );								
-			if ( icreq.getProduto().getCodigoBarras().trim().isEmpty() )
+			if ( icreq.getProduto().getCodigoBarras().isBlank() )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_CODIGO_BARRAS_OBRIGATORIO ) );			
 			
-			for ( SaveCategoriaRequest catreq : icreq.getProduto().getCategorias() ) {
-				if ( catreq.getDescricao() == null )
+			for ( SaveCategoriaMapRequest mapreq : icreq.getProduto().getCategoriaMaps() ) {
+				if ( mapreq.getCategoria() == null )
 					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
-				if ( catreq.getDescricao().trim().isEmpty() )
+				if ( mapreq.getCategoria().isBlank() )
 					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CATEGORIA_DESCRICAO_OBRIGATORIA ) );
 				
-				for( SaveSubCategoriaRequest subcatreq : catreq.getSubcategorias() ) {
-					if ( subcatreq.getDescricao() == null )
-						return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
-					if ( subcatreq.getDescricao().trim().isEmpty() )
-						return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );					
-				}
+				if ( mapreq.getSubcategoria() == null )
+					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );
+				if ( mapreq.getSubcategoria().trim().isEmpty() )
+					return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.SUBCATEGORIA_DESCRICAO_OBRIGATORIA ) );									
 			}			
 		}
 		

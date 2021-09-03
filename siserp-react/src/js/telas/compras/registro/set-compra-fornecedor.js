@@ -1,9 +1,9 @@
 import React from 'react';
 import { Card, Form } from 'react-bootstrap';
 
-import MensagemPainel from './../../componente/mensagem-painel';
-import InputDropdown from './../../componente/input-dropdown';
-import sistema from './../../logica/sistema';
+import MensagemPainel from './../../../componente/mensagem-painel';
+import InputDropdown from './../../../componente/input-dropdown';
+import sistema from './../../../logica/sistema';
 
 export default class SetCompraFornecedor extends React.Component {
 	

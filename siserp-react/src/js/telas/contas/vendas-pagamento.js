@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Row, Col, Card, Table, Form, Button } from 'react-bootstrap';
 
-import sistema from './../../logica/sistema';
-import MensagemPainel from './../../componente/mensagem-painel';
-import InputDropdown from './../../componente/input-dropdown';
+import sistema from '../../logica/sistema';
+import MensagemPainel from '../../componente/mensagem-painel';
+import InputDropdown from '../../componente/input-dropdown';
 
-import Vendas from './vendas';
+import ContasReceber from './contas-receber';
 
 export default class VendasPagamento extends React.Component {
 	
@@ -62,7 +62,7 @@ export default class VendasPagamento extends React.Component {
 				for( let i = 0; i < vendas.length; i++ ) {
 					let subtotal = sistema.paraFloat( vendas[ i ].subtotal );
 					let desconto = sistema.paraFloat( vendas[ i ].desconto );
-					vendas[ i ].total = subtotal * ( 1.0 - desconto );
+					vendas[ i ].total = subtotal * ( 1.0 - ( desconto / 100.0 ) );
 
 					debito += sistema.paraFloat( vendas[ i ].debito );
 				}
@@ -96,8 +96,8 @@ export default class VendasPagamento extends React.Component {
 		}, this );
 	}
 				
-	paraTelaVendas() {
-		ReactDOM.render( <Vendas />, sistema.paginaElemento() ); 
+	paraTelaContasReceber() {
+		ReactDOM.render( <ContasReceber />, sistema.paginaElemento() ); 
 	}	
 		
 	render() {
@@ -181,7 +181,7 @@ export default class VendasPagamento extends React.Component {
 				
 				<Card className="p-3">					
 					<Form>
-						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaVendas( e ) }>Ir para tela de vendas</button>
+						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaContasReceber( e ) }>Ir para tela de vendas</button>
 					</Form>
 				</Card>				
 			</div>

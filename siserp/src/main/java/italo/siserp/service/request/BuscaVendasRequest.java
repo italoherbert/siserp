@@ -12,11 +12,5 @@ public class BuscaVendasRequest {
 	private String dataIni;
 	
 	private String dataFim;
-	
-	private String clienteNomeIni;
-	
-	private String incluirCliente;
 		
-	private String incluirPagas;
-	
 }

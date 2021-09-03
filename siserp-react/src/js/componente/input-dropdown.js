@@ -12,6 +12,13 @@ export default class InputDropdown extends React.Component {
 	componentDidMount() {						
 		document.getElementById( this.state.id ).style.display = 'none';
 		document.getElementById( this.state.id ).style.visibility = 'hidden';				
+
+		let referencia;
+		if ( this.props.referencia !== null && this.props.referencia !== undefined )
+			referencia = this.props.referencia;	
+		else referencia = this.texto;
+
+		referencia.current.value = '';
 	}
 	
 	onChangeTexto( e ) {

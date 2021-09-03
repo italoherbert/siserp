@@ -1,10 +1,13 @@
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {Container, Row, Col, Card, Form, Table, Button} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
+
+import VendasPagamento from './vendas-pagamento';
 
 export default class ContasReceber extends React.Component {
 	
@@ -18,7 +21,7 @@ export default class ContasReceber extends React.Component {
 			dataIni : new Date(),
 			dataFim : new Date(),
 			
-			contasObj : { vendas : [] },
+			contasObj : { contas : [] },
 			debitoPeriodo : 0,
 			debitoTotal : 0
 		};						
@@ -49,13 +52,7 @@ export default class ContasReceber extends React.Component {
 		}, (resposta) => {
 			resposta.json().then( (dados) => {
 				let contasObj = dados;
-				
-				for( let i = 0; i < contasObj.vendas.length; i++ ) {
-					let subtotal = sistema.paraFloat( contasObj.vendas[ i ].subtotal );
-					let desconto = sistema.paraFloat( contasObj.vendas[ i ].desconto );
-					contasObj.vendas[ i ].total = subtotal * ( 1.0 - desconto );
-				}
-									
+													
 				if ( dados.length === 0 && filtrarBTClicado === true )
 					this.setState( { infoMsg : "Nenhuma conta encontrada pelos critérios de filtro informados!" } );																							
 				
@@ -81,31 +78,47 @@ export default class ContasReceber extends React.Component {
 	changeDataFim( date ) {
 		this.setState( { dataFim : date } );
 	}
+
+	paraTelaPagamentos( e ) {		
+		ReactDOM.render( <VendasPagamento />, sistema.paginaElemento() );
+	}
 				
 	render() {
 		const { erroMsg, infoMsg, contasObj, dataIni, dataFim } = this.state;
 		
 		return (
-			<Container>					
-				<h4 className="text-center">Lista de contas a pagar</h4>
+			<Container>	
+				<Row>
+					<Col>
+						<Form>
+							<Button variant="primary" className="float-end" onClick={ (e) => this.paraTelaPagamentos(e) }>Efetue um pagamento</Button>							
+						</Form>
+					</Col>
+				</Row>
+
+				<br />				
+
+				<h4 className="text-center">Lista de contas a receber</h4>
 				<div className="tbl-pnl">
 					<Table striped bordered hover>
 						<thead>
 							<tr>
-								<th>Data de venda</th>
+								<th>Data de pagamento</th>
+								<th>Data de vencimento</th>
 								<th>Cliente</th>
 								<th>Total</th>
 								<th>Débito</th>
 							</tr>
 						</thead>
 						<tbody>
-							{contasObj.vendas.map( ( venda, index ) => {
+							{contasObj.contas.map( ( conta, index ) => {
 								return (
 									<tr key={index}>
-										<td>{ venda.dataVenda }</td>
-										<td>{ venda.cliente.pessoa.nome }</td>
-										<td>{ sistema.formataReal( venda.total ) }</td>
-										<td>{ sistema.formataReal( venda.debito ) }</td>
+										<td>{ conta.parcela.dataPagamento }</td>
+										<td>{ conta.parcela.dataVencimento }</td>
+										<td>{ conta.clienteNome }</td>
+										<td>{ sistema.formataReal( conta.parcela.valor ) }</td>
+										<td>{ sistema.formataReal( conta.parcela.debito ) }</td>
 									</tr>
 								);
 							} ) }	

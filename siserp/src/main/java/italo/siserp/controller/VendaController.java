@@ -15,14 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.ClienteNaoEncontradoException;
-import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
+import italo.siserp.exception.DataPagamentoInvalidaException;
+import italo.siserp.exception.DataVencimentoInvalidaException;
 import italo.siserp.exception.DataVendaInvalidaException;
 import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
 import italo.siserp.exception.FormaPagInvalidaException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
+import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
@@ -30,14 +33,12 @@ import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
-import italo.siserp.exception.ValorRecebidoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.FormaPag;
 import italo.siserp.service.VendaService;
 import italo.siserp.service.request.BuscaVendasRequest;
 import italo.siserp.service.request.SaveItemVendaRequest;
 import italo.siserp.service.request.SaveVendaRequest;
-import italo.siserp.service.request.ValorRecebidoRequest;
 import italo.siserp.service.response.ErroResponse;
 import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.FormaPagEnumConversor;
@@ -108,6 +109,12 @@ public class VendaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );						
 		} catch (FormaPagInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FORMA_PAG_INVALIDA ) );						
+		} catch (ParcelaValorInvalidoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PARCELA_VALOR_INVALIDO, e.getParams() ) );						
+		} catch (DataPagamentoInvalidaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_PAGAMENTO_INVALIDA, e.getParams() ) );						
+		} catch (DataVencimentoInvalidaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_VENCIMENTO_INVALIDA, e.getParams() ) );						
 		}
 	}
 	
@@ -122,21 +129,7 @@ public class VendaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
 		if ( request.getDataFim().isBlank() )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_FIM_OBRIGATORIA ) );
-		
-		
-		if ( request.getIncluirCliente() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_OBRIGATORIO ) );
-		
-		if ( request.getIncluirPagas() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_VENDAS_PAGAS_OBRIGATORIO ) );		
-		
-		if ( request.getIncluirCliente().equals( "true") ) {
-			if ( request.getClienteNomeIni() == null )
-				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );
-			if ( request.getClienteNomeIni().isBlank() )
-				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );			
-		}
-		
+				
 		try {
 			List<VendaResponse> resps = vendaService.filtra( request );
 			return ResponseEntity.ok( resps );
@@ -177,24 +170,6 @@ public class VendaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.COMPRA_NAO_ENCONTRADA ) );						
 		}
 	}
-		 
-	@PreAuthorize("hasAnyAuthority('vendaWRITE')")	
-	@PostMapping(value="/efetuarecebimento/{clienteId}")
-	public ResponseEntity<Object> efetuaPagamento( @PathVariable Long clienteId, @RequestBody ValorRecebidoRequest request ) {
-		if ( request.getValor() == null )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_RECEBIDO_INVALIDO ) );						
-		if ( request.getValor().isBlank() )
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_RECEBIDO_INVALIDO ) );						
 			
-		try {			
-			vendaService.efetuaRecebimento( clienteId, request );			
-			return ResponseEntity.ok().build();
-		} catch (ClienteNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );						
-		} catch (ValorRecebidoInvalidoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_RECEBIDO_INVALIDO ) );						
-		}
-	}
-	
 }
 

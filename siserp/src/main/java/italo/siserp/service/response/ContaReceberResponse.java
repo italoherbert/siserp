@@ -7,10 +7,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SubCategoriaResponse {
+public class ContaReceberResponse {
 
-	private Long id;
+	private String clienteNome;
 	
-	private String descricao;
+	private VendaParcelaResponse parcela;	
 	
 }

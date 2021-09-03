@@ -23,6 +23,6 @@ public class SaveProdutoRequest {
 	
 	private String codigoBarras;	
 	
-	private List<SaveCategoriaRequest> categorias;
+	private List<SaveCategoriaMapRequest> categoriaMaps;
 				
 }

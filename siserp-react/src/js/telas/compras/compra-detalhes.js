@@ -87,7 +87,7 @@ export default class CompraRegistro extends React.Component {
 													<td>{ item.produto.descricao }</td>
 													<td>{ item.produto.codigoBarras }</td>
 													<td>{ sistema.formataReal( item.precoUnitario ) }</td>
-													<td>{ sistema.formataFloat( item.quantidade ) }</td>
+													<td>{ sistema.formataFloat( item.quantidade ) } {item.produto.unidade}</td>
 												</tr>
 											)
 										} ) }

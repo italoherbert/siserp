@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Row, Col, Card, Table } from 'react-bootstrap';
+import { Row, Col, Card, Table, Form } from 'react-bootstrap';
 import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 
 import sistema from './../../logica/sistema';
@@ -17,14 +17,22 @@ export default class VendaDetalhes extends React.Component {
 		this.state = { 
 			infoMsg : null,
 			erroMsg : null,
-			venda : { cliente : { pessoa : {} }, itens : [] }
+			venda : { cliente : { pessoa : {} }, itens : [], parcelas : [] },
+			total : 0,
+			valorPago : 0,
+			debito : 0
 		};								
 	}				
 	
 	componentDidMount() {	
 		sistema.wsGet( '/api/venda/get/'+this.props.vendaId, (resposta) => {
-			resposta.json().then( (dados) => {
-				this.setState( { venda : dados } );
+			resposta.json().then( (dados) => {				
+				this.setState( { 
+					venda : dados,
+					total : dados.total,
+					debito : dados.debito,
+					valorPago : dados.total - dados.debito
+				} );
 			} );
 		}, this );	
 	}
@@ -34,7 +42,7 @@ export default class VendaDetalhes extends React.Component {
 	}
 		
 	render() {
-		const { infoMsg, erroMsg, venda } = this.state;
+		const { infoMsg, erroMsg, venda, total, valorPago, debito } = this.state;
 				
 		return(	
 			<div>
@@ -44,51 +52,53 @@ export default class VendaDetalhes extends React.Component {
 					<TabList>
 						<Tab>Detalhes</Tab>
 						<Tab>Produtos</Tab>
+						<Tab>Parcelas</Tab>
 					</TabList>
 					<TabPanel>														
-						<Card className="p-3">															
-							<Row className="mb-2">
-								<Col>
+						<Card className="p-3">		
+							<Row className="mb-2">	
+								<Col>									
 									<span className="font-weight-bold">Cliente: </span>
 									<span className="text-success">{ venda.cliente.pessoa.nome }</span>
 								</Col>
 							</Row>
-							
-							<Row className="mb-2">
-								<Col>
+							<Row className="mb-2">	
+								<Col>									
 									<span className="font-weight-bold">Data de venda: </span>
 									<span className="text-success">{ venda.dataVenda }</span>
 								</Col>
 							</Row>
-							
-							<Row className="mb-2">
-								<Col>
+							<Row className="mb-2">	
+								<Col>									
 									<span className="font-weight-bold">Sub total: </span>
-									<span className="text-danger">{ sistema.formataReal( venda.subtotal ) }</span>
-								</Col>								
-								<Col>
-									<span className="font-weight-bold">Desconto: </span>
-									<span className="text-danger">{ sistema.formataFloat( venda.desconto * 100 )} %</span>
+									<span className="text-primary">{ sistema.formataReal( venda.subtotal ) }</span>
 								</Col>
 							</Row>
-							<Row className="mb-2">
-								<Col>
+							<Row className="mb-2">	
+								<Col>									
+									<span className="font-weight-bold">Desconto: </span>							
+									<span className="text-primary">{ sistema.formataFloat( venda.desconto )} %</span>
+								</Col>
+							</Row>
+							<Row className="mb-2">	
+								<Col>									
 									<span className="font-weight-bold">Total: </span>
-									<span className="text-danger">{ sistema.formataReal( venda.subtotal * ( 1.0 - parseFloat( venda.desconto ) ) )}</span>
+									<span className="text-primary">{ sistema.formataReal( venda.subtotal * ( 1.0 - ( parseFloat( venda.desconto ) / 100.0 ) ) ) }</span>
 								</Col>
 							</Row>
-							<Row className="mb-2">
-								<Col>
+							
+							<Row className="mb-2">	
+								<Col>									
 									<span className="font-weight-bold">Debito: </span>
 									<span className="text-danger">{ sistema.formataReal( venda.debito ) }</span>
 								</Col>
 							</Row>
-							<Row className="mb-2">
-								<Col>
+							<Row className="mb-2">	
+								<Col>									
 									<span className="font-weight-bold">Forma de pagamento: </span>
-									<span className="text-success">{ venda.formaPag }</span>
+									<span className="text-success">{ venda.formaPag }</span>																
 								</Col>
-							</Row>								
+							</Row>							
 						</Card>
 					</TabPanel>		
 					<TabPanel>							
@@ -120,7 +130,52 @@ export default class VendaDetalhes extends React.Component {
 								</tbody>
 							</Table>
 						</div>
-					</TabPanel>										
+					</TabPanel>		
+					<TabPanel>
+						{ venda.parcelas.length === 0 && (
+							<MensagemPainel cor="info" msg="Nenhuma parcela registrada para esta venda!" />
+						) }
+						
+						<div className="tbl-pnl-pequeno">
+							<Table striped bordered hover>
+								<thead>
+									<tr>
+										<th>Valor</th>
+										<th>Débito</th>
+										<th>Data de pagamento</th>
+										<th>Data de vencimento</th>
+									</tr>
+								</thead>
+								<tbody>
+									{venda.parcelas.map( (item, index) => {							
+										return (
+											<tr key={index}>
+												<td>{ sistema.formataReal( item.valor ) }</td>
+												<td>{ sistema.formataReal( item.debito ) }</td>
+												<td>{ item.dataPagamento }</td>
+												<td>{ item.dataVencimento }</td>												
+											</tr>
+										)
+									} ) }
+								</tbody>
+							</Table>
+						</div>
+						
+						<br />
+						
+						<Form.Group style={{fontSize: '1.6em'}}>
+							<Form.Label>Total: &nbsp;<span className="text-primary">{ sistema.formataReal( total ) }</span></Form.Label>
+							<br />
+							<Row>
+								<Col>
+									<Form.Label>Valor pago: &nbsp;<span className="text-primary">{ sistema.formataReal( valorPago ) }</span></Form.Label>
+								</Col>
+								<Col>
+									<Form.Label>Débito: &nbsp;<span className="text-danger">{ sistema.formataReal( debito ) }</span></Form.Label>
+								</Col>
+							</Row>
+						</Form.Group>
+					</TabPanel>								
 				</Tabs>
 					
 				<br />

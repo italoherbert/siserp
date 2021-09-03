@@ -18,8 +18,7 @@ public class ErroResponse {
 	public final static int USUARIO_NAO_ENCONTRADO = 100;
 	public final static int FUNCIONARIO_NAO_ENCONTRADO = 101;
 	public final static int FORNECEDOR_NAO_ENCONTRADO = 102;	
-	public final static int CATEGORIA_NAO_ENCONTRADA = 103;
-	public final static int SUBCATEGORIA_NAO_ENCONTRADA = 104;
+	public final static int CATEGORIA_MAP_NAO_ENCONTRADA = 103;
 	public final static int PRODUTO_NAO_ENCONTRADO = 105;
 	public final static int COMPRA_NAO_ENCONTRADA = 106;
 	public final static int CLIENTE_NAO_ENCONTRADO = 107;
@@ -36,8 +35,7 @@ public class ErroResponse {
 	public final static int PESSOA_JA_EXISTE = 200;
 	public final static int USUARIO_JA_EXISTE = 201;
 	public final static int FORNECEDOR_JA_EXISTE = 202;
-	public final static int CATEGORIA_JA_EXISTE = 203;
-	public final static int SUBCATEGORIA_JA_EXISTE = 204;
+	public final static int CATEGORIA_MAP_JA_EXISTE = 203;
 	public final static int PRODUTO_JA_EXISTE = 205;
 	public final static int USUARIO_GRUPO_JA_EXISTE = 206;
 	public final static int RECURSO_JA_EXISTE = 207;
@@ -142,11 +140,8 @@ public class ErroResponse {
 			case FORNECEDOR_NAO_ENCONTRADO:
 				mensagem = "Fornecedor não encontrado.";
 				break;
-			case CATEGORIA_NAO_ENCONTRADA:
-				mensagem = "Categoria não encontrada.";
-				break;
-			case SUBCATEGORIA_NAO_ENCONTRADA:
-				mensagem = "Subcategoria não encontrada.";
+			case CATEGORIA_MAP_NAO_ENCONTRADA:
+				mensagem = "Categoria e subcategoria não encontrada.";
 				break;
 			case PRODUTO_NAO_ENCONTRADO:
 				mensagem = "Produto não encontrado.";
@@ -188,12 +183,9 @@ public class ErroResponse {
 			case FORNECEDOR_JA_EXISTE:
 				mensagem = "Já existe cadastrado outro fornecedor com o nome de empresa informado.";
 				break;
-			case CATEGORIA_JA_EXISTE:
-				mensagem = "Já existe cadastrada outra categoria com a descrição informada.";
-				break;			
-			case SUBCATEGORIA_JA_EXISTE:
-				mensagem = "Já existe cadastrada outra subcategoria com a descrição informada.";
-				break;
+			case CATEGORIA_MAP_JA_EXISTE:
+				mensagem = "Já existe um mapeamento para a categoria e subcategoria informadas.";
+				break;	
 			case PRODUTO_JA_EXISTE:
 				mensagem = "Já existe um produto cadastrado com descrição ou código de barras informado.";
 				break;

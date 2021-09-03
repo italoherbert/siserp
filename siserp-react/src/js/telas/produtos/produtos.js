@@ -9,7 +9,7 @@ import sistema from './../../logica/sistema';
 import ProdutoDetalhes from './produto-detalhes';
 import ProdutoForm from './produto-form';
 
-import Categorias from './../categorias/categorias';
+import CategoriaMaps from './../categoriamaps/categoria-maps';
 
 export default class Produtos extends React.Component {
 	
@@ -110,10 +110,10 @@ export default class Produtos extends React.Component {
 			<ProdutoForm op="cadastrar" titulo="Cadastre um novo produto" />, sistema.paginaElemento() );
 	}
 	
-	paraCategorias( e ) {
+	paraCategoriaMaps( e ) {
 		e.preventDefault();
 		
-		ReactDOM.render( <Categorias />, sistema.paginaElemento() );
+		ReactDOM.render( <CategoriaMaps />, sistema.paginaElemento() );
 	}
 		
 	render() {
@@ -137,7 +137,7 @@ export default class Produtos extends React.Component {
 				<Row>
 					<Col>
 						<Form>
-							<Button  className="float-start" variant="primary" onClick={ (e) => this.paraCategorias( e ) } >Categorias</Button>
+							<Button  className="float-start" variant="primary" onClick={ (e) => this.paraCategoriaMaps( e ) } >Categorias</Button>
 							<Button  className="float-end" variant="primary" onClick={ (e) => this.paraCadastroForm( e ) } >Cadastre um novo produto</Button>
 						</Form>
 					</Col>

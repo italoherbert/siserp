@@ -1,7 +1,5 @@
 package italo.siserp.service.request;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,10 +7,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class SaveCategoriaRequest {
+public class EfetuarRecebimentoRequest {
+
+	private String clienteId;
 	
-	private String descricao;
+	private String valorPago;
 	
-	private List<SaveSubCategoriaRequest> subcategorias;
+	private String formaPag;
 	
 }

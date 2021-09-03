@@ -1,9 +1,9 @@
 import React from 'react';
 import { Row, Col, Card, Table, Form, Button } from 'react-bootstrap';
 
-import sistema from './../../logica/sistema';
-import MensagemPainel from './../../componente/mensagem-painel';
-import InputDropdown from './../../componente/input-dropdown';
+import sistema from './../../../logica/sistema';
+import MensagemPainel from './../../../componente/mensagem-painel';
+import InputDropdown from './../../../componente/input-dropdown';
 
 export default class AddCompraProdutoCategorias extends React.Component {
 	
@@ -39,32 +39,19 @@ export default class AddCompraProdutoCategorias extends React.Component {
 			return;
 		}
 					
-		let categoria = null;
-		for( let i = 0; categoria === null && i < this.props.categorias.length; i++ ) {
-			let cat = this.props.categorias[ i ];
-			if( cat.descricao.toLowerCase() === catdesc.toLowerCase() ) 
-				categoria = cat;
-		}
-		
 		let jaInserida = false;
-		if ( categoria === null ) {
-			categoria = {
-				descricao : catdesc,
-				subcategorias : []
-			}
-			this.props.categorias.push( categoria );
-		} else {
-			for( let i = 0; jaInserida === false && i < categoria.subcategorias.length; i++ ) {
-				let subcat = categoria.subcategorias[ i ];
-				if ( subcat.descricao.toLowerCase() === subcatdesc.toLowerCase() )
-					jaInserida = true;				
-			}
+		for( let i = 0; jaInserida === false && i < this.props.categoriaMaps.length; i++ ) {
+			let map = this.props.categoriaMaps[ i ];
+			if( map.categoria.toLowerCase() === catdesc.toLowerCase() && map.subcategoria.toLowerCase() === subcatdesc ) 
+				jaInserida = true;
 		}
-		
+				
 		if ( jaInserida === false ) {
-			categoria.subcategorias.push( {
-				descricao : subcatdesc
+			this.props.categoriaMaps.push( {
+				categoria : this.categoria.current.value,
+				subcategoria : this.subcategoria.current.value
 			} );
+			
 			
 			this.categoria.current.value = '';
 			this.subcategoria.current.value = '';
@@ -77,23 +64,14 @@ export default class AddCompraProdutoCategorias extends React.Component {
 	
 	removeCategoria( item, cat, subcat ) {
 		item.preventDefault();
-		
+						
 		let fim = false;
-		let size = this.props.categorias.length;
+		let size = this.props.categoriaMaps.length;
+		
 		for( let i = 0; fim === false && i < size; i++ ) {
-			let catObj = this.props.categorias[ i ];
-			if ( catObj.descricao.toLowerCase() === cat.toLowerCase() ) {
-				let size2 = catObj.subcategorias.length;
-				for( let j = 0; fim === false && j < size2; j++ ) {
-					let subcatObj = catObj.subcategorias[ j ];
-					if ( subcatObj.descricao.toLowerCase() === subcat.toLowerCase() ) {
-						catObj.subcategorias.splice( j, 1 );
-						fim = true;
-					}
-					
-					if ( catObj.subcategorias.length <= 0 )
-						this.props.categorias.splice( i, 1 );
-				}
+			let catObj = this.props.categoriaMaps[ i ];
+			if ( catObj.categoria.toLowerCase() === cat.toLowerCase() && catObj.subcategoria.toLowerCase() === subcat.toLowerCase() ) {									
+				this.props.categoriaMaps.splice( i, 1 );	
 				fim = true;
 			}
 		}
@@ -101,11 +79,13 @@ export default class AddCompraProdutoCategorias extends React.Component {
 	}
 			
 	categoriaOnChange( item ) {
+		let cat = item;
+		if ( cat.trim().length === 0 )
+			cat = "*";
+		
 		this.setState( { categoria : item } );	
 		
-		sistema.wsPost( '/api/categoria/filtra/limit/5', {
-			"descricaoIni" : item
-		}, (resposta) => {
+		sistema.wsGet( '/api/categoriamap/filtra/categoria/limit/'+cat+'/5', (resposta) => {
 			resposta.json().then( (dados) => {
 				this.setState( { categoriasLista : [] } );
 				
@@ -117,17 +97,20 @@ export default class AddCompraProdutoCategorias extends React.Component {
 		}, this );				
 	}
 	
-	subcategoriaOnChange( item ) {								
-		if ( this.state.categoria.length === 0 ) {
-			this.setState( { erroMsg : 'Nenhuma categoria selecionada ou informada.' } );
-			return;
-		}
+	subcategoriaOnChange( item ) {	
+		let cat = this.state.categoria;
+		if ( cat.trim().length === 0 )
+			cat = "!";
 		
+		let subcat = item;
+		if ( subcat.trim().length === 0 )
+			subcat = "*";
+				
 		this.setState( { subcategoria : item } );
 				
-		sistema.wsPost(	'/api/subcategoria/filtra/limit/'+this.state.categoria+'/5', {
-			"descricaoIni" : item
-		}, (resposta) => {
+		let cat = this.state.categoria;
+
+		sistema.wsGet( '/api/categoriamap/filtra/subcategoria/limit/'+this.state.categoria+'/'+item,+'/5', (resposta) => {
 			resposta.json().then( (dados) => {
 				this.setState( { subcategoriasLista : [] } );
 				
@@ -149,23 +132,19 @@ export default class AddCompraProdutoCategorias extends React.Component {
 					<Table striped bordered hover>
 						<thead>
 							<tr>
-								<th>Catetoria</th>
+								<th>Categoria</th>
 								<th>Subcategoria</th>										
 								<th>Remover</th>
 							</tr>
 						</thead>
 						<tbody>
-							{this.props.categorias.map( ( cat, index ) => {
-								return (
-									cat.subcategorias.map( ( subcat, index2 ) => {														
-										return (
-											<tr key={index * cat.subcategorias.length + index2}>
-												<td>{cat.descricao}</td>
-												<td>{subcat.descricao}</td>
-												<td><button className="btn btn-link p-0" onClick={(item) => this.removeCategoria( item, cat.descricao, subcat.descricao )}>remover</button></td>
-											</tr>
-										)
-									} )
+							{this.props.categoriaMaps.map( ( map, index ) => {
+								return (									
+									<tr key={index}>
+										<td>{map.categoria}</td>
+										<td>{map.subcategoria}</td>
+										<td><button className="btn btn-link p-0" onClick={(item) => this.removeCategoria( item, map.categoria, map.subcategoria )}>remover</button></td>
+									</tr>										
 								)
 							} ) }	
 						</tbody>							

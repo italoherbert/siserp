@@ -10,18 +10,17 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import italo.siserp.builder.CategoriaBuilder;
+import italo.siserp.builder.CategoriaMapBuilder;
 import italo.siserp.builder.CompraBuilder;
 import italo.siserp.builder.CompraParcelaBuilder;
+import italo.siserp.builder.FiltroCompraBuilder;
 import italo.siserp.builder.FornecedorBuilder;
 import italo.siserp.builder.ItemCompraBuilder;
 import italo.siserp.builder.ProdutoBuilder;
-import italo.siserp.builder.SubCategoriaBuilder;
-import italo.siserp.builder.FiltroCompraBuilder;
 import italo.siserp.exception.CompraNaoEncontradaException;
 import italo.siserp.exception.DataCompraInvalidaException;
-import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DataPagamentoInvalidaException;
 import italo.siserp.exception.DataVencimentoInvalidaException;
@@ -29,26 +28,22 @@ import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
-import italo.siserp.model.Categoria;
 import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Compra;
 import italo.siserp.model.CompraParcela;
 import italo.siserp.model.Fornecedor;
 import italo.siserp.model.ItemCompra;
 import italo.siserp.model.Produto;
-import italo.siserp.model.SubCategoria;
 import italo.siserp.repository.CategoriaMapRepository;
-import italo.siserp.repository.CategoriaRepository;
 import italo.siserp.repository.CompraRepository;
 import italo.siserp.repository.FornecedorRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.service.request.BuscaComprasRequest;
-import italo.siserp.service.request.SaveCategoriaRequest;
+import italo.siserp.service.request.SaveCategoriaMapRequest;
 import italo.siserp.service.request.SaveCompraParcelaRequest;
 import italo.siserp.service.request.SaveCompraRequest;
 import italo.siserp.service.request.SaveItemCompraRequest;
 import italo.siserp.service.request.SaveProdutoRequest;
-import italo.siserp.service.request.SaveSubCategoriaRequest;
 import italo.siserp.service.response.CompraResponse;
 import italo.siserp.service.response.FiltroCompraResponse;
 import italo.siserp.util.DataUtil;
@@ -64,10 +59,7 @@ public class CompraService {
 	
 	@Autowired
 	private FornecedorRepository fornecedorRepository;	
-	
-	@Autowired
-	private CategoriaRepository categoriaRepository;
-	
+		
 	@Autowired
 	private CategoriaMapRepository categoriaMapRepository;
 			
@@ -90,11 +82,8 @@ public class CompraService {
 	private ItemCompraBuilder itemCompraBuilder;
 	
 	@Autowired
-	private CategoriaBuilder categoriaBuilder;
-		
-	@Autowired
-	private SubCategoriaBuilder subcategoriaBuilder;		
-	
+	private CategoriaMapBuilder categoriaMapBuilder;
+			
 	@Autowired
 	private DataUtil dataUtil;
 		
@@ -177,52 +166,28 @@ public class CompraService {
 	}							
 		
 	private void carregaCategorias( Produto p, SaveProdutoRequest request ) {		
-		if ( request.getCategorias() == null )
+		if ( request.getCategoriaMaps() == null )
 			return;					
 		
 		List<CategoriaMap> categoriasMap = new ArrayList<>();
-		for( SaveCategoriaRequest catreq : request.getCategorias() ) {
-			Optional<Categoria> cop = categoriaRepository.buscaPorDescricao( catreq.getDescricao() );
+		for( SaveCategoriaMapRequest mapreq : request.getCategoriaMaps() ) {
+			Optional<CategoriaMap> mapOp = categoriaMapRepository.get( mapreq.getCategoria(), mapreq.getSubcategoria() );
 			
-			List<SubCategoria> subcategorias = null;
-			int scsize = 0;
-
-			Categoria c;
-			if ( cop.isPresent() ) {
-				c = cop.get();
-
-				subcategorias = c.getSubcategorias();
-				scsize = subcategorias.size();
+			CategoriaMap map;
+			
+			if ( mapOp.isPresent() ) {
+				map = mapOp.get();				
 			} else {
-				c = categoriaBuilder.novoCategoria();
+				map = categoriaMapBuilder.novoCategoriaMap();
 			}
 			
-			categoriaBuilder.carregaCategoria( c, catreq );
+			categoriaMapBuilder.carregaCategoriaMap( map, mapreq );
 			
-			for( SaveSubCategoriaRequest subcatreq : catreq.getSubcategorias() ) {				
-				SubCategoria sc = null;
-				if ( subcategorias != null ) {
-					for( int i = 0; sc == null && i < scsize; i++ ) {
-						SubCategoria sc2 = subcategorias.get( i );
-						if( sc2.getDescricao().equalsIgnoreCase( subcatreq.getDescricao() ) )
-							sc = sc2;
-					}										
-				}
+			map.setProduto( p ); 
+			map.setCategoria( mapreq.getCategoria() );
+			map.setSubcategoria( mapreq.getSubcategoria() );
 				
-				if ( sc == null )
-					sc = subcategoriaBuilder.novoSubCategoria();				
-				
-				subcategoriaBuilder.carregaSubCategoria( sc, subcatreq );
-
-				CategoriaMap map = new CategoriaMap();
-				map.setProduto( p ); 
-				map.setCategoria( c );
-				map.setSubcategoria( sc );
-			
-				sc.setCategoria( c ); 
-			
-				categoriasMap.add( map );																			
-			}
+			categoriasMap.add( map );																						
 		}						
 		
 		p.setCategoriaMaps( categoriasMap );

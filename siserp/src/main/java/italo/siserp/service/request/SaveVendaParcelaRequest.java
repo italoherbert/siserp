@@ -7,8 +7,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ValorRecebidoRequest {
+public class SaveVendaParcelaRequest {
 
 	private String valor;
+	
+	private String dataPagamento;
+	
+	private String dataVencimento;
 	
 }

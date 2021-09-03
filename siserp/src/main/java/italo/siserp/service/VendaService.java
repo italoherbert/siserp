@@ -14,18 +14,22 @@ import org.springframework.stereotype.Service;
 import italo.siserp.builder.ItemVendaBuilder;
 import italo.siserp.builder.LancamentoBuilder;
 import italo.siserp.builder.VendaBuilder;
+import italo.siserp.builder.VendaParcelaBuilder;
 import italo.siserp.dao.CaixaDAO;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.ClienteNaoEncontradoException;
-import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataFimInvalidaException;
+import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
+import italo.siserp.exception.DataPagamentoInvalidaException;
+import italo.siserp.exception.DataVencimentoInvalidaException;
 import italo.siserp.exception.DataVendaInvalidaException;
 import italo.siserp.exception.DebitoInvalidoException;
 import italo.siserp.exception.DescontoInvalidoException;
 import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.FormaPagInvalidaException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
+import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
@@ -33,7 +37,6 @@ import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
-import italo.siserp.exception.ValorRecebidoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Cliente;
@@ -43,14 +46,15 @@ import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Produto;
 import italo.siserp.model.Venda;
+import italo.siserp.model.VendaParcela;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
 import italo.siserp.service.request.BuscaVendasRequest;
 import italo.siserp.service.request.SaveItemVendaRequest;
+import italo.siserp.service.request.SaveVendaParcelaRequest;
 import italo.siserp.service.request.SaveVendaRequest;
-import italo.siserp.service.request.ValorRecebidoRequest;
 import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.FormaPagEnumConversor;
@@ -82,6 +86,9 @@ public class VendaService {
 	
 	@Autowired
 	private LancamentoBuilder lancamentoBuilder;
+	
+	@Autowired
+	private VendaParcelaBuilder vendaParcelaBuilder;
 			
 	@Autowired
 	private DataUtil dataUtil;
@@ -107,7 +114,10 @@ public class VendaService {
 				ClienteNaoEncontradoException,
 				FormaPagInvalidaException, 
 				UsuarioNaoEncontradoException, 
-				FuncionarioNaoEncontradoException {				
+				FuncionarioNaoEncontradoException, 
+				ParcelaValorInvalidoException, 
+				DataPagamentoInvalidaException, 
+				DataVencimentoInvalidaException {				
 								
 		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
 		
@@ -153,8 +163,8 @@ public class VendaService {
 			throw new ValorPagoInvalidoException();
 		}						
 
-		double total = subtotal * (1.0d - desconto);				
-		
+		double total = subtotal * (1.0d - (desconto/100.0));		
+				
 		FormaPag formaPag = enumConversor.getFormaPag( request.getFormaPag() );
 		if ( formaPag == FormaPag.ESPECIE ) {
 			Lancamento lanc = lancamentoBuilder.novoINILancamento( caixa );
@@ -162,8 +172,6 @@ public class VendaService {
 			lanc.setObs( Lancamento.LANCAMENTO_VENDA_EFETUADA );
 			lanc.setValor( total ); 
 			lancamentoRepository.save( lanc );			
-		} else if ( formaPag == FormaPag.DEBITO ) {
-			v.setDebito( total ); 
 		}
 		
 		if ( request.getIncluirCliente().equals( "true" ) ) {
@@ -174,6 +182,16 @@ public class VendaService {
 		
 			v.setCliente( cop.get() );			
 		}
+		
+		List<VendaParcela> parcelas = new ArrayList<>();
+		for( SaveVendaParcelaRequest pReq : request.getParcelas() ) {
+			VendaParcela parcela = new VendaParcela();
+			vendaParcelaBuilder.carregaVendaParcela( parcela, pReq );
+			
+			parcela.setVenda( v );			
+			parcelas.add( parcela );
+		}
+		v.setParcelas( parcelas );
 		
 		v.setItensVenda( itensVenda );
 		v.setCaixa( caixa );
@@ -202,7 +220,6 @@ public class VendaService {
 				throws DataIniInvalidaException,
 					DataFimInvalidaException,
 					DataIniAposDataFimException {
-		boolean incluirCliente = request.getIncluirCliente().equals( "true" );				
 		
 		Date dataIni, dataFim;
 		try {
@@ -223,16 +240,9 @@ public class VendaService {
 		if ( dataIni.after( dataFim ) )
 			throw new DataIniAposDataFimException();
 		
-		boolean incluirPagas = request.getIncluirPagas().equals( "true" );
 		
-		List<Venda> vendas;
-		if ( incluirCliente ) {
-			String nomeIni = (request.getClienteNomeIni().equals( "*" ) ? "" : request.getClienteNomeIni() );
-			vendas = vendaRepository.filtra( dataIni, dataFim, nomeIni+"%", incluirPagas );
-		} else {
-			vendas = vendaRepository.filtraSemCliente( dataIni, dataFim, incluirPagas );
-		}
-		
+		List<Venda> vendas = vendaRepository.filtra( dataIni, dataFim );
+				
 		List<VendaResponse> responses = new ArrayList<>();
 		
 		for( Venda v : vendas ) {			
@@ -280,7 +290,6 @@ public class VendaService {
 					
 			double total = subtotal * ( 1.0d - v.getDesconto() );
 									
-			System.out.println( "TOTAL= "+total+"  "+subtotal+"  "+v.getDesconto() );
 			Caixa caixa = v.getCaixa();			
 			
 			Lancamento lanc = lancamentoBuilder.novoINILancamento( caixa );
@@ -298,40 +307,6 @@ public class VendaService {
 		}
 						
 		vendaRepository.delete( v ); 
-	}
-	
-	@Transactional
-	public void efetuaRecebimento( Long clienteId, ValorRecebidoRequest request ) 
-			throws ClienteNaoEncontradoException, ValorRecebidoInvalidoException {
-		
-		Cliente c = clienteRepository.findById( clienteId ).orElseThrow( ClienteNaoEncontradoException::new );		
-		
-		double valor;
-		try {
-			valor = numeroUtil.stringParaDouble( request.getValor() );
-		} catch (DoubleInvalidoException e) {
-			throw new ValorRecebidoInvalidoException();
-		} 
-	
-		double debito = valor;
-		
-		List<Venda> vendas = c.getVendas();
-		int size = vendas.size();
-		for( int i = 0; debito > 0 && i < size; i++ ) {
-			Venda v = vendas.get( i );
-			
-			if( v.getDebito() <= 0 )
-				continue;
-			
-			if ( valor > v.getDebito() ) {
-				debito -= v.getDebito();
-				v.setDebito( 0 );
-			} else {
-				v.setDebito( v.getDebito() - debito );
-				debito = 0;
-			}
-			vendaRepository.save( v );
-		}		
-	}
+	}		
 			
 }

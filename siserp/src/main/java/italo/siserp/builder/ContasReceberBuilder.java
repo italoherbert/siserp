@@ -6,43 +6,41 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import italo.siserp.model.Venda;
+import italo.siserp.model.VendaParcela;
+import italo.siserp.service.response.ContaReceberResponse;
 import italo.siserp.service.response.ContasReceberResponse;
-import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component
 public class ContasReceberBuilder {
 
 	@Autowired
-	private VendaBuilder vendaBuilder;
+	private ContaReceberBuilder contaReceberBuilder;
 	
 	@Autowired
 	private NumeroUtil numeroUtil;
 	
 	public void carregaContasReceberResponse( 
 			ContasReceberResponse response, 
-			List<Venda> vendas, double totalCompleto, boolean incluirPagas ) {
+			List<VendaParcela> parcelas, double totalCompleto, boolean incluirPagas ) {
 		
 		double totalPeriodo = 0;
 		
-		List<VendaResponse> lista = new ArrayList<>();
-		for( Venda v : vendas ) {
-			if ( v.getCliente() == null )
+		List<ContaReceberResponse> lista = new ArrayList<>();
+		for( VendaParcela p : parcelas ) {						
+			if ( !incluirPagas && p.getDebito()==0 )
 				continue;
 			
-			if ( !incluirPagas && v.getDebito() <= 0 )
-				continue;
-			
-			VendaResponse resp = vendaBuilder.novoVendaResponse();
-			vendaBuilder.carregaVendaResponse( resp, v );
-			
+			ContaReceberResponse resp = contaReceberBuilder.novoContaReceberResponse();
+			contaReceberBuilder.carregaContaReceberResponse( resp, p );
+						
 			lista.add( resp );
 			
-			totalPeriodo += v.getDebito();
+			if ( p.getDebito()>0 )
+				totalPeriodo += p.getValor();
 		}
 		
-		response.setVendas( lista );
+		response.setContas( lista );
 		response.setTotalPeriodo( numeroUtil.doubleParaString( totalPeriodo ) ); 
 		response.setTotalCompleto( numeroUtil.doubleParaString( totalCompleto ) );		
 	}

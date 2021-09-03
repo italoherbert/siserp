@@ -6,9 +6,9 @@ import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
 
-import AddCompraProduto from './add-compra-produto';
-import SetCompraFornecedor from './set-compra-fornecedor';
-import GeraCompraParcelas from './gera-compra-parcelas';
+import AddCompraProduto from './registro/add-compra-produto';
+import SetCompraFornecedor from './registro/set-compra-fornecedor';
+import GeraCompraParcelas from './registro/gera-compra-parcelas';
 
 import Compras from './compras';
 
@@ -65,7 +65,7 @@ export default class CompraRegistro extends React.Component {
 					precoUnitVenda : p.precoUnitVenda,
 					unidade : p.unidade,
 					
-					categorias : p.categorias,
+					categoriaMaps : p.categoriaMaps,
 					quantidade : p.paraAddQuantidade
 				}
 			} );
@@ -139,16 +139,12 @@ export default class CompraRegistro extends React.Component {
 												<td>{ sistema.formataFloat( p.paraAddQuantidade ) } {p.unidade}</td>
 												<td>
 													<select>
-														{p.categorias.map( (cat, index2) => {
+														{p.categoriaMaps.map( (map, index2) => {
 															return (
-																cat.subcategorias.map( ( subcat, index3 ) => {
-																	return (
-																		<option key={produtos.length + index2 * cat.subcategorias.length + index3}>{subcat.descricao}</option>
-																	)
-																} )
+																<option key={produtos.length + index2}>{map.categoria} {map.subcategoria}</option>	
 															)
 														} ) }
-													</select>																																									
+													</select>					
 												</td>
 												<td><button className="btn btn-link p-0" onClick={(e) => this.removeProduto( e, index )}>remover</button></td>
 											</tr>

@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 public class CategoriaMapResponse {
 
+	private Long id;
+	
 	private String categoria;
 	
 	private String subcategoria;

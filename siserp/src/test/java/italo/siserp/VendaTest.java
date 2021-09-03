@@ -26,6 +26,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import italo.siserp.dao.CaixaDAO;
+import italo.siserp.dao.bean.CaixaBalancoDAOTO;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Funcionario;
 import italo.siserp.model.Produto;
@@ -35,7 +37,6 @@ import italo.siserp.repository.FuncionarioRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
-import italo.siserp.service.CaixaService;
 import italo.siserp.service.request.AbreCaixaRequest;
 import italo.siserp.service.request.SaveEnderecoRequest;
 import italo.siserp.service.request.SaveFuncionarioRequest;
@@ -46,13 +47,18 @@ import italo.siserp.service.request.SaveProdutoRequest;
 import italo.siserp.service.request.SaveUsuarioGrupoRequest;
 import italo.siserp.service.request.SaveUsuarioRequest;
 import italo.siserp.service.request.SaveVendaRequest;
-import italo.siserp.service.response.CaixaBalancoResponse;
 import italo.siserp.util.DataUtil;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@WithMockUser(username = "admin", authorities = "ADMIN")
+@WithMockUser(username = "admin", authorities = {
+	"funcionarioWRITE", "funcionarioREAD", "funcionarioDELETE",
+	"caixaWRITE", "caixaREAD", "caixaDELETE",
+	"lancamentoWRITE", "lancamentoREAD", "lancamentoDELETE",
+	"produtoWRITE", "produtoREAD", "produtoDELETE",
+	"vendaWRITE", "vendaREAD", "vendaDELETE"
+})
 public class VendaTest {
 
 	@Autowired
@@ -74,7 +80,7 @@ public class VendaTest {
 	private VendaRepository vendaRepository;
 	
 	@Autowired
-	private CaixaService caixaService;
+	private CaixaDAO caixaDAO;
 	
 	@Autowired
 	private DataUtil dataUtil;
@@ -135,8 +141,9 @@ public class VendaTest {
 			
 			mockMvc.perform( abreCaixaRB ).andExpect( status().isOk() );
 								
-			CaixaBalancoResponse balanco = caixaService.geraCaixaBalancoHoje( uid );
-			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAberturaCaixa, 0.01 );
+			Caixa caixa = caixaDAO.buscaHojeCaixaBean( uid );
+			CaixaBalancoDAOTO balanco = caixaDAO.geraCaixaBalanco( caixa );
+			assertEquals( balanco.getSaldo(), valorAberturaCaixa, 0.1 );
 			
 			SaveLancamentoRequest lancamentoRequest1 = new SaveLancamentoRequest();
 			lancamentoRequest1.setTipo( "CREDITO" );
@@ -150,17 +157,17 @@ public class VendaTest {
 			lancamentoRequest3.setTipo( "CREDITO" );
 			lancamentoRequest3.setValor( ""+valorL3 );
 			
-			RequestBuilder regLanc1RB = MockMvcRequestBuilders.post( "/api/caixa/lancamento/efetua/{usuarioId}", uid )
+			RequestBuilder regLanc1RB = MockMvcRequestBuilders.post( "/api/lancamento/novo/hoje/{usuarioId}", uid )
 					.content( toJson( lancamentoRequest1 ) ) 
 					.contentType(MediaType.APPLICATION_JSON )
 					.accept( MediaType.APPLICATION_JSON );
 			
-			RequestBuilder regLanc2RB = MockMvcRequestBuilders.post( "/api/caixa/lancamento/efetua/{usuarioId}", uid )
+			RequestBuilder regLanc2RB = MockMvcRequestBuilders.post( "/api/lancamento/novo/hoje/{usuarioId}", uid )
 					.content( toJson( lancamentoRequest2 ) ) 
 					.contentType(MediaType.APPLICATION_JSON )
 					.accept( MediaType.APPLICATION_JSON );
 			
-			RequestBuilder regLanc3RB = MockMvcRequestBuilders.post( "/api/caixa/lancamento/efetua/{usuarioId}", uid )
+			RequestBuilder regLanc3RB = MockMvcRequestBuilders.post( "/api/lancamento/novo/hoje/{usuarioId}", uid )
 					.content( toJson( lancamentoRequest3 ) ) 
 					.contentType(MediaType.APPLICATION_JSON )
 					.accept( MediaType.APPLICATION_JSON );
@@ -174,8 +181,9 @@ public class VendaTest {
 			int quantLancamentos2 = lancamentoRepository.findAll().size();
 			assertEquals( quantLancamentos2, quantLancamentos + 3 );
 			
-			balanco = caixaService.geraCaixaBalancoHoje( uid );
-			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposLancamentos, 0.01 );
+			caixa = caixaDAO.buscaHojeCaixaBean( uid );
+			balanco = caixaDAO.geraCaixaBalanco( caixa );
+			assertEquals( balanco.getSaldo(), valorAposLancamentos, 0.1 );
 			
 			SaveProdutoRequest p1 = new SaveProdutoRequest();
 			p1.setCodigoBarras( "_000" );
@@ -229,8 +237,10 @@ public class VendaTest {
 			
 			mockMvc.perform( regVendaRB ).andExpect( status().isOk() );
 						
-			balanco = caixaService.geraCaixaBalancoHoje( uid );
-			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposVendaRegistrada );
+			caixa = caixaDAO.buscaHojeCaixaBean( uid );
+			balanco = caixaDAO.geraCaixaBalanco( caixa );
+			
+			assertEquals( balanco.getSaldo(), valorAposVendaRegistrada );
 					
 			List<Produto> prod1List = produtoRepository.filtraPorDescIni( "P1" );
 			List<Produto> prod2List = produtoRepository.filtraPorDescIni( "P2" );
@@ -266,11 +276,13 @@ public class VendaTest {
 									
 			mockMvc.perform( delVenda ).andExpect( status().isOk() );
 			
-			balanco = caixaService.geraCaixaBalancoHoje( uid );
-			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposVendaRegistrada, 0.01 );
+			caixa = caixaDAO.buscaHojeCaixaBean( uid );
+			balanco = caixaDAO.geraCaixaBalanco( caixa );			
+			assertEquals( balanco.getSaldo(), valorAposVendaRegistrada, 0.1 );
 			
-			balanco = caixaService.geraCaixaBalancoHoje( uid );
-			assertEquals( Double.parseDouble( balanco.getSaldo() ), valorAposLancamentos, 0.01 );
+			caixa = caixaDAO.buscaHojeCaixaBean( uid );
+			balanco = caixaDAO.geraCaixaBalanco( caixa );			
+			assertEquals( balanco.getSaldo(), valorAposLancamentos, 0.1 );
 						
 			prod1 = produtoRepository.filtraPorDescIni( "P1" ).get( 0 );
 			prod2 = produtoRepository.filtraPorDescIni( "P2" ).get( 0 ); 

@@ -7,7 +7,6 @@ import SedeDetalhes from './telas/sede/sede-detalhes';
 import Funcionarios from './telas/funcionarios/funcionarios';
 import Fornecedores from './telas/fornecedores/fornecedores';
 import Produtos from './telas/produtos/produtos';
-import Categorias from './telas/categorias/categorias';
 import Compras from './telas/compras/compras';
 import Clientes from './telas/clientes/clientes';
 import Vendas from './telas/vendas/vendas';
@@ -78,11 +77,7 @@ export default class NavegBar extends React.Component {
 	paraTelaProdutos() {
 		ReactDOM.render( <Produtos />, sistema.paginaElemento() );
 	}
-	
-	paraTelaCategorias() {
-		ReactDOM.render( <Categorias />, sistema.paginaElemento() );
-	}
-	
+		
 	paraTelaCompras() {
 		ReactDOM.render( <Compras />, sistema.paginaElemento() );
 	}
@@ -135,7 +130,7 @@ export default class NavegBar extends React.Component {
 								</Row>
 							</Nav.Link>
 						) }
-						{ ( sistema.usuario.grupo.nome === 'SUPERVISOR' || sistema.usuario.grupo.nome === 'GERENTE' ) && (
+						{ ( sistema.usuario.grupo.nome !== 'ADMIN' ) && (
 							<div className="m-2">
 								<Row>
 									<Col className="text-center">
@@ -152,11 +147,9 @@ export default class NavegBar extends React.Component {
 												Contas a pagar
 											</NavDropdown.Item>
 										) }
-										{ (  sistema.usuario.grupo.nome === 'GERENTE' ) && (
-											<NavDropdown.Item onClick={ () => this.paraTelaContasReceber() }>
-												Contas a receber
-											</NavDropdown.Item>
-										) }
+										<NavDropdown.Item onClick={ () => this.paraTelaContasReceber() }>
+											Contas a receber
+										</NavDropdown.Item>
 									</NavDropdown>						
 								</Row>
 							</div>

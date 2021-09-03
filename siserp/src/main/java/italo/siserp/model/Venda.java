@@ -38,9 +38,6 @@ public class Venda {
 
 	@Column
 	private double desconto;
-
-	@Column
-	private double debito;
 	
 	@Column
 	@Temporal(TemporalType.TIMESTAMP)
@@ -60,5 +57,8 @@ public class Venda {
 	
 	@OneToMany(mappedBy="venda", cascade=CascadeType.ALL)
 	private List<ItemVenda> itensVenda;
+	
+	@OneToMany(mappedBy="venda", cascade=CascadeType.ALL) 
+	private List<VendaParcela> parcelas;
 	
 }

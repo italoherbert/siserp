@@ -10,7 +10,7 @@ import sistema from './../../logica/sistema';
 import VendaRegistro from './venda-registro';
 import VendaDetalhes from './venda-detalhes';
 
-import VendasPagamento from './vendas-pagamento';
+import VendasPagamento from '../contas/vendas-pagamento';
 
 export default class Vendas extends React.Component {
 	
@@ -92,11 +92,7 @@ export default class Vendas extends React.Component {
 			this.setState( { infoMsg : 'Venda deletada com êxito.' } );
 		}, this );
 	}
-	
-	paraTelaPagamentos( e ) {		
-		ReactDOM.render( <VendasPagamento />, sistema.paginaElemento() );
-	}
-	
+			
 	paraRegistroForm( e ) {
 		e.preventDefault();
 		
@@ -127,14 +123,15 @@ export default class Vendas extends React.Component {
 					</Modal.Footer>
 				</Modal>
 				
-				<Row>
-					<Col>
-						<Form>
-							<Button variant="primary" className="float-start" onClick={ (e) => this.paraTelaPagamentos(e) }>Efetue um pagamento</Button>							
-							<Button variant="primary" className="float-end" onClick={ (e) => this.paraRegistroForm(e) }>Registre uma nova venda</Button>
-						</Form>
-					</Col>
-				</Row>
+				{ sistema.usuario.grupo.nome === 'CAIXA' && (
+					<Row>
+						<Col>
+							<Form>
+								<Button variant="primary" className="float-end" onClick={ (e) => this.paraRegistroForm(e) }>Registre uma nova venda</Button>
+							</Form>
+						</Col>
+					</Row>
+				) }				
 				
 				<h3 className="text-center">Lista de Vendas</h3>
 				<div className="tbl-pnl">
@@ -157,7 +154,7 @@ export default class Vendas extends React.Component {
 										<td>{venda.id}</td>
 										<td>{venda.dataVenda}</td>
 										<td>{venda.cliente.pessoa.nome}</td>
-										<td>{ sistema.formataReal( venda.subtotal * ( 1.0 - venda.desconto ) ) }</td>														
+										<td>{ sistema.formataReal( venda.subtotal * ( 1.0 - ( ( sistema.paraFloat( venda.desconto ) / 100.0 )  ) ) ) }</td>														
 										<td>{ sistema.formataReal( venda.debito ) }</td>														
 										<td><button className="btn btn-link p-0" onClick={(e) => this.detalhes( e, venda.id )}>detalhes</button></td>
 										<td><button className="btn btn-link p-0" onClick={(e) => this.removerSeConfirmado( e, venda.id )}>remover</button></td>

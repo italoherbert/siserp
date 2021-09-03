@@ -5,9 +5,9 @@ import { Row, Col, Card, Form, Button } from 'react-bootstrap';
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
 
-import CategoriaDetalhes from './categoria-detalhes';
+import CategoriaMapDetalhes from './categoria-map-detalhes';
 
-export default class CategoriaForm extends React.Component {
+export default class CategoriaMapForm extends React.Component {
 	
 	constructor( props ) {
 		super( props );
@@ -17,7 +17,8 @@ export default class CategoriaForm extends React.Component {
 			infoMsg : null
 		};
 		
-		this.descricao = React.createRef();
+		this.categoria = React.createRef();
+		this.subcategoria = React.createRef();
 	}
 	
 	componentDidMount() {			
@@ -26,9 +27,10 @@ export default class CategoriaForm extends React.Component {
 	}
 	
 	carrega() {
-		sistema.wsGet( "/api/categoria/get/"+this.props.categoriaId, (resposta) => {
+		sistema.wsGet( "/api/categoriamap/get/"+this.props.categoriaMapId, (resposta) => {
 			resposta.json().then( (dados) => {
-				this.descricao.current.value = dados.descricao;											
+				this.categoria.current.value = dados.categoria;											
+				this.subcategoria.current.value = dados.subcategoria;											
 			} );
 		}, this );
 	}
@@ -39,25 +41,26 @@ export default class CategoriaForm extends React.Component {
 		let url;
 		let metodo;
 		if ( this.props.op === 'editar' ) {			
-			url = "/api/categoria/atualiza/"+this.props.categoriaId;
+			url = "/api/categoriamap/atualiza/"+this.props.categoriaMapId;
 			metodo = 'PUT';									
 		} else {
-			url = "/api/categoria/registra";
+			url = "/api/categoriamap/registra";
 			metodo = 'POST';
 		}
 	
 		sistema.wsSave( url, metodo, {
-			"descricao" : this.descricao.current.value			
+			"categoria" : this.categoria.current.value,
+			"subcategoria" : this.subcategoria.current.value
 		}, (resposta) => {
-			this.setState( { infoMsg : "Categoria cadastrada com sucesso." } );
+			this.setState( { infoMsg : "Categoria salva com sucesso." } );
 			
 			if ( typeof( this.props.registrou ) === "function" )
 				this.props.registrou.call();
 		}, this );						
 	}
 		
-	paraTelaCategoriaDetalhes() {
-		ReactDOM.render( <CategoriaDetalhes categoriaId={this.props.categoriaId} />, sistema.paginaElemento() );
+	paraTelaCategoriaMapDetalhes() {
+		ReactDOM.render( <CategoriaMapDetalhes categoriaMapId={this.props.categoriaMapId} />, sistema.paginaElemento() );
 	}
 	
 	render() {
@@ -70,8 +73,13 @@ export default class CategoriaForm extends React.Component {
 						<h4 className="card-title">{this.props.titulo}</h4>
 						
 						<Form.Group className="mb-2">
-							<Form.Label>Descrição: </Form.Label>
-							<Form.Control type="text" ref={this.descricao} name="descricao" />
+							<Form.Label>Categoria: </Form.Label>
+							<Form.Control type="text" ref={this.categoria} name="categoria" />
+						</Form.Group>
+						
+						<Form.Group className="mb-2">
+							<Form.Label>Subcategoria: </Form.Label>
+							<Form.Control type="text" ref={this.subcategoria} name="subcategoria" />
 						</Form.Group>
 					
 						<MensagemPainel cor="danger" msg={erroMsg} />
@@ -87,7 +95,7 @@ export default class CategoriaForm extends React.Component {
 						<Card className="p-3">
 							<Row>
 								<Col>
-									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategoriaDetalhes( e ) }>Ir para detalhes</button>
+									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategoriaMapDetalhes( e ) }>Ir para detalhes</button>
 								</Col>
 							</Row>
 						</Card>

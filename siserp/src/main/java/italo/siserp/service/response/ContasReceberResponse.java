@@ -15,6 +15,6 @@ public class ContasReceberResponse {
 	
 	private String totalPeriodo;
 	
-	private List<VendaResponse> vendas;
+	private List<ContaReceberResponse> contas;
 	
 }

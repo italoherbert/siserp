@@ -23,4 +23,6 @@ public class SaveVendaRequest {
 	
 	private List<SaveItemVendaRequest> itensVenda;
 	
+	private List<SaveVendaParcelaRequest> parcelas;
+	
 }

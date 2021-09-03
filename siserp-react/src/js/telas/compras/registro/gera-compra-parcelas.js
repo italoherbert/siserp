@@ -3,7 +3,7 @@ import { Table, Form, Button } from 'react-bootstrap';
 
 import * as moment from 'moment';
 
-import sistema from './../../logica/sistema';
+import sistema from './../../../logica/sistema';
 
 export default class GeraCompraParcelas extends React.Component {
 	
@@ -25,7 +25,7 @@ export default class GeraCompraParcelas extends React.Component {
 		let total = 0;
 		for( let i = 0; i < produtos.length; i++ ) {
 			let p = produtos[ i ];
-			total += parseFloat( p.precoUnitCompra ) * parseFloat( p.paraAddQuantidade );
+			total += sistema.paraFloat( p.precoUnitCompra ) * sistema.paraFloat( p.paraAddQuantidade );
 		}
 		
 		let quantParcelas = this.props.quantParcelasRef.current.value;

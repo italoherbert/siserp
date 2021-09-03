@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Row, Col, Card, Table, Form, Button } from 'react-bootstrap';
+import { Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 
 import sistema from './../../logica/sistema';
 import MensagemPainel from './../../componente/mensagem-painel';
-import InputDropdown from './../../componente/input-dropdown';
 
 import Vendas from './vendas';
+import AddVendaProduto from './registro/add-venda-produto';
+import ConfigVendaPagamento from './registro/config-venda-pagamento';
+import GeraVendaParcelas from './registro/gera-venda-parcelas';
 
 export default class VendaRegistro extends React.Component {
 	
@@ -18,81 +21,37 @@ export default class VendaRegistro extends React.Component {
 			erroMsg : null,
 
 			itens : [],
-			formasPag : [],
-						
-			clientesNomeLista : [],
-			clienteId : -1,
-			clienteNome : '',
-			incluirCliente : false,
+			parcelas : [],
 			
-			subtotal : 0,
-			desconto : 0,
-			total : 0,
-			troco : 0
-		};			
-		this.codigoBarras = React.createRef();
-		this.desconto = React.createRef();
+			valores : {
+				subtotal : 0,
+				total : 0,
+				troco : 0,
+				desconto : 0,
+				valorPago : 0
+			},
+
+			cliente : {
+				incluir : false
+			}
+		};	
+		
 		this.formaPag = React.createRef();
-		this.valorPago = React.createRef();
-	}
-
-	componentDidMount() {
-		this.carregaFormasPagamento();
-	}
-	
-	carregaFormasPagamento() {
-		sistema.wsGet( '/api/pagamento/formas/', (resposta) => {
-			resposta.json().then( (dados) => {
-				this.setState( { formasPag : dados } );
-			} );
-		}, this );
-	}
-
-	addItemVenda( e ) {
-		let codigoBarras = this.codigoBarras.current.value;
-			
-		sistema.wsGet( '/api/produto/busca/'+codigoBarras, (resposta) => {
-			resposta.json().then( (dados) => {
-				this.state.itens.unshift( {
-					codigoBarras : codigoBarras,
-					descricao : dados.descricao,
-					categorias : dados.categorias,
-					precoUnitario : dados.precoUnitVenda, 	
-					unidade : dados.unidade,
-					estoqueQuantidade : dados.quantidade,
-					quantidade : 1
-				} );			
-				
-				this.codigoBarras.current.value = '';
-				
-				this.calcularTotal( e );		
-				
-				sistema.scrollTo( 'produtos-tbl-pnl' );
-				
-				this.setState( {} );
-			} );
-		}, this );
-	}		
-			
-	removerItemVenda( e, index ) {
-		e.preventDefault();
-				
-		this.setState( { erroMsg : null, infoMsg : null } );
-
-		this.state.itens.splice( index, 1 );
-		
-		this.calcularTotal( e );		
-		
-		this.setState( {} );
+		this.clienteNome = React.createRef();
 	}
 		
 	efetuarVenda( e ) {
-		const { itens } = this.state;
+		const { itens, parcelas } = this.state;
 		
 		e.preventDefault();
 		
 		this.setState( { erroMsg : null, infoMsg : null } );
-												
+							
+		if ( itens.length === 0 ) {
+			this.setState( { erroMsg : "Nenhum produto adicionado." } );
+			return;
+		}
+
 		let itensVenda = [];
 		for( let i = 0; i < itens.length; i++ ) {
 			let quant = parseFloat( itens[ i ].quantidade );
@@ -116,16 +75,25 @@ export default class VendaRegistro extends React.Component {
 			} );
 		}
 		
+		let parcelasList = [];
+		for( let i = 0; i < parcelas.length; i++ ) {
+			let p = parcelas[ i ];
+			parcelasList.push( {
+				valor : p.valor,
+				dataPagamento : sistema.formataData( p.dataPagamento ),
+				dataVencimento : sistema.formataData( p.dataVencimento )
+			} );
+		}
+
 		sistema.wsPost( '/api/venda/efetua/'+sistema.usuario.id, {
-			subtotal : sistema.paraFloat( this.state.subtotal ),
-			desconto : sistema.paraFloat( this.state.desconto ),
+			subtotal : sistema.paraFloat( this.state.valores.subtotal ),
+			desconto : sistema.paraFloat( this.state.valores.desconto ),
 			formaPag : this.formaPag.current.value,
-			incluirCliente : this.state.incluirCliente,
-			clienteNome : this.state.clienteNome,
-			itensVenda : itensVenda
+			incluirCliente : this.state.cliente.incluir,
+			clienteNome : this.clienteNome.current.value,
+			itensVenda : itensVenda,
+			parcelas : parcelasList
 		}, (resposta) => {
-			this.valorPago.current.value = '';
-			this.desconto.current.value = '';
 			this.formaPag.current.value = '';
 									
 			this.setState( { 
@@ -133,64 +101,26 @@ export default class VendaRegistro extends React.Component {
 				itens : [],
 				subtotal : 0,
 				total : 0,
-				troco : 0
+				troco : 0,
+				valorPago : 0,
+				desconto : 0,
 			} );
 		}, this );		
 	}
-		
-	quantidadeItemProdOnChange( e, index ) {		
-		let itens = this.state.itens;				
-		
-		this.setState( { erroMsg : null, infoMsg : null } );				
-		
-		if ( e.target.value.trim().length > 0 )	{
-			let estoqueQuant = parseFloat( itens[ index ].estoqueQuantidade );
-
-			let quant = sistema.paraFloat( e.target.value );
-			if ( isNaN( quant ) === false ) {
-				if ( quant <= estoqueQuant ) {		
-					itens[ index ].quantidade = quant;
-					
-					this.calcularTotal( e );
-				} else {					
-					let descricao = itens[ index ].descricao;
-					this.setState( { erroMsg : "Quantidade informada maior que a quantidade em estoque. Produto="+descricao } );
-				}
-			} else {
-				this.setState( { itens : itens } );
-			}
-		}				
-	}
-		
-	incluirClienteOnChange( e ) {
-		this.setState( { incluirCliente : e.target.checked } );
-	}
-		
-	clienteNomeOnChange( item ) {	
-		this.setState( { clienteNome : item } );
-		
-		sistema.wsPost( '/api/cliente/filtra/limit/5', {
-			"nomeIni" : item
-		}, (resposta) => {
-			resposta.json().then( (dados) => {
-				this.setState( { clientesNomeLista : [] } );
-														
-				for( let i = 0; i < dados.length; i++ )
-					this.state.clientesNomeLista.push( dados[ i ].pessoa.nome );					
-
-				this.setState( {} );
-			} );
-		}, this );
-	}
 	
 	calcularTotal( e ) {
-		const { itens } = this.state;
-				
-		let desconto = parseFloat( sistema.paraFloat( this.desconto.current.value ) );
-		if ( isNaN( desconto ) === true ) {
-			desconto = 0;					
+		e.preventDefault();
+
+		const { itens, valores } = this.state;
+		
+		let desconto = valores.desconto;
+		let valorPago = valores.valorPago;
+		
+		let desconto001 = parseFloat( desconto );
+		if ( isNaN( desconto001 ) === true ) {
+			desconto001 = 0;					
 		} else {
-			desconto /= 100.0;
+			desconto001 /= 100.0;
 		}			
 				
 		for( let i = 0; i < itens.length; i++ ) {
@@ -213,15 +143,18 @@ export default class VendaRegistro extends React.Component {
 		for( let i = 0; i < itens.length; i++ )
 			subtotal += parseFloat( itens[ i ].quantidade ) * parseFloat( itens[ i ].precoUnitario );				
 								
-		let total = subtotal * ( 1.0 - desconto );		
+		let total = subtotal * ( 1.0 - desconto001 );		
 		
-		let valorPago = parseFloat( sistema.paraFloat( this.valorPago.current.value ) );
+		let valorPagoFloat = parseFloat( sistema.paraFloat( valorPago ) );
 		
 		let troco = 0;
-		if ( !isNaN( valorPago ) )
-			troco = sistema.paraFloat( this.valorPago.current.value ) - total;		
+		if ( !isNaN( valorPagoFloat ) )
+			troco = valorPagoFloat - total;		
 		
-		this.setState( { desconto : desconto, subtotal : subtotal, total : total, troco : troco } );
+		this.setState( { valores : { 
+			subtotal : subtotal, total : total, troco : troco, 
+			desconto : desconto, 
+			valorPago : valorPago } } );
 	}
 			
 	paraTelaVendas() {
@@ -229,168 +162,57 @@ export default class VendaRegistro extends React.Component {
 	}	
 		
 	render() {
-		const { infoMsg, erroMsg, itens, formasPag, subtotal, total, troco, clientesNomeLista, incluirCliente } = this.state;
+		const { infoMsg, erroMsg, itens, valores, cliente, parcelas } = this.state;
 							
 		return(	
-			<div>												
-				<h4 className="text-center">Lista de Produtos</h4>
-				<div id="produtos-tbl-pnl" className="tbl-pnl-pequeno">
-					<Table striped bordered hover>
-						<thead>
-							<tr>
-								<th>Descrição</th>
-								<th>Codigo de Barras</th>
-								<th>Preço unitário</th>
-								<th>Quant. Estoque</th>
-								<th>Quantidade</th>
-								<th>Unidade</th>
-								<th>Categorias</th>
-								<th>Remover</th>
-							</tr>
-						</thead>
-						<tbody>
-							{itens.map( ( item, index ) => {
-								return (
-									<tr key={index}>
-										<td>{ item.descricao }</td>
-										<td>{ item.codigoBarras }</td>
-										<td>{ sistema.formataReal( item.precoUnitario ) }</td>
-										<td>{ sistema.formataFloat( item.estoqueQuantidade ) }</td>
-										<td>
-											<Form>
-												<Form.Control type="text" onChange={ (e) => this.quantidadeItemProdOnChange( e, index ) } value={item.quantidade} />
-											</Form>
-										</td>
-										<td>{ item.unidade }</td>
-										<td>
-											<select>
-												{ item.categorias.map( (item, index) => {
-													return (
-														item.subcategorias.map( (subitem, index2) => {
-															return (
-																<option key={index} value={subitem.descricao}>{subitem.descricao}</option>
-															)
-														} )
-													)
-												} )}
-											</select>
-										</td>			
-										<td><button className="btn btn-link p-0" onClick={(e) => this.removerItemVenda( e, index )}>remover</button></td>
-									</tr>
-								)
-							} ) }	
-						</tbody>							
-					</Table>
-				</div>			
-
-				<br />
-				
-				<Card className="p-3 col-sm-6">
-					<h4>Incluir produtos</h4>
-					<Row>
-						<Col className="col-sm-8">
-							<Form.Group className="mb-2">
-								<Form.Label>Codigo de barras</Form.Label>
-								<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
-							</Form.Group>
-						</Col>
-						<Col className="col-sm-4">
-							<Form.Group className="mb-2">
-								<Form.Label>&nbsp;</Form.Label>
-								<br />
-								<Button variant="primary" onClick={ (e) => this.addItemVenda( e ) }>Adicionar produto</Button>
-							</Form.Group>								
-						</Col>
-					</Row>					
-				</Card>
-				
-				<br />
-				
+			<div>	
 				<MensagemPainel cor="danger" msg={erroMsg} />
 				<MensagemPainel cor="primary" msg={infoMsg} />
-				
-				<div className="bg-light">
-					<Form.Group>
-						<div style={{fontSize : '1.6em' }}>
-							<Card className="p-3">
-								<Row>
-									<Col>
-										<Form.Label>Subtotal: &nbsp; <span className="text-danger">{ sistema.formataReal( subtotal ) }</span></Form.Label>
-									</Col>
-									<Col>
-										<Form.Label>Desconto (%): &nbsp;</Form.Label>
-										<Form>
-											<Form.Control className="text-danger" type="text" ref={this.desconto} name="desconto" onChange={ (e) => this.calcularTotal( e ) } />										
-										</Form>
-									</Col>	
-									<Col>
-										<Form>
-											<Form.Label>Valor pago (R$): </Form.Label> 
-											<Form.Control className="text-danger" type="text" ref={this.valorPago} name="valorPago" onChange={ (e) => this.calcularTotal( e ) } />									
-										</Form>
-									</Col>
-								</Row>
-								<Row>
-									<Col></Col>
-									<Col>
-										<Form.Label>Total: &nbsp; <span className="text-danger">{ sistema.formataReal( total ) }</span></Form.Label>										
-									</Col>								
-									<Col>
-										<Form.Label>Troco: &nbsp; <span className="text-danger">{ sistema.formataReal( troco ) }</span></Form.Label>										
-									</Col>
-								</Row>
-							</Card>							
-						</div>
-					</Form.Group>
-				</div>
+
+				<Tabs forceRenderTabPanel={true}>
+					<TabList>
+						<Tab>Itens de produtos</Tab>
+						<Tab>Config. Pagamento</Tab>
+						<Tab>Simulação de parcelas</Tab>						
+					</TabList>
+					<TabPanel>	
+						<AddVendaProduto calcularTotal={ (e) => this.calcularTotal( e ) } itens={itens} />										
+					</TabPanel>
+					<TabPanel>																				
+						<ConfigVendaPagamento 
+							calcularTotal={ (e) => this.calcularTotal( e ) } 
+							valores={valores} 
+							cliente={cliente} 
+							formaPagReferencia={this.formaPag} 
+							clienteNomeReferencia={this.clienteNome} />
+					</TabPanel>
+					<TabPanel>
+						<GeraVendaParcelas parcelas={parcelas} valores={valores} />
+					</TabPanel>
+				</Tabs>
 
 				<br />
 
-				<Form onSubmit={ (e) => this.efetuarVenda( e ) }>
-					<Row>						
-						<Col>												
-							<Card className="p-3">
-								<h4>Forma de pagamento</h4>									
-								<Row>									
-									<Col>
-										<Form.Group className="mb-2">
-											<Form.Label>Formas de pagamento: &nbsp;</Form.Label>
-											<select name="formaPag" ref={this.formaPag} className="form-control">
-												<option key="0" value="NONE">Selecione uma forma!</option>
-												{ formasPag.map( (item, i) => {
-													return <option key={i} value={item}>{item}</option>
-												} )	}
-											</select>
-										</Form.Group>
-									</Col>									
-								</Row>
-							</Card>
-						</Col>																	
+				<Card className="p-3" style={{fontSize : '1.6em' }}>
+					<Row>
 						<Col>
-							<Card className="p-3">
-								<Form.Group className="mb-2">
-									<input type="checkbox" defaultValue={incluirCliente} onChange={ (e) => this.incluirClienteOnChange( e ) } /> 
-										&nbsp; Incluir cliente
-								</Form.Group>
-														
-								{ incluirCliente === true && (
-									<Form.Group>
-										<Form.Label>
-											<h5>Informe um cliente</h5>
-										</Form.Label>
-										<InputDropdown 
-											referencia={this.clienteNome} 
-											itens={clientesNomeLista} 
-											carregaItens={ (item) => this.clienteNomeOnChange( item ) } />		
-									</Form.Group>
-								) }
-							</Card>
+							<Form.Label>Subtotal: &nbsp; <span className="text-danger">{ sistema.formataReal( valores.subtotal ) }</span></Form.Label>
+						</Col>
+						<Col>
+							<Form.Label>Desconto (%): &nbsp;  <span className="text-danger">{ sistema.formataFloat( valores.desconto ) }</span></Form.Label>
 						</Col>
 					</Row>
-				</Form>
-											
-				<br />
-				
+					<Row>
+						<Col>
+							<Form.Label>Total: &nbsp; <span className="text-danger">{ sistema.formataReal( valores.total ) }</span></Form.Label>										
+						</Col>
+						<Col>
+							<Form.Label>Troco: &nbsp; <span className="text-danger">{ sistema.formataReal( valores.troco ) }</span></Form.Label>
+						</Col>
+					</Row>
+				</Card>
+				<br />				
+																			
 				<Card className="p-3 text-left">	
 					<Row>
 						<Col>

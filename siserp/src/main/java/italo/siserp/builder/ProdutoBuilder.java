@@ -10,10 +10,8 @@ import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.PrecoUnitCompraInvalidoException;
 import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
-import italo.siserp.model.Categoria;
 import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
-import italo.siserp.model.SubCategoria;
 import italo.siserp.service.request.SaveProdutoRequest;
 import italo.siserp.service.response.CategoriaMapResponse;
 import italo.siserp.service.response.ProdutoResponse;
@@ -77,17 +75,17 @@ public class ProdutoBuilder {
 				
 		List<CategoriaMapResponse> maps = new ArrayList<>();
 		for( CategoriaMap map : p.getCategoriaMaps() ) {
-			Categoria c = map.getCategoria();
-			SubCategoria sc = map.getSubcategoria();
+			String c = map.getCategoria();
+			String sc = map.getSubcategoria();
 						
 			CategoriaMapResponse mapresp = new CategoriaMapResponse();
-			mapresp.setCategoria( c.getDescricao() );
-			mapresp.setSubcategoria( sc.getDescricao() );
+			mapresp.setCategoria( c );
+			mapresp.setSubcategoria( sc );
 			
-			maps.add( mapresp );
+			maps.add( mapresp );			
 		}		
 		
-		resp.setCategoriaMaps( maps ); 
+		resp.setCategoriaMaps( maps ); 				
 	}	
 	
 	public ProdutoResponse novoProdutoResponse() {

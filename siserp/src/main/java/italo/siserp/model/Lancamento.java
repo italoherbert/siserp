@@ -30,6 +30,7 @@ public class Lancamento {
 	public final static String LANCAMENTO_FECHA_CAIXA = "Caixa fechado.";
 	public final static String LANCAMENTO_VENDA_EFETUADA = "Venda efetuada.";
 	public final static String LANCAMENTO_VENDA_CANCELADA = "Venda cancelada.";
+	public final static String CLIENTE_PAGOU = "Cliente realizou pagamento.";
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

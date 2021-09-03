@@ -19,12 +19,16 @@ public class VendaResponse {
 	
 	private String desconto;
 	
-	private String debito;
+	private String total;
 	
+	private String debito;
+		
 	private String formaPag;
 
 	private ClienteResponse cliente;
 
 	private List<ItemVendaResponse> itens;
+	
+	private List<VendaParcelaResponse> parcelas;
 	
 }

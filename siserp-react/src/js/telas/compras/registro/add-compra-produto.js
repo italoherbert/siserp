@@ -2,10 +2,10 @@ import React from 'react';
 import { Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 
-import MensagemPainel from './../../componente/mensagem-painel';
-import sistema from './../../logica/sistema';
+import MensagemPainel from './../../../componente/mensagem-painel';
+import sistema from './../../../logica/sistema';
 
-import AddCompraProdutoCategorias from './add-compra-produto-categorias';
+import AddCompraProdutocategoriaMaps from './add-compra-produto-categoria-maps';
 
 export default class AddCompraProduto extends React.Component {
 	
@@ -15,7 +15,7 @@ export default class AddCompraProduto extends React.Component {
 		this.state = { 
 			erroMsg : null, 
 			infoMsg : null,
-			categorias : []			
+			categoriaMaps : []			
 		};		
 		this.descricao = React.createRef();
 		this.codigoBarras = React.createRef();
@@ -63,7 +63,7 @@ export default class AddCompraProduto extends React.Component {
 			precoUnitVenda : sistema.paraFloat( this.precoUnitVenda.current.value ),
 			unidade : this.unidade.current.value,
 			paraAddQuantidade : sistema.paraFloat( this.paraAddQuantidade.current.value ),
-			categorias : this.state.categorias
+			categoriaMaps : this.state.categoriaMaps
 		};	
 		
 		this.limpaProdutoForm();
@@ -80,7 +80,7 @@ export default class AddCompraProduto extends React.Component {
 		this.unidade.current.value = "";
 		this.paraAddQuantidade.current.value = "";
 		
-		this.setState( { categorias : [] } );
+		this.setState( { categoriaMaps : [] } );
 	}
 	
 	buscar( e ) {
@@ -95,14 +95,14 @@ export default class AddCompraProduto extends React.Component {
 				this.precoUnitVenda.current.value = sistema.formataFloat( dados.precoUnitVenda );
 				this.unidade.current.value = dados.unidade;
 				this.estoqueQuantidade.current.value = sistema.formataFloat( dados.quantidade );
-									
-				this.setState( { categorias : dados.categorias } );
+								
+				this.setState( { categoriaMaps : dados.categoriaMaps } );
 			} );
 		}, this );					
 	}
 			
 	render() {
-		const { erroMsg, infoMsg, categorias } = this.state;
+		const { erroMsg, infoMsg, categoriaMaps } = this.state;
 				
 		return(									
 			<Form onSubmit={(e) => this.addProduto( e ) }>																							
@@ -161,7 +161,7 @@ export default class AddCompraProduto extends React.Component {
 						</Card>
 					</TabPanel>
 					<TabPanel>							
-						<AddCompraProdutoCategorias categorias={categorias} />
+						<AddCompraProdutocategoriaMaps categoriaMaps={categoriaMaps} />
 					</TabPanel>
 				</Tabs>
 				

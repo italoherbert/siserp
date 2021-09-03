@@ -18,8 +18,10 @@ import italo.siserp.exception.SubtotalInvalidoException;
 import italo.siserp.model.FormaPag;
 import italo.siserp.model.ItemVenda;
 import italo.siserp.model.Venda;
+import italo.siserp.model.VendaParcela;
 import italo.siserp.service.request.SaveVendaRequest;
 import italo.siserp.service.response.ItemVendaResponse;
+import italo.siserp.service.response.VendaParcelaResponse;
 import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.FormaPagEnumConversor;
@@ -34,6 +36,9 @@ public class VendaBuilder {
 	
 	@Autowired
 	private ItemVendaBuilder itemVendaBuilder;
+	
+	@Autowired
+	private VendaParcelaBuilder vendaParcelaBuilder;
 			
 	@Autowired
 	private DataUtil dataUtil;
@@ -83,7 +88,6 @@ public class VendaBuilder {
 		resp.setDataVenda( dataUtil.dataParaString( v.getDataVenda() ) ); 
 		resp.setSubtotal( numeroUtil.doubleParaString( v.getSubtotal() ) );
 		resp.setDesconto( numeroUtil.doubleParaString( v.getDesconto() ) );
-		resp.setDebito( numeroUtil.doubleParaString( v.getDebito() ) );
 		resp.setFormaPag( enumConversor.getFormaPagString( v.getFormaPag() ) ); 
 		
 		List<ItemVendaResponse> itemResps = new ArrayList<>();
@@ -96,6 +100,25 @@ public class VendaBuilder {
 		}
 		resp.setItens( itemResps );
 		
+		double total = 0;
+		double debito = 0;
+		
+		List<VendaParcelaResponse> parcelasResps = new ArrayList<>();
+		List<VendaParcela> parcelas = v.getParcelas();
+		for( VendaParcela p : parcelas ) {
+			VendaParcelaResponse pResp = vendaParcelaBuilder.novoVendaParcelaResponse();
+			vendaParcelaBuilder.carregaVendaParcelaResponse( pResp, p );
+			
+			parcelasResps.add( pResp );
+			
+			total += p.getValor();
+			debito += p.getDebito();
+		}
+		resp.setParcelas( parcelasResps );
+		
+		resp.setTotal( numeroUtil.doubleParaString( total ) );
+		resp.setDebito( numeroUtil.doubleParaString( debito ) ); 
+			
 		if ( v.getCliente() != null )
 			clienteBuilder.carregaClienteResponse( resp.getCliente(), v.getCliente() ); 
 	}	
