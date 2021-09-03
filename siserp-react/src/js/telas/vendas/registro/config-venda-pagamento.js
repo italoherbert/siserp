@@ -19,7 +19,8 @@ export default class ConfigVendaPagamento extends React.Component {
 									
 			clientesNomeLista : [],					
 		};		
-        this.incluirCliente = React.createRef();	
+        this.incluirCliente = React.createRef();
+        this.formaPag = React.createRef();	
 	}
 
 	componentDidMount() {
@@ -48,12 +49,14 @@ export default class ConfigVendaPagamento extends React.Component {
 	}
 		
 	formaPagOnChange( e ) {
-		if ( e.target.value === 'DEBITO' ) {
+        if ( typeof( this.props.formaPagOnChange ) === 'function' )
+            this.props.formaPagOnChange.call( this, e.target.value );
+
+		if ( e.target.value === 'APRAZO' ) {
             this.props.cliente.incluir = true;			
             this.incluirCliente.current.checked = true;
-
             this.setState( {} );
-		}
+		}        
 	}
 		
 	incluirClienteOnChange( e ) {        
@@ -133,7 +136,7 @@ export default class ConfigVendaPagamento extends React.Component {
                                     <Col>
                                         <Form.Group className="mb-2">
                                             <Form.Label>Formas de pagamento: &nbsp;</Form.Label>
-                                            <select name="formaPag" ref={formaPagReferencia} onChange={(e) => this.formaPagOnChange( e )} className="form-control">
+                                            <select name="formaPag" ref={this.formaPag} onChange={(e) => this.formaPagOnChange( e )} className="form-control">
                                                 <option key="0" value="NONE">Selecione uma forma!</option>
                                                 { formasPag.map( (item, i) => {
                                                     return <option key={i} value={item}>{item}</option>

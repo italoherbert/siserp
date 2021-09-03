@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.VendaParcela;
-import italo.siserp.service.response.ContaReceberResponse;
-import italo.siserp.service.response.ContasReceberResponse;
+import italo.siserp.model.response.ContaReceberResponse;
+import italo.siserp.model.response.ContasReceberResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component

@@ -2,7 +2,7 @@ package italo.siserp.relatorio.to;
 
 import java.util.List;
 
-import italo.siserp.service.response.CaixaBalancoResponse;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

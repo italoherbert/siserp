@@ -3,8 +3,8 @@ package italo.siserp.builder;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Fornecedor;
-import italo.siserp.service.request.SaveFornecedorRequest;
-import italo.siserp.service.response.FornecedorResponse;
+import italo.siserp.model.request.SaveFornecedorRequest;
+import italo.siserp.model.response.FornecedorResponse;
 
 @Component
 public class FornecedorBuilder {

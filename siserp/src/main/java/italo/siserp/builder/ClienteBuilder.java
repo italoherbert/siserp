@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import italo.siserp.model.Cliente;
 import italo.siserp.model.Endereco;
 import italo.siserp.model.Pessoa;
-import italo.siserp.service.request.SaveClienteRequest;
-import italo.siserp.service.response.ClienteResponse;
+import italo.siserp.model.request.SaveClienteRequest;
+import italo.siserp.model.response.ClienteResponse;
 
 @Component
 public class ClienteBuilder {

@@ -11,7 +11,7 @@ public class FormaPagEnumConversor {
 		switch( formaPag ) {
 			case CARTAO: return "CARTAO";
 			case ESPECIE: return "ESPECIE";
-			case DEBITO: return "DEBITO";
+			case APRAZO: return "APRAZO";
 		}
 		return null;
 	}
@@ -21,8 +21,8 @@ public class FormaPagEnumConversor {
 			return FormaPag.CARTAO;			
 		} else if ( formaPag.equalsIgnoreCase( "ESPECIE") ) {
 			return FormaPag.ESPECIE;
-		} else if ( formaPag.equalsIgnoreCase( "DEBITO" ) ) {
-			return FormaPag.DEBITO;
+		} else if ( formaPag.equalsIgnoreCase( "APRAZO" ) ) {
+			return FormaPag.APRAZO;
 		}
 		return null;
 	}

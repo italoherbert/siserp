@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 import italo.siserp.builder.ConfigBuilder;
 import italo.siserp.exception.FalhaLeituraLogoException;
 import italo.siserp.model.Config;
+import italo.siserp.model.request.SaveLogoConfigRequest;
+import italo.siserp.model.response.ConfigLogoResponse;
 import italo.siserp.repository.ConfigRepository;
-import italo.siserp.service.request.SaveLogoConfigRequest;
-import italo.siserp.service.response.ConfigLogoResponse;
 import italo.siserp.util.ImagemUtil;
 
 @Service

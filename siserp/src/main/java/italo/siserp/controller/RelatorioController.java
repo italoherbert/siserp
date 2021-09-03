@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.GeracaoRelatorioException;
+import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.RelatorioService;
-import italo.siserp.service.response.ErroResponse;
 
 @RestController
 @RequestMapping(value="/api/relatorio")

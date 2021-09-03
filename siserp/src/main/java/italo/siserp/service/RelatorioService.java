@@ -15,10 +15,10 @@ import italo.siserp.dao.CaixaDAO;
 import italo.siserp.dao.bean.CaixaBalancoDAOTO;
 import italo.siserp.exception.GeracaoRelatorioException;
 import italo.siserp.model.Caixa;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.relatorio.BalancoDiaRelatorio;
 import italo.siserp.relatorio.to.BalancoDiaRelatorioTO;
 import italo.siserp.repository.CaixaRepository;
-import italo.siserp.service.response.CaixaBalancoResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 

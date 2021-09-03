@@ -11,8 +11,8 @@ import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.model.Venda;
 import italo.siserp.model.VendaParcela;
-import italo.siserp.service.request.SaveVendaParcelaRequest;
-import italo.siserp.service.response.VendaParcelaResponse;
+import italo.siserp.model.request.SaveVendaParcelaRequest;
+import italo.siserp.model.response.VendaParcelaResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 
@@ -60,6 +60,8 @@ public class VendaParcelaBuilder {
 			ex.setParams( req.getDataPagamento() );
 			throw ex;
 		}				
+		
+		parcela.setDebitoRestaurado( false ); 
 	}
 	
 	public void carregaVendaParcelaResponse( VendaParcelaResponse resp, VendaParcela parcela ) {
@@ -68,6 +70,7 @@ public class VendaParcelaBuilder {
 		resp.setDebito( numeroUtil.doubleParaString( parcela.getDebito() ) );
 		resp.setDataPagamento( dataUtil.dataParaString( parcela.getDataPagamento() ) );
 		resp.setDataVencimento( dataUtil.dataParaString( parcela.getDataVencimento() ) );
+		resp.setDebitoRestaurado( String.valueOf( parcela.isDebitoRestaurado() ) );
 	}	
 	
 	public VendaParcelaResponse novoVendaParcelaResponse() {

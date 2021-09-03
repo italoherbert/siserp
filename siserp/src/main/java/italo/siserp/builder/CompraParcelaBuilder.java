@@ -11,8 +11,8 @@ import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.ParcelaValorInvalidoException;
 import italo.siserp.model.Compra;
 import italo.siserp.model.CompraParcela;
-import italo.siserp.service.request.SaveCompraParcelaRequest;
-import italo.siserp.service.response.CompraParcelaResponse;
+import italo.siserp.model.request.SaveCompraParcelaRequest;
+import italo.siserp.model.response.CompraParcelaResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 

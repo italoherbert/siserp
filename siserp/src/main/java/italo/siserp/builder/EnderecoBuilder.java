@@ -3,8 +3,8 @@ package italo.siserp.builder;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Endereco;
-import italo.siserp.service.request.SaveEnderecoRequest;
-import italo.siserp.service.response.EnderecoResponse;
+import italo.siserp.model.request.SaveEnderecoRequest;
+import italo.siserp.model.response.EnderecoResponse;
 
 @Component
 public class EnderecoBuilder {

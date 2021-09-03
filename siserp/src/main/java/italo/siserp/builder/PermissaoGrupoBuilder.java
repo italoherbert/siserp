@@ -11,9 +11,9 @@ import italo.siserp.model.PermissaoGrupo;
 import italo.siserp.model.PermissaoTipo;
 import italo.siserp.model.Recurso;
 import italo.siserp.model.UsuarioGrupo;
-import italo.siserp.service.request.SavePermissaoGrupoRequest;
-import italo.siserp.service.request.SavePermissaoRequest;
-import italo.siserp.service.response.PermissaoGrupoResponse;
+import italo.siserp.model.request.SavePermissaoGrupoRequest;
+import italo.siserp.model.request.SavePermissaoRequest;
+import italo.siserp.model.response.PermissaoGrupoResponse;
 import italo.siserp.util.PermissaoEnumConversor;
 
 @Component

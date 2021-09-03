@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.TentativaDeletarGrupoNaoVazioException;
 import italo.siserp.exception.UsuarioGrupoJaExisteException;
 import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
+import italo.siserp.model.request.BuscaUsuarioGruposRequest;
+import italo.siserp.model.request.SaveUsuarioGrupoRequest;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.UsuarioGrupoResponse;
 import italo.siserp.service.UsuarioGrupoService;
-import italo.siserp.service.request.BuscaUsuarioGruposRequest;
-import italo.siserp.service.request.SaveUsuarioGrupoRequest;
-import italo.siserp.service.response.ErroResponse;
-import italo.siserp.service.response.UsuarioGrupoResponse;
 
 @RestController
 @RequestMapping(value="/api/usuario/grupo") 

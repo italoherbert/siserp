@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Cliente;
 import italo.siserp.model.VendaParcela;
-import italo.siserp.service.response.ContaReceberResponse;
-import italo.siserp.service.response.VendaParcelaResponse;
+import italo.siserp.model.response.ContaReceberResponse;
+import italo.siserp.model.response.VendaParcelaResponse;
 
 @Component
 public class ContaReceberBuilder {

@@ -10,7 +10,7 @@ import sistema from './../../logica/sistema';
 import VendaRegistro from './venda-registro';
 import VendaDetalhes from './venda-detalhes';
 
-import VendasPagamento from '../contas/vendas-pagamento';
+import VendasPagamento from './vendas-pagamento';
 
 export default class Vendas extends React.Component {
 	
@@ -92,10 +92,12 @@ export default class Vendas extends React.Component {
 			this.setState( { infoMsg : 'Venda deletada com êxito.' } );
 		}, this );
 	}
-			
-	paraRegistroForm( e ) {
-		e.preventDefault();
-		
+					
+	paraTelaPagamentos( e ) {		
+		ReactDOM.render( <VendasPagamento />, sistema.paginaElemento() );
+	}	
+
+	paraRegistroForm( e ) {	
 		ReactDOM.render( <VendaRegistro />, sistema.paginaElemento() );
 	}
 		
@@ -127,6 +129,7 @@ export default class Vendas extends React.Component {
 					<Row>
 						<Col>
 							<Form>
+								<Button variant="primary" className="float-start" onClick={ (e) => this.paraTelaPagamentos(e) }>Efetue um pagamento</Button>							
 								<Button variant="primary" className="float-end" onClick={ (e) => this.paraRegistroForm(e) }>Registre uma nova venda</Button>
 							</Form>
 						</Col>

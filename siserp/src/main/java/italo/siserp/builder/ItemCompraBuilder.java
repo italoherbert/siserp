@@ -10,8 +10,8 @@ import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.model.Compra;
 import italo.siserp.model.ItemCompra;
 import italo.siserp.model.Produto;
-import italo.siserp.service.request.SaveItemCompraRequest;
-import italo.siserp.service.response.ItemCompraResponse;
+import italo.siserp.model.request.SaveItemCompraRequest;
+import italo.siserp.model.response.ItemCompraResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component

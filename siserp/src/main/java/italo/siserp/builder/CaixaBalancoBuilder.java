@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.dao.bean.CaixaBalancoDAOTO;
-import italo.siserp.service.response.CaixaBalancoResponse;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 

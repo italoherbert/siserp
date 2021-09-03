@@ -16,12 +16,12 @@ import italo.siserp.exception.RecursoNaoEncontradoException;
 import italo.siserp.model.PermissaoGrupo;
 import italo.siserp.model.Recurso;
 import italo.siserp.model.UsuarioGrupo;
+import italo.siserp.model.request.BuscaRecursosRequest;
+import italo.siserp.model.request.SaveRecursoRequest;
+import italo.siserp.model.response.RecursoResponse;
 import italo.siserp.repository.PermissaoGrupoRepository;
 import italo.siserp.repository.RecursoRepository;
 import italo.siserp.repository.UsuarioGrupoRepository;
-import italo.siserp.service.request.BuscaRecursosRequest;
-import italo.siserp.service.request.SaveRecursoRequest;
-import italo.siserp.service.response.RecursoResponse;
 
 @Service
 public class RecursoService {

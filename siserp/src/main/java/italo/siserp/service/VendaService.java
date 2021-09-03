@@ -47,15 +47,15 @@ import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Produto;
 import italo.siserp.model.Venda;
 import italo.siserp.model.VendaParcela;
+import italo.siserp.model.request.BuscaVendasRequest;
+import italo.siserp.model.request.SaveItemVendaRequest;
+import italo.siserp.model.request.SaveVendaParcelaRequest;
+import italo.siserp.model.request.SaveVendaRequest;
+import italo.siserp.model.response.VendaResponse;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.ProdutoRepository;
 import italo.siserp.repository.VendaRepository;
-import italo.siserp.service.request.BuscaVendasRequest;
-import italo.siserp.service.request.SaveItemVendaRequest;
-import italo.siserp.service.request.SaveVendaParcelaRequest;
-import italo.siserp.service.request.SaveVendaRequest;
-import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.FormaPagEnumConversor;
 import italo.siserp.util.NumeroUtil;
@@ -283,12 +283,12 @@ public class VendaService {
 		
 		List<ItemVenda> itens = v.getItensVenda();
 		
-		if ( v.getFormaPag() == FormaPag.ESPECIE ) {
+		if ( v.getFormaPag() == FormaPag.APRAZO ) {
 			double subtotal = 0;
 			for( ItemVenda item : itens )												
 				subtotal += item.getQuantidade() * item.getPrecoUnitario();											
 					
-			double total = subtotal * ( 1.0d - v.getDesconto() );
+			double total = subtotal * ( 1.0d - ( v.getDesconto() / 100.0 ) );
 									
 			Caixa caixa = v.getCaixa();			
 			

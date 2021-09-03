@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.FalhaLeituraLogoException;
+import italo.siserp.model.request.SaveLogoConfigRequest;
+import italo.siserp.model.response.ConfigLogoResponse;
+import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.ConfigService;
-import italo.siserp.service.request.SaveLogoConfigRequest;
-import italo.siserp.service.response.ConfigLogoResponse;
-import italo.siserp.service.response.ErroResponse;
 
 @RestController
 @RequestMapping(value="/api/config")

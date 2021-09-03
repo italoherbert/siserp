@@ -61,7 +61,7 @@ public class CaixaDAO {
 			double total = v.getSubtotal() * (1.0d - (v.getDesconto()/100.0) );
 			if ( v.getFormaPag() == FormaPag.CARTAO )
 				cartaoValorRecebido += total;			
-			if ( v.getFormaPag() == FormaPag.DEBITO ) 
+			if ( v.getFormaPag() == FormaPag.APRAZO ) 
 				vendasAPrazoTotal += total;
 		}
 		

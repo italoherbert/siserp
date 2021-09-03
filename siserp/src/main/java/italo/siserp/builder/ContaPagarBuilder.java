@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import italo.siserp.model.CompraParcela;
 import italo.siserp.model.Fornecedor;
-import italo.siserp.service.response.CompraParcelaResponse;
-import italo.siserp.service.response.ContaPagarResponse;
+import italo.siserp.model.response.CompraParcelaResponse;
+import italo.siserp.model.response.ContaPagarResponse;
 
 @Component
 public class ContaPagarBuilder {

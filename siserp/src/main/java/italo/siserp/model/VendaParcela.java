@@ -34,6 +34,12 @@ public class VendaParcela {
 	
 	@Column
 	private double debito;
+	
+	@Column
+	private double debitoAux;
+	
+	@Column
+	private boolean debitoRestaurado;
 		
 	@Column
 	@Temporal(TemporalType.DATE)	

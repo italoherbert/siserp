@@ -3,8 +3,8 @@ package italo.siserp.builder;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Recurso;
-import italo.siserp.service.request.SaveRecursoRequest;
-import italo.siserp.service.response.RecursoResponse;
+import italo.siserp.model.request.SaveRecursoRequest;
+import italo.siserp.model.response.RecursoResponse;
 
 @Component
 public class RecursoBuilder {

@@ -58,7 +58,7 @@ class Sistema {
 	}
 	
 	formataReal( valor ) {
-		let v = parseFloat( valor );
+		let v = parseFloat( parseFloat( valor ).toFixed( 2 ) );
 		if ( v === 0 ) 
 			return "R$ 0,00";
 				
@@ -67,8 +67,7 @@ class Sistema {
 			let s = ""+n;
 			return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		
 		} else {
-			let truncI = ( v < 0 ? 5 : 4 );			
-			return"R$ " +( ( ""+v ).substring( 0, truncI ).replace( '.', ',' ) );			
+			return"R$ " +( ( ""+v ).replace( '.', ',' ) );			
 		}				
 	}
 	
@@ -79,7 +78,7 @@ class Sistema {
 		if ( (""+valor) === "0" ) 
 			return 0;
 		
-		return parseFloat( (""+valor).replace( ',', '.' ) );
+		return parseFloat( parseFloat( (""+valor).replace( ',', '.' ) ).toFixed( 2 ) );
 	}
 	
 	formataFloat( valor ) {

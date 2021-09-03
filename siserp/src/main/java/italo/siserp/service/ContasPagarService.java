@@ -13,10 +13,10 @@ import italo.siserp.exception.DataFimInvalidaException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.model.CompraParcela;
+import italo.siserp.model.request.BuscaContasPagarRequest;
+import italo.siserp.model.request.PagamentoParcelaRequest;
+import italo.siserp.model.response.ContasPagarResponse;
 import italo.siserp.repository.CompraParcelaRepository;
-import italo.siserp.service.request.BuscaContasPagarRequest;
-import italo.siserp.service.request.PagamentoParcelaRequest;
-import italo.siserp.service.response.ContasPagarResponse;
 import italo.siserp.util.DataUtil;
 
 @Service

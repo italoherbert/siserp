@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import italo.siserp.model.request.SaveSedeRequest;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.SedeResponse;
 import italo.siserp.service.SedeService;
-import italo.siserp.service.request.SaveSedeRequest;
-import italo.siserp.service.response.ErroResponse;
-import italo.siserp.service.response.SedeResponse;
 
 @RestController
 @RequestMapping(value="/api/sede")

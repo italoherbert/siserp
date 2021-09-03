@@ -28,7 +28,8 @@ export default class VendaRegistro extends React.Component {
 				total : 0,
 				troco : 0,
 				desconto : 0,
-				valorPago : 0
+				valorPago : 0,
+				formaPag : ''
 			},
 
 			cliente : {
@@ -36,12 +37,11 @@ export default class VendaRegistro extends React.Component {
 			}
 		};	
 		
-		this.formaPag = React.createRef();
 		this.clienteNome = React.createRef();
 	}
 		
 	efetuarVenda( e ) {
-		const { itens, parcelas } = this.state;
+		const { itens, parcelas, valores } = this.state;
 		
 		e.preventDefault();
 		
@@ -49,6 +49,11 @@ export default class VendaRegistro extends React.Component {
 							
 		if ( itens.length === 0 ) {
 			this.setState( { erroMsg : "Nenhum produto adicionado." } );
+			return;
+		}
+
+		if ( valores.formaPag === 'APRAZO' && parcelas.length == 0 ) {
+			this.setState( { erroMsg : "Nenhuma parcela informada." } );
 			return;
 		}
 
@@ -88,26 +93,30 @@ export default class VendaRegistro extends React.Component {
 		sistema.wsPost( '/api/venda/efetua/'+sistema.usuario.id, {
 			subtotal : sistema.paraFloat( this.state.valores.subtotal ),
 			desconto : sistema.paraFloat( this.state.valores.desconto ),
-			formaPag : this.formaPag.current.value,
+			formaPag : this.state.formaPag,
 			incluirCliente : this.state.cliente.incluir,
 			clienteNome : this.clienteNome.current.value,
 			itensVenda : itensVenda,
 			parcelas : parcelasList
-		}, (resposta) => {
-			this.formaPag.current.value = '';
-									
+		}, (resposta) => {									
 			this.setState( { 
 				infoMsg : 'Venda registrada com êxito',
 				itens : [],
-				subtotal : 0,
-				total : 0,
-				troco : 0,
-				valorPago : 0,
-				desconto : 0,
+				valores : {
+					subtotal : 0,
+					total : 0,
+					troco : 0,
+					valorPago : 0,
+					desconto : 0,				
+				}
 			} );
 		}, this );		
 	}
 	
+	formaPagOnChange( formaPag ) {
+		this.setState( { formaPag : formaPag } ); 
+	}
+
 	calcularTotal( e ) {
 		e.preventDefault();
 
@@ -162,7 +171,7 @@ export default class VendaRegistro extends React.Component {
 	}	
 		
 	render() {
-		const { infoMsg, erroMsg, itens, valores, cliente, parcelas } = this.state;
+		const { infoMsg, erroMsg, itens, valores, cliente, parcelas, formaPag } = this.state;
 							
 		return(	
 			<div>	
@@ -181,13 +190,16 @@ export default class VendaRegistro extends React.Component {
 					<TabPanel>																				
 						<ConfigVendaPagamento 
 							calcularTotal={ (e) => this.calcularTotal( e ) } 
+							formaPagOnChange={ (formaPag) => this.formaPagOnChange( formaPag ) } 
 							valores={valores} 
 							cliente={cliente} 
-							formaPagReferencia={this.formaPag} 
 							clienteNomeReferencia={this.clienteNome} />
 					</TabPanel>
 					<TabPanel>
-						<GeraVendaParcelas parcelas={parcelas} valores={valores} />
+						{ formaPag === 'APRAZO' ?
+							<GeraVendaParcelas parcelas={parcelas} valores={valores} /> :
+							<div className="p-3 text-primary">Modo de pagamentos à prazo não selecionado.</div>
+						}	
 					</TabPanel>
 				</Tabs>
 

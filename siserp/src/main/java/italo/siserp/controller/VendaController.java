@@ -35,12 +35,12 @@ import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.FormaPag;
+import italo.siserp.model.request.BuscaVendasRequest;
+import italo.siserp.model.request.SaveItemVendaRequest;
+import italo.siserp.model.request.SaveVendaRequest;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.VendaResponse;
 import italo.siserp.service.VendaService;
-import italo.siserp.service.request.BuscaVendasRequest;
-import italo.siserp.service.request.SaveItemVendaRequest;
-import italo.siserp.service.request.SaveVendaRequest;
-import italo.siserp.service.response.ErroResponse;
-import italo.siserp.service.response.VendaResponse;
 import italo.siserp.util.FormaPagEnumConversor;
 
 @RestController
@@ -64,7 +64,7 @@ public class VendaController {
 		boolean incluirCliente = request.getIncluirCliente().equals( "true" );
 		FormaPag formaPag = formaPagEnumConversor.getFormaPag( request.getFormaPag() );
 		
-		if ( incluirCliente || formaPag == FormaPag.DEBITO ) {
+		if ( incluirCliente || formaPag == FormaPag.APRAZO ) {
 			if ( request.getClienteNome() == null )
 				return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NOME_OBRIGATORIO ) );
 			if ( request.getClienteNome().isBlank() )

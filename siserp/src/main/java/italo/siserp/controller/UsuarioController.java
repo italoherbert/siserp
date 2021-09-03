@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.UsuarioJaExisteException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.model.request.BuscaUsuariosRequest;
+import italo.siserp.model.request.SaveUsuarioRequest;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.UsuarioResponse;
 import italo.siserp.service.UsuarioService;
-import italo.siserp.service.request.BuscaUsuariosRequest;
-import italo.siserp.service.request.SaveUsuarioRequest;
-import italo.siserp.service.response.ErroResponse;
-import italo.siserp.service.response.UsuarioResponse;
 
 @RestController
 @RequestMapping(value="/api/usuario")

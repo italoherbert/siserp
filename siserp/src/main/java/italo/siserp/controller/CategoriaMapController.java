@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.CategoriaMapJaExisteException;
 import italo.siserp.exception.CategoriaMapNaoEncontradaException;
+import italo.siserp.model.request.BuscaCategoriaMapsRequest;
+import italo.siserp.model.request.SaveCategoriaMapRequest;
+import italo.siserp.model.response.CategoriaMapResponse;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.IdResponse;
 import italo.siserp.service.CategoriaMapService;
-import italo.siserp.service.request.BuscaCategoriaMapsRequest;
-import italo.siserp.service.request.SaveCategoriaMapRequest;
-import italo.siserp.service.response.CategoriaMapResponse;
-import italo.siserp.service.response.ErroResponse;
-import italo.siserp.service.response.IdResponse;
 
 @RestController
 @RequestMapping(value="/api/categoriamap")

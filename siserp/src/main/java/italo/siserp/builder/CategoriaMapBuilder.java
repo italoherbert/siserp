@@ -3,8 +3,8 @@ package italo.siserp.builder;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.CategoriaMap;
-import italo.siserp.service.request.SaveCategoriaMapRequest;
-import italo.siserp.service.response.CategoriaMapResponse;
+import italo.siserp.model.request.SaveCategoriaMapRequest;
+import italo.siserp.model.response.CategoriaMapResponse;
 
 @Component
 public class CategoriaMapBuilder {

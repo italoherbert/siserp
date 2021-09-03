@@ -22,6 +22,8 @@ import lombok.Setter;
 @Table(name = "produto")
 public class Produto {
 
+	public final static String UNIDADES_PADRAO = "unidades";
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;

@@ -14,12 +14,12 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import italo.siserp.exception.GeracaoRelatorioException;
+import italo.siserp.model.response.CaixaBalancoResponse;
 import italo.siserp.relatorio.layout.AtributosRelatorioLayout;
 import italo.siserp.relatorio.layout.BordaRelatorioLayout;
 import italo.siserp.relatorio.layout.TabelaRelatorioLayout;
 import italo.siserp.relatorio.layout.TituloRelatorioLayout;
 import italo.siserp.relatorio.to.BalancoDiaRelatorioTO;
-import italo.siserp.service.response.CaixaBalancoResponse;
 
 @Component
 public class BalancoDiaRelatorio {

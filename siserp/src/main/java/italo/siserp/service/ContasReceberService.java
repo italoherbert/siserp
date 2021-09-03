@@ -20,6 +20,7 @@ import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.DoubleInvalidoException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LongInvalidoException;
+import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorRecebidoInvalidoException;
@@ -29,12 +30,12 @@ import italo.siserp.model.Lancamento;
 import italo.siserp.model.LancamentoTipo;
 import italo.siserp.model.Venda;
 import italo.siserp.model.VendaParcela;
+import italo.siserp.model.request.BuscaContasReceberRequest;
+import italo.siserp.model.request.EfetuarRecebimentoRequest;
+import italo.siserp.model.response.ContasReceberResponse;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.VendaParcelaRepository;
-import italo.siserp.service.request.BuscaContasReceberRequest;
-import italo.siserp.service.request.EfetuarRecebimentoRequest;
-import italo.siserp.service.response.ContasReceberResponse;
 import italo.siserp.util.DataUtil;
 import italo.siserp.util.NumeroUtil;
 
@@ -88,7 +89,7 @@ public class ContasReceberService  {
 		} 
 	
 		double debito = valor;
-		
+				
 		List<Venda> vendas = cliente.getVendas();
 		int size = vendas.size();
 		for( int i = 0; debito > 0 && i < size; i++ ) {
@@ -98,24 +99,67 @@ public class ContasReceberService  {
 			int size2 = parcelas.size();
 			for( int j = 0; debito > 0 && j < size2; j++ ) {
 				VendaParcela p = parcelas.get( j );
-				if ( valor > p.getDebito() ) {
+				if ( debito > p.getDebito() ) {
 					debito -= p.getDebito();
 					p.setDebito( 0 ); 
 				} else {
 					p.setDebito( p.getDebito() - debito );
 					debito = 0;
-				}
-			
+				}			
+				p.setDebitoRestaurado( false );
+				
 				vendaParcelaRepository.save( p );												
 			}
 		}		
 		
+				
 		Lancamento l = lancamentoBuilder.novoINILancamento( caixa );
 		l.setTipo( LancamentoTipo.CREDITO );
 		l.setObs( Lancamento.CLIENTE_PAGOU ); 
 		l.setValor( valor - debito );
-		
+				
 		lancamentoRepository.save( l );
+	}
+	
+	@Transactional
+	public void restauraDebito( Long parcelaId ) throws ParcelaNaoEncontradaException {
+		VendaParcela p = vendaParcelaRepository.findById( parcelaId ).orElseThrow( ParcelaNaoEncontradaException::new );
+		Caixa caixa = p.getVenda().getCaixa();
+				
+		double valorLanc = p.getValor() - p.getDebito();
+		
+		p.setDebitoAux( p.getDebito() );
+		p.setDebito( p.getValor() );
+		p.setDebitoRestaurado( true ); 
+		vendaParcelaRepository.save( p );
+		
+		Lancamento l = lancamentoBuilder.novoINILancamento( caixa );
+		l.setTipo( LancamentoTipo.DEBITO );
+		l.setObs( Lancamento.RECEBIMENTO_CANCELADO ); 
+		l.setValor( valorLanc );
+				
+		lancamentoRepository.save( l );
+		
+	}
+	
+	@Transactional
+	public void restauraRecebimento( Long parcelaId ) throws ParcelaNaoEncontradaException {
+		VendaParcela p = vendaParcelaRepository.findById( parcelaId ).orElseThrow( ParcelaNaoEncontradaException::new );
+		Caixa caixa = p.getVenda().getCaixa();
+					
+		double valorLanc = p.getValor() - p.getDebitoAux();
+		
+		p.setDebito( p.getDebitoAux() );
+		p.setDebitoRestaurado( false );
+		vendaParcelaRepository.save( p );
+		
+		Lancamento l = lancamentoBuilder.novoINILancamento( caixa );
+		l.setTipo( LancamentoTipo.CREDITO );
+		l.setObs( Lancamento.RECEBIMENTO_RESTAURADO ); 
+		l.setValor( valorLanc );
+				
+		lancamentoRepository.save( l );
+		
 	}
 	
 	public ContasReceberResponse filtra( BuscaContasReceberRequest request ) 

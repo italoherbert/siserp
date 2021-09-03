@@ -12,9 +12,9 @@ import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.model.CategoriaMap;
 import italo.siserp.model.Produto;
-import italo.siserp.service.request.SaveProdutoRequest;
-import italo.siserp.service.response.CategoriaMapResponse;
-import italo.siserp.service.response.ProdutoResponse;
+import italo.siserp.model.request.SaveProdutoRequest;
+import italo.siserp.model.response.CategoriaMapResponse;
+import italo.siserp.model.response.ProdutoResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component
@@ -60,7 +60,7 @@ public class ProdutoBuilder {
 			throw ex;
 		}
 				
-		p.setUnidade( req.getUnidade() );
+		p.setUnidade( req.getUnidade().isBlank() ? Produto.UNIDADES_PADRAO : req.getUnidade() );
 	}
 	
 	public void carregaProdutoResponse( ProdutoResponse resp, Produto p ) {

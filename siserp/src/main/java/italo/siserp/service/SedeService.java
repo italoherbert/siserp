@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 
 import italo.siserp.builder.SedeBuilder;
 import italo.siserp.model.Sede;
+import italo.siserp.model.request.SaveSedeRequest;
+import italo.siserp.model.response.SedeResponse;
 import italo.siserp.repository.SedeRepository;
-import italo.siserp.service.request.SaveSedeRequest;
-import italo.siserp.service.response.SedeResponse;
 
 @Service
 public class SedeService {

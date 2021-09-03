@@ -18,13 +18,13 @@ import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.model.PermissaoGrupo;
 import italo.siserp.model.Recurso;
 import italo.siserp.model.UsuarioGrupo;
+import italo.siserp.model.request.BuscaUsuarioGruposRequest;
+import italo.siserp.model.request.SaveUsuarioGrupoRequest;
+import italo.siserp.model.response.PermissaoGrupoResponse;
+import italo.siserp.model.response.UsuarioGrupoResponse;
 import italo.siserp.repository.PermissaoGrupoRepository;
 import italo.siserp.repository.RecursoRepository;
 import italo.siserp.repository.UsuarioGrupoRepository;
-import italo.siserp.service.request.BuscaUsuarioGruposRequest;
-import italo.siserp.service.request.SaveUsuarioGrupoRequest;
-import italo.siserp.service.response.PermissaoGrupoResponse;
-import italo.siserp.service.response.UsuarioGrupoResponse;
 
 @Service
 public class UsuarioGrupoService {

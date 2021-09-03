@@ -34,7 +34,7 @@ export default class CaixaFluxo extends React.Component {
 			"dataIni" : sistema.formataData( this.state.dataIni ),
 			"dataFim" : sistema.formataData( this.state.dataFim )
 		}, (resposta) => {			
-			resposta.json().then( (dados) => {		
+			resposta.json().then( (dados) => {	
 				this.setState( { balancosDiarios : dados } );
 				
 				if ( dados.length === 0 )

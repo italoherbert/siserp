@@ -16,14 +16,15 @@ import italo.siserp.exception.DataIniAposDataFimException;
 import italo.siserp.exception.DataIniInvalidaException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LongInvalidoException;
+import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
 import italo.siserp.exception.UsuarioNaoEncontradoException;
 import italo.siserp.exception.ValorRecebidoInvalidoException;
+import italo.siserp.model.request.BuscaContasReceberRequest;
+import italo.siserp.model.request.EfetuarRecebimentoRequest;
+import italo.siserp.model.response.ContasReceberResponse;
+import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.ContasReceberService;
-import italo.siserp.service.request.BuscaContasReceberRequest;
-import italo.siserp.service.request.EfetuarRecebimentoRequest;
-import italo.siserp.service.response.ContasReceberResponse;
-import italo.siserp.service.response.ErroResponse;
 
 @RestController
 @RequestMapping(value="/api/conta/receber")
@@ -32,7 +33,7 @@ public class ContasReceberController {
 	@Autowired
 	private ContasReceberService contasReceberService;
 	
-	@PreAuthorize("hasAuthority('contasPagarWRITE')")
+	@PreAuthorize("hasAuthority('vendaWRITE')")
 	@PostMapping(value="/efetuarecebimento/{usuarioId}")
 	public ResponseEntity<Object> efetuaRecebimento( @PathVariable Long usuarioId, @RequestBody EfetuarRecebimentoRequest request ) {
 		
@@ -58,6 +59,28 @@ public class ContasReceberController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );			
 		} catch (LongInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );						
+		}
+	}
+	
+	@PreAuthorize("hasAuthority('contasReceberWRITE')")
+	@PostMapping(value="/restauradebito/{parcelaId}")
+	public ResponseEntity<Object> restauraDebito( @PathVariable Long parcelaId ) {
+		try {
+			contasReceberService.restauraDebito( parcelaId );
+			return ResponseEntity.ok().build();
+		} catch (ParcelaNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PARCELA_NAO_ENCONTRADA ) );						
+		}
+	}
+	
+	@PreAuthorize("hasAuthority('contasReceberWRITE')")
+	@PostMapping(value="/restaurarecebimento/{parcelaId}")
+	public ResponseEntity<Object> restauraRecebimento( @PathVariable Long parcelaId ) {
+		try {
+			contasReceberService.restauraRecebimento( parcelaId );
+			return ResponseEntity.ok().build();
+		} catch (ParcelaNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PARCELA_NAO_ENCONTRADA ) );						
 		}
 	}
 		

@@ -15,10 +15,10 @@ import italo.siserp.exception.PermissaoGrupoNaoEncontradoException;
 import italo.siserp.exception.PermissaoLeituraException;
 import italo.siserp.exception.PermissaoRemocaoException;
 import italo.siserp.exception.PermissaoTipoInvalidoException;
+import italo.siserp.model.request.SavePermissaoGrupoRequest;
+import italo.siserp.model.request.SavePermissaoRequest;
+import italo.siserp.model.response.ErroResponse;
 import italo.siserp.service.PermissaoGrupoService;
-import italo.siserp.service.request.SavePermissaoGrupoRequest;
-import italo.siserp.service.request.SavePermissaoRequest;
-import italo.siserp.service.response.ErroResponse;
 
 @RestController
 @RequestMapping(value="/api/permissao")

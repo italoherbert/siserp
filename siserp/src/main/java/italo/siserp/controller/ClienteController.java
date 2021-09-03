@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import italo.siserp.exception.ClienteNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
 import italo.siserp.exception.UsuarioJaExisteException;
+import italo.siserp.model.request.BuscaClientesRequest;
+import italo.siserp.model.request.SaveClienteRequest;
+import italo.siserp.model.response.ClienteResponse;
+import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.IdResponse;
 import italo.siserp.service.ClienteService;
-import italo.siserp.service.request.BuscaClientesRequest;
-import italo.siserp.service.request.SaveClienteRequest;
-import italo.siserp.service.response.ClienteResponse;
-import italo.siserp.service.response.ErroResponse;
-import italo.siserp.service.response.IdResponse;
 
 @RestController
 @RequestMapping(value="/api/cliente")

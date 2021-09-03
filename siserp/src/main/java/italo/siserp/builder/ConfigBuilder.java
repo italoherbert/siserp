@@ -3,9 +3,9 @@ package italo.siserp.builder;
 import org.springframework.stereotype.Component;
 
 import italo.siserp.model.Config;
-import italo.siserp.service.request.SaveConfigSemLogoRequest;
-import italo.siserp.service.request.SaveLogoConfigRequest;
-import italo.siserp.service.response.ConfigLogoResponse;
+import italo.siserp.model.request.SaveConfigSemLogoRequest;
+import italo.siserp.model.request.SaveLogoConfigRequest;
+import italo.siserp.model.response.ConfigLogoResponse;
 
 @Component
 public class ConfigBuilder {

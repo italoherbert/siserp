@@ -7,7 +7,7 @@ import DatePicker from 'react-datepicker';
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
 
-import VendasPagamento from './vendas-pagamento';
+import VendasPagamento from '../vendas/vendas-pagamento';
 
 export default class ContasReceber extends React.Component {
 	
@@ -26,7 +26,6 @@ export default class ContasReceber extends React.Component {
 			debitoTotal : 0
 		};						
 		
-		this.valorRecebido = React.createRef();
 		this.incluirContasPagas = React.createRef();
 		this.incluirCliente = React.createRef();
 		this.clienteNomeIni = React.createRef();
@@ -60,15 +59,21 @@ export default class ContasReceber extends React.Component {
 			} );	
 		}, this );
 	}
-			
-	efetuarRecebimento( e, index, clienteId ) {
+		
+	restauraDebito( e, parcelaId ) {
 		e.preventDefault();
 				
-		sistema.wsPost(	'/api/conta/receber/efetuarecebimento/'+clienteId, {
-			valorRecebido : this.valorRecebido.current.value
-		}, (resposta) => {
+		sistema.wsPost(	'/api/conta/receber/restauradebito/'+parcelaId, {}, (resposta) => {
 			this.filtrar( e, false );
-		}, this );								
+		}, this );
+	}
+
+	restauraRecebimento( e, parcelaId ) {
+		e.preventDefault();
+		
+		sistema.wsPost(	'/api/conta/receber/restaurarecebimento/'+parcelaId, {}, (resposta) => {
+			this.filtrar( e, false );
+		}, this );
 	}
 	
 	changeDataIni( date ) {
@@ -78,26 +83,12 @@ export default class ContasReceber extends React.Component {
 	changeDataFim( date ) {
 		this.setState( { dataFim : date } );
 	}
-
-	paraTelaPagamentos( e ) {		
-		ReactDOM.render( <VendasPagamento />, sistema.paginaElemento() );
-	}
 				
 	render() {
 		const { erroMsg, infoMsg, contasObj, dataIni, dataFim } = this.state;
 		
 		return (
-			<Container>	
-				<Row>
-					<Col>
-						<Form>
-							<Button variant="primary" className="float-end" onClick={ (e) => this.paraTelaPagamentos(e) }>Efetue um pagamento</Button>							
-						</Form>
-					</Col>
-				</Row>
-
-				<br />				
-
+			<Container>								
 				<h4 className="text-center">Lista de contas a receber</h4>
 				<div className="tbl-pnl">
 					<Table striped bordered hover>
@@ -106,8 +97,9 @@ export default class ContasReceber extends React.Component {
 								<th>Data de pagamento</th>
 								<th>Data de vencimento</th>
 								<th>Cliente</th>
-								<th>Total</th>
+								<th>Valor</th>
 								<th>Débito</th>
+								<th>Restaurar débito</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -119,6 +111,14 @@ export default class ContasReceber extends React.Component {
 										<td>{ conta.clienteNome }</td>
 										<td>{ sistema.formataReal( conta.parcela.valor ) }</td>
 										<td>{ sistema.formataReal( conta.parcela.debito ) }</td>
+										<td>
+											<button type="button" className="btn btn-link p-0" 
+													onClick={ conta.parcela.debitoRestaurado === 'true' ? 
+														(e) => this.restauraRecebimento( e, conta.parcela.id ) : 
+														(e) => this.restauraDebito( e, conta.parcela.id ) }>
+												{ conta.parcela.debitoRestaurado === 'true' ? 'desfazer' : 'restaurar' }												
+											</button>
+										</td>
 									</tr>
 								);
 							} ) }	
@@ -179,7 +179,8 @@ export default class ContasReceber extends React.Component {
 										<Form.Group className="mb-2">													
 											<Form.Label>&nbsp;</Form.Label>
 											<br />
-											<input className="my-2" type="checkbox" ref={this.incluirContasPagas} /> &nbsp; Incluir contas pagas										
+											<input className="my-2" type="checkbox" ref={this.incluirContasPagas} /> 
+											&nbsp; Incluir contas quitadas										
 										</Form.Group>
 									</Col>
 								</Row>						
