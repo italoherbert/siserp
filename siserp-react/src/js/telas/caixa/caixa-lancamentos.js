@@ -42,7 +42,7 @@ export default class CaixaLancamentos extends React.Component {
 		if ( this.props.getTipo === "caixaid" ) {
 			url = '/api/caixa/get/'+this.props.caixaId;
 		} else {
-			url = '/api/caixa/get/uid/hoje/'+sistema.usuario.id;
+			url = '/api/caixa/get/hoje';
 		}
 				
 		sistema.wsGet( url, (resposta) => {

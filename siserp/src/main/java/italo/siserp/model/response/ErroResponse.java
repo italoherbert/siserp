@@ -29,6 +29,7 @@ public class ErroResponse {
 	public final static int RECURSO_NAO_ENCONTRADO = 112;
 	public final static int PERMISSAO_GRUPO_NAO_ENCONTRADO = 113;
 	public final static int PARCELA_NAO_ENCONTRADA = 114;
+	public final static int USUARIO_LOGADO_NAO_ENCONTRADO = 115;
 	
 	public final static int CODIGO_BARRAS_NAO_REGISTRADO = 150;
 		
@@ -93,7 +94,7 @@ public class ErroResponse {
 	public final static int SUBTOTAL_INVALIDO = 515;
 	public final static int DESCONTO_INVALIDO = 516;
 	public final static int DEBITO_INVALIDO = 517;
-	public final static int PERFIL_DE_CAIXA_REQUEERIDO = 518;
+	public final static int PERFIL_DE_CAIXA_REQUERIDO = 518;
 	public final static int CAIXA_VALOR_INICIAL_INVALIDO = 519;
 	public final static int CAIXA_NAO_ABERTO = 520;
 	public final static int CAIXA_JA_ABERTO = 521;
@@ -172,6 +173,9 @@ public class ErroResponse {
 				break;
 			case PARCELA_NAO_ENCONTRADA:
 				mensagem = "Parcela não encontrada";
+				break;
+			case USUARIO_LOGADO_NAO_ENCONTRADO:
+				mensagem = "Usuário logado não encontrado.";
 				break;
 				
 			case USUARIO_JA_EXISTE:
@@ -351,7 +355,7 @@ public class ErroResponse {
 			case DEBITO_INVALIDO:
 				mensagem = "O campo débito está em formato inválido.";
 				break;
-			case PERFIL_DE_CAIXA_REQUEERIDO:
+			case PERFIL_DE_CAIXA_REQUERIDO:
 				mensagem = "Perfil de caixa requerido.";
 				break;
 			case CAIXA_VALOR_INICIAL_INVALIDO:

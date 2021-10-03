@@ -27,5 +27,5 @@ public class ContaReceberBuilder {
 	public ContaReceberResponse novoContaReceberResponse() {
 		return new ContaReceberResponse();
 	}
-	
+		
 }

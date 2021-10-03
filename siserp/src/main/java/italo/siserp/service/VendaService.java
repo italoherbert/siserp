@@ -35,7 +35,7 @@ import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.Caixa;
@@ -100,7 +100,7 @@ public class VendaService {
 	private FormaPagEnumConversor enumConversor;
 	
 	@Transactional
-	public void efetuaVenda( Long usuarioId, SaveVendaRequest request ) 
+	public void efetuaVenda( Long logadoUID, SaveVendaRequest request ) 
 			throws QuantidadeInvalidaException,
 				PrecoUnitVendaInvalidoException,
 				SubtotalInvalidoException,
@@ -113,13 +113,13 @@ public class VendaService {
 				ValorPagoInvalidoException,
 				ClienteNaoEncontradoException,
 				FormaPagInvalidaException, 
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException, 
 				ParcelaValorInvalidoException, 
 				DataPagamentoInvalidaException, 
 				DataVencimentoInvalidaException {				
 								
-		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Caixa caixa = caixaDAO.buscaHojeCaixaBean( logadoUID );
 		
 		Venda v = vendaBuilder.novoVenda();
 		vendaBuilder.carregaVenda( v, request );
@@ -257,6 +257,19 @@ public class VendaService {
 	
 	public List<VendaResponse> buscaVendasPorClienteId( Long clienteId ) {
 		List<Venda> vendas = vendaRepository.buscaVendasPorClienteId( clienteId );
+		
+		List<VendaResponse> lista = new ArrayList<>();
+		for( Venda v : vendas ) {
+			VendaResponse resp = vendaBuilder.novoVendaResponse();
+			vendaBuilder.carregaVendaResponse( resp, v );
+			
+			lista.add( resp );
+		}
+		return lista;
+	}
+	
+	public List<VendaResponse> buscaVendasEmDebitoPorClienteId( Long clienteId ) {
+		List<Venda> vendas = vendaRepository.buscaVendasEmDebitoPorClienteId( clienteId );
 		
 		List<VendaResponse> lista = new ArrayList<>();
 		for( Venda v : vendas ) {

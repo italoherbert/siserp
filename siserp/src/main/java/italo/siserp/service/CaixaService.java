@@ -27,7 +27,7 @@ import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Funcionario;
@@ -73,16 +73,16 @@ public class CaixaService {
 	@Autowired
 	private NumeroUtil numeroUtil;
 	
-	public void abreCaixa( Long usuarioId, AbreCaixaRequest req ) 
+	public void abreCaixa( Long logadoUID, AbreCaixaRequest req ) 
 			throws PerfilCaixaRequeridoException,
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException,
 				CaixaValorInicialInvalidoException,
 				CaixaJaAbertoException, 
 				LancamentoTipoInvalidoException,
 				LancamentoValorInvalidoException {
 		
-		Funcionario f = caixaDAO.buscaFuncionarioPorUID( usuarioId );		
+		Funcionario f = caixaDAO.buscaFuncionarioPorUID( logadoUID );		
 		
 		Date hoje = dataUtil.apenasData( new Date() );
 		
@@ -108,16 +108,16 @@ public class CaixaService {
 		caixaRepository.save( caixa );		
 	}
 	
-	public void fechaCaixa( Long usuarioId, FechaCaixaRequest request ) 
+	public void fechaCaixa( Long logadoUID, FechaCaixaRequest request ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException, 
 				LancamentoTipoInvalidoException, 
 				LancamentoValorInvalidoException,
 				ValorEmCaixaInsuficienteException {
 		
-		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Caixa caixa = caixaDAO.buscaHojeCaixaBean( logadoUID );
 		CaixaBalancoDAOTO caixaBalancoDAOTO = caixaDAO.geraCaixaBalanco( caixa );
 		
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
@@ -212,13 +212,13 @@ public class CaixaService {
 		}
 	}	
 
-	public CaixaBalancoResponse geraCaixaBalancoHoje( Long usuarioId ) 
+	public CaixaBalancoResponse geraCaixaBalancoHoje( Long logadoUID ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException {
 		
-		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );						
+		Caixa c = caixaDAO.buscaHojeCaixaBean( logadoUID );						
 		CaixaBalancoDAOTO balanco = caixaDAO.geraCaixaBalanco( c );
 		
 		CaixaBalancoResponse resp = caixaBalancoBuilder.novoCaixaBalancoResponse();
@@ -275,13 +275,13 @@ public class CaixaService {
 		return resp;
 	}
 	
-	public CaixaResponse buscaCaixaHoje( Long usuarioId ) 
+	public CaixaResponse buscaCaixaHoje( Long logadoUID ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException {
 				
-		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Caixa c = caixaDAO.buscaHojeCaixaBean( logadoUID );
 		
 		CaixaResponse resp = caixaBuilder.novoCaixaResponse();
 		caixaBuilder.carregaCaixaResponse( resp, c );

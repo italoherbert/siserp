@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import italo.siserp.model.VendaParcela;
 import italo.siserp.model.response.ContaReceberResponse;
 import italo.siserp.model.response.ContasReceberResponse;
+import italo.siserp.model.response.RecebimentoEfetuadoResponse;
 import italo.siserp.util.NumeroUtil;
 
 @Component
@@ -47,6 +48,10 @@ public class ContasReceberBuilder {
 	
 	public ContasReceberResponse novoContasReceberResponse() {
 		return new ContasReceberResponse();
+	}
+	
+	public RecebimentoEfetuadoResponse novoRecebimentoEfetuadoResponse() {
+		return new RecebimentoEfetuadoResponse();
 	}
 	
 }

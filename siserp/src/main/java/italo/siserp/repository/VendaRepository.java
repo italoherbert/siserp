@@ -18,4 +18,9 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
 	@Query( "select v from Venda v join v.cliente c where c.id=?1" )
 	public List<Venda> buscaVendasPorClienteId( Long clienteId );
 	
+	@Query( "select v from Venda v join v.cliente c "
+			+ "where c.id=?1 and "
+			+ 		"(select sum(debito) from VendaParcela vp where vp.venda.id=v.id)>0" )
+	public List<Venda> buscaVendasEmDebitoPorClienteId( Long clienteId );
+	
 }

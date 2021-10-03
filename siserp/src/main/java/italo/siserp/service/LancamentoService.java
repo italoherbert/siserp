@@ -18,7 +18,7 @@ import italo.siserp.exception.LancamentoNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Lancamento;
@@ -44,13 +44,13 @@ public class LancamentoService {
 	private CaixaDAO caixaDAO;
 		
 	@Transactional
-	public void deletaLancamentosHoje( Long usuarioId ) 
+	public void deletaLancamentosHoje( Long logadoUID ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
-				UsuarioNaoEncontradoException,
+				UsuarioLogadoNaoEncontradoException,
 				FuncionarioNaoEncontradoException {
 				
-		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Caixa c = caixaDAO.buscaHojeCaixaBean( logadoUID );
 		
 		List<Lancamento> lancamentos = new ArrayList<>( c.getLancamentos() );
 		for( Lancamento l : lancamentos ) {
@@ -59,16 +59,16 @@ public class LancamentoService {
 		}
 	}
 				
-	public void efetuaLancamento( Long usuarioId, SaveLancamentoRequest request ) 
+	public void efetuaLancamento( Long logadoUID, SaveLancamentoRequest request ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
 				LancamentoTipoInvalidoException, 
 				LancamentoValorInvalidoException, 
 				ValorEmCaixaInsuficienteException,
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException {
 		
-		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Caixa c = caixaDAO.buscaHojeCaixaBean( logadoUID );
 		CaixaBalancoDAOTO caixaBalancoDAOTO = caixaDAO.geraCaixaBalanco( c );
 				
 		Lancamento lanc = lancamentoBuilder.novoLancamento();
@@ -83,13 +83,13 @@ public class LancamentoService {
 		lancamentoRepository.save( lanc );
 	}
 			
-	public List<LancamentoResponse> buscaLancamentosPorUsuarioId( Long usuarioId ) 
+	public List<LancamentoResponse> buscaLancamentosPorUsuarioId( Long logadoUID ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
-				UsuarioNaoEncontradoException,
+				UsuarioLogadoNaoEncontradoException,
 				FuncionarioNaoEncontradoException {
 		
-		Caixa c = caixaDAO.buscaHojeCaixaBean( usuarioId );
+		Caixa c = caixaDAO.buscaHojeCaixaBean( logadoUID );
 		List<Lancamento> lancamentos = c.getLancamentos();
 		
 		List<LancamentoResponse> responses = new ArrayList<>();

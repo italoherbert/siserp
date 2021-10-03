@@ -82,13 +82,13 @@ export default class AddCompraProdutoCategorias extends React.Component {
 			cat = "*";
 		
 		this.setState( { categoria : item } );	
-		
+
 		sistema.wsGet( '/api/categoriamap/filtra/categoria/limit/'+cat+'/5', (resposta) => {
 			resposta.json().then( (dados) => {
 				this.setState( { categoriasLista : [] } );
 				
 				for( let i = 0; i < dados.length; i++ )
-					this.state.categoriasLista.push( dados[ i ].descricao );					
+					this.state.categoriasLista.push( dados[ i ].categoria );					
 
 				this.setState( {} );
 			} );
@@ -111,7 +111,7 @@ export default class AddCompraProdutoCategorias extends React.Component {
 				this.setState( { subcategoriasLista : [] } );
 				
 				for( let i = 0; i < dados.length; i++ )
-					this.state.subcategoriasLista.push( dados[ i ].descricao );					
+					this.state.subcategoriasLista.push( dados[ i ].subcategoria );					
 				
 				this.setState( {} );
 			} );

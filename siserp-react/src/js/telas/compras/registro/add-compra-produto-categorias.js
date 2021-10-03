@@ -79,6 +79,7 @@ export default class AddCompraProdutoCategorias extends React.Component {
 	}
 			
 	categoriaOnChange( item ) {
+		alert( "SSSS" );
 		let cat = item;
 		if ( cat.trim().length === 0 )
 			cat = "*";

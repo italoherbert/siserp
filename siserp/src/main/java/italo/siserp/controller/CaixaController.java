@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +26,7 @@ import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.model.request.AbreCaixaRequest;
 import italo.siserp.model.request.BuscaBalancosDiarios;
@@ -47,9 +48,8 @@ public class CaixaController {
 	private CaixaService caixaService;
 			
 	@PreAuthorize("hasAuthority('caixaWRITE')")
-	@PostMapping(value="/abre/{usuarioId}")
-	public ResponseEntity<Object> abreCaixa( 
-			@PathVariable Long usuarioId, @RequestBody AbreCaixaRequest request ) {
+	@PostMapping(value="/abre")
+	public ResponseEntity<Object> abreCaixa( @RequestHeader Long logadoUID, @RequestBody AbreCaixaRequest request ) {
 		
 		if ( request.getLancamento() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_ABERTURA_CAIXA_OBRITATORIO ) );		
@@ -60,10 +60,10 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_LANCAMENTO_OBRIGATORIO ) );		
 		
 		try {
-			caixaService.abreCaixa( usuarioId, request );
+			caixaService.abreCaixa( logadoUID, request );
 			return ResponseEntity.ok().build();
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );		
 		} catch (CaixaValorInicialInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_VALOR_INICIAL_INVALIDO ) );		
 		} catch (CaixaJaAbertoException e) {
@@ -72,8 +72,8 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_TIPO_INVALIDO ) );					
 		} catch (LancamentoValorInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_VALOR_INVALIDO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		}		
@@ -81,9 +81,9 @@ public class CaixaController {
 	
 
 	@PreAuthorize("hasAuthority('caixaWRITE')")
-	@PostMapping(value="/fecha/{usuarioId}")
+	@PostMapping(value="/fecha")
 	public ResponseEntity<Object> fechaCaixa( 
-			@PathVariable Long usuarioId, @RequestBody FechaCaixaRequest request ) {
+			@RequestHeader Long logadoUID, @RequestBody FechaCaixaRequest request ) {
 		
 		if ( request.getLancamento() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_ABERTURA_CAIXA_OBRITATORIO ) );		
@@ -94,16 +94,16 @@ public class CaixaController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_LANCAMENTO_OBRIGATORIO ) );		
 		
 		try {
-			caixaService.fechaCaixa( usuarioId, request );
+			caixaService.fechaCaixa( logadoUID, request );
 			return ResponseEntity.ok().build();
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );		
 		} catch (LancamentoTipoInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_TIPO_INVALIDO ) );					
 		} catch (LancamentoValorInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_VALOR_INVALIDO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		} catch (CaixaNaoAbertoException e) {
@@ -114,34 +114,34 @@ public class CaixaController {
 	}
 	
 	@PreAuthorize("hasAuthority('caixaREAD')")	
-	@GetMapping(value="/balanco/hoje/{usuarioId}")
-	public ResponseEntity<Object> geraBalancoCaixaHoje( @PathVariable Long usuarioId ) {
+	@GetMapping(value="/balanco/hoje")
+	public ResponseEntity<Object> geraBalancoCaixaHoje( @RequestHeader Long logadoUID ) {
 		try {						
-			CaixaBalancoResponse resp = caixaService.geraCaixaBalancoHoje( usuarioId );
+			CaixaBalancoResponse resp = caixaService.geraCaixaBalancoHoje( logadoUID );
 			return ResponseEntity.ok( resp );
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );					
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		}		
 	}
 	
 	@PreAuthorize("hasAuthority('caixaREAD')")
-	@GetMapping(value="/get/uid/hoje/{usuarioId}")
-	public ResponseEntity<Object> buscaPorUsuarioID( @PathVariable Long usuarioId ) {		
+	@GetMapping(value="/get/hoje")
+	public ResponseEntity<Object> buscaPorUsuarioID( @RequestHeader Long logadoUID ) {		
 		try {
-			CaixaResponse resp = caixaService.buscaCaixaHoje( usuarioId );
+			CaixaResponse resp = caixaService.buscaCaixaHoje( logadoUID );
 			return ResponseEntity.ok( resp );
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );		
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		}

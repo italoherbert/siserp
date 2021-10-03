@@ -82,8 +82,8 @@ export default class ConfigVendaPagamento extends React.Component {
 	}
 					
 	render() {
-		const { infoMsg, erroMsg, formasPag, clientesNomeLista, incluirCliente } = this.state;
-        const { valores, cliente, formaPagReferencia, clienteNomeReferencia } = this.props;
+		const { infoMsg, erroMsg, formasPag, clientesNomeLista } = this.state;
+        const { valores, cliente, clienteNomeReferencia } = this.props;
 							
 		return(	
 			<div>	

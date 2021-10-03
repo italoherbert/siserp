@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ import italo.siserp.exception.LancamentoNaoEncontradoException;
 import italo.siserp.exception.LancamentoTipoInvalidoException;
 import italo.siserp.exception.LancamentoValorInvalidoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorEmCaixaInsuficienteException;
 import italo.siserp.model.request.SaveLancamentoRequest;
 import italo.siserp.model.response.ErroResponse;
@@ -39,8 +40,8 @@ public class LancamentoController {
 	private LancamentoEnumConversor lancamentoTipoEnumConversor;
 				
 	@PreAuthorize("hasAuthority('lancamentoWRITE')")	
-	@PostMapping(value="/novo/hoje/{usuarioId}")
-	public ResponseEntity<Object> efetuarLancamento( @PathVariable Long usuarioId, @RequestBody SaveLancamentoRequest request ) {		
+	@PostMapping(value="/novo/hoje")
+	public ResponseEntity<Object> efetuarLancamento( @RequestHeader Long logadoUID, @RequestBody SaveLancamentoRequest request ) {		
 		if ( request.getTipo() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.TIPO_LANCAMENTO_OBRIGATORIO ) );		
 		if ( request.getTipo().isBlank() )
@@ -52,18 +53,18 @@ public class LancamentoController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_LANCAMENTO_OBRIGATORIO ) );		
 				
 		try {			
-			lancamentoService.efetuaLancamento( usuarioId, request );
+			lancamentoService.efetuaLancamento( logadoUID, request );
 			return ResponseEntity.ok().build();
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );		
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );		
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );		
 		} catch (LancamentoTipoInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_TIPO_INVALIDO ) );		
 		} catch (LancamentoValorInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.LANCAMENTO_VALOR_INVALIDO ) );		
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		} catch (ValorEmCaixaInsuficienteException e) {
@@ -72,17 +73,17 @@ public class LancamentoController {
 	}
 	
 	@PreAuthorize("hasAuthority('lancamentoREAD')")	
-	@GetMapping("/lista/hoje/{usuarioId}")
-	public ResponseEntity<Object> listaLancamentosPorUsuario( @PathVariable Long usuarioId ) {
+	@GetMapping("/lista/hoje")
+	public ResponseEntity<Object> listaLancamentosPorUsuario( @RequestHeader Long logadoUID ) {
 		try {			
-			List<LancamentoResponse> lista = lancamentoService.buscaLancamentosPorUsuarioId( usuarioId );
+			List<LancamentoResponse> lista = lancamentoService.buscaLancamentosPorUsuarioId( logadoUID );
 			return ResponseEntity.ok( lista );
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );					
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		}				
@@ -100,17 +101,17 @@ public class LancamentoController {
 	}
 
 	@PreAuthorize("hasAuthority('lancamentoDELETE')")	
-	@DeleteMapping(value="/deletatodos/hoje/{usuarioId}")
-	public ResponseEntity<Object> deletaLancamentos( @PathVariable Long usuarioId ) {
+	@DeleteMapping(value="/deletatodos/hoje")
+	public ResponseEntity<Object> deletaLancamentos( @RequestHeader Long logadoUID ) {
 		try {			
-			lancamentoService.deletaLancamentosHoje( usuarioId );
+			lancamentoService.deletaLancamentosHoje( logadoUID );
 			return ResponseEntity.ok().build();
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );					
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );					
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );					
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		}

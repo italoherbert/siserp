@@ -32,7 +32,7 @@ export default class Caixa extends React.Component {
 	}		
 		
 	atualizaDadosHoje() {				
-		sistema.wsGet( '/api/caixa/balanco/hoje/'+sistema.usuario.id, (resposta) => {
+		sistema.wsGet( '/api/caixa/balanco/hoje', (resposta) => {
 			resposta.json().then( (dados) => {
 				this.setState( { balanco : dados } );				
 			} )
@@ -43,7 +43,7 @@ export default class Caixa extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 								
-		sistema.wsPost( '/api/caixa/fecha/'+sistema.usuario.id, {
+		sistema.wsPost( '/api/caixa/fecha', {
 			lancamento : {
 				tipo : "DEBITO",
 				valor : sistema.paraFloat( this.valorFechamento.current.value )

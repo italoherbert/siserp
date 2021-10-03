@@ -67,7 +67,7 @@ class Sistema {
 			let s = ""+n;
 			return "R$ "+s.substring( 0, s.length-2 ) + ',' + s.substring( s.length-2, s.length );		
 		} else {
-			return"R$ " +( ( ""+v ).replace( '.', ',' ) );			
+			return "R$ " +( ( ""+v ).replace( '.', ',' ) );			
 		}				
 	}
 	
@@ -109,7 +109,8 @@ class Sistema {
 			method : 'GET',
 			headers : {
 				'Accept' : 'application/pdf',
-				'Authorization' : 'Bearer '+this.token
+				'Authorization' : 'Bearer '+this.token,
+				'logadoUID' : this.usuario.id
 			}
 		}, responseOk, compRef );
 	}
@@ -139,7 +140,8 @@ class Sistema {
 			method : method,
 			headers : {
 				'Content-Type' : 'application/json; charset=UTF-8',
-				'Authorization' : 'Bearer '+this.token
+				'Authorization' : 'Bearer '+this.token,
+				'logadoUID' : this.usuario.id
 			},
 			body : JSON.stringify( requestDados )
 		}, responseOk, compRef );
@@ -149,7 +151,8 @@ class Sistema {
 		this.ws( url, {
 			method : method,
 			headers : {
-				'Authorization' : 'Bearer '+this.token
+				'Authorization' : 'Bearer '+this.token,
+				'logadoUID' : this.usuario.id
 			}
 		}, responseOk, compRef );
 	}

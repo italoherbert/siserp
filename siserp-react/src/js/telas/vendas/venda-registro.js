@@ -52,7 +52,7 @@ export default class VendaRegistro extends React.Component {
 			return;
 		}
 
-		if ( valores.formaPag === 'APRAZO' && parcelas.length == 0 ) {
+		if ( valores.formaPag === 'APRAZO' && parcelas.length === 0 ) {
 			this.setState( { erroMsg : "Nenhuma parcela informada." } );
 			return;
 		}
@@ -90,12 +90,16 @@ export default class VendaRegistro extends React.Component {
 			} );
 		}
 
-		sistema.wsPost( '/api/venda/efetua/'+sistema.usuario.id, {
+		let clienteNomeValor = "";
+		if ( this.state.cliente.incluir === true )
+			clienteNomeValor = this.clienteNome.current.value;		
+
+		sistema.wsPost( '/api/venda/efetua', {
 			subtotal : sistema.paraFloat( this.state.valores.subtotal ),
 			desconto : sistema.paraFloat( this.state.valores.desconto ),
 			formaPag : this.state.formaPag,
 			incluirCliente : this.state.cliente.incluir,
-			clienteNome : this.clienteNome.current.value,
+			clienteNome : clienteNomeValor,
 			itensVenda : itensVenda,
 			parcelas : parcelasList
 		}, (resposta) => {									

@@ -19,7 +19,7 @@ export default class GeraVendaParcelas extends React.Component {
 	calcularParcelas( e ) {
 		e.preventDefault();
 		
-		const { parcelas, itensProdutos, valores } = this.props;
+		const { parcelas, valores } = this.props;
 				
 		parcelas.splice( 0, parcelas.length );
 					

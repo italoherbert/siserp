@@ -39,7 +39,6 @@ export default class CaixaFluxoDia extends React.Component {
 					}
 				
 					let saldo = credito - debito;
-					alert( debito+"  "+credito+"  "+saldo );	
 					
 					this.state.caixas.push( {
 						id : caixa.id,

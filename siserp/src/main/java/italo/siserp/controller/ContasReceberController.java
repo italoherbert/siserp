@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,12 +19,13 @@ import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LongInvalidoException;
 import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorRecebidoInvalidoException;
 import italo.siserp.model.request.BuscaContasReceberRequest;
 import italo.siserp.model.request.EfetuarRecebimentoRequest;
 import italo.siserp.model.response.ContasReceberResponse;
 import italo.siserp.model.response.ErroResponse;
+import italo.siserp.model.response.RecebimentoEfetuadoResponse;
 import italo.siserp.service.ContasReceberService;
 
 @RestController
@@ -34,8 +36,8 @@ public class ContasReceberController {
 	private ContasReceberService contasReceberService;
 	
 	@PreAuthorize("hasAuthority('vendaWRITE')")
-	@PostMapping(value="/efetuarecebimento/{usuarioId}")
-	public ResponseEntity<Object> efetuaRecebimento( @PathVariable Long usuarioId, @RequestBody EfetuarRecebimentoRequest request ) {
+	@PostMapping(value="/efetuarecebimento")
+	public ResponseEntity<Object> efetuaRecebimento( @RequestHeader Long locadoUID, @RequestBody EfetuarRecebimentoRequest request ) {
 		
 		if ( request.getClienteId() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
@@ -43,18 +45,18 @@ public class ContasReceberController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
 		
 		try {
-			contasReceberService.efetuaRecebimento( usuarioId, request );
-			return ResponseEntity.ok().build();
+			RecebimentoEfetuadoResponse resp = contasReceberService.efetuaRecebimento( locadoUID, request );
+			return ResponseEntity.ok( resp );
 		} catch (ClienteNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
 		} catch (ValorRecebidoInvalidoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.VALOR_RECEBIDO_INVALIDO ) );
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );
 		} catch (CaixaNaoAbertoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CAIXA_NAO_ABERTO ) );			
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );			
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );			
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );			
 		} catch (LongInvalidoException e) {

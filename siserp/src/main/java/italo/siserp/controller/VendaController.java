@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +32,7 @@ import italo.siserp.exception.PrecoUnitVendaInvalidoException;
 import italo.siserp.exception.ProdutoNaoEncontradoException;
 import italo.siserp.exception.QuantidadeInvalidaException;
 import italo.siserp.exception.SubtotalInvalidoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorPagoInvalidoException;
 import italo.siserp.exception.VendaNaoEncontradaException;
 import italo.siserp.model.FormaPag;
@@ -54,8 +55,8 @@ public class VendaController {
 	private FormaPagEnumConversor formaPagEnumConversor;
 		
 	@PreAuthorize("hasAnyAuthority('vendaWRITE')")	
-	@PostMapping(value="/efetua/{usuarioId}")
-	public ResponseEntity<Object> efetuaVenda( @PathVariable Long usuarioId, @RequestBody SaveVendaRequest request ) {		
+	@PostMapping(value="/efetua")
+	public ResponseEntity<Object> efetuaVenda( @RequestHeader Long logadoUID, @RequestBody SaveVendaRequest request ) {		
 		if ( request.getIncluirCliente() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FLAG_INCLUIR_CLIENTE_VALOR_INVALIDO ) );						
 		if ( request.getIncluirCliente().isBlank() )
@@ -79,7 +80,7 @@ public class VendaController {
 		}
 				
 		try {
-			vendaService.efetuaVenda( usuarioId, request );
+			vendaService.efetuaVenda( logadoUID, request );
 			return ResponseEntity.ok().build();
 		} catch (DataVendaInvalidaException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.DATA_COMPRA_INVALIDA, e.getParams() ) );
@@ -96,9 +97,9 @@ public class VendaController {
 		} catch (ProdutoNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PRODUTO_NAO_ENCONTRADO ) );			
 		} catch (PerfilCaixaRequeridoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUEERIDO ) );			
-		} catch (UsuarioNaoEncontradoException e) {
-			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_NAO_ENCONTRADO ) );					
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.PERFIL_DE_CAIXA_REQUERIDO ) );			
+		} catch (UsuarioLogadoNaoEncontradoException e) {
+			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.USUARIO_LOGADO_NAO_ENCONTRADO ) );					
 		} catch (FuncionarioNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.FUNCIONARIO_NAO_ENCONTRADO ) );					
 		} catch (CaixaNaoAbertoException e) {
@@ -146,6 +147,13 @@ public class VendaController {
 	@GetMapping("/lista/porcliente/{clienteId}")
 	public ResponseEntity<Object> buscaVendasPorClienteId( @PathVariable Long clienteId ) {
 		List<VendaResponse> lista = vendaService.buscaVendasPorClienteId( clienteId );
+		return ResponseEntity.ok( lista ); 
+	}
+	
+	@PreAuthorize("hasAnyAuthority('vendaREAD')")	
+	@GetMapping("/lista/emdebito/porcliente/{clienteId}")
+	public ResponseEntity<Object> buscaVendasEmDebitoPorClienteId( @PathVariable Long clienteId ) {
+		List<VendaResponse> lista = vendaService.buscaVendasEmDebitoPorClienteId( clienteId );
 		return ResponseEntity.ok( lista ); 
 	}
 	

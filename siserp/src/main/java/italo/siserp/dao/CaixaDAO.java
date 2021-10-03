@@ -11,7 +11,7 @@ import italo.siserp.dao.bean.CaixaBalancoDAOTO;
 import italo.siserp.exception.CaixaNaoAbertoException;
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.FormaPag;
 import italo.siserp.model.Funcionario;
@@ -76,13 +76,13 @@ public class CaixaDAO {
 		return balanco;
 	}
 				
-	public Caixa buscaHojeCaixaBean( Long usuarioId ) 
+	public Caixa buscaHojeCaixaBean( Long logadoUID ) 
 			throws PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException,
-				UsuarioNaoEncontradoException, 
+				UsuarioLogadoNaoEncontradoException, 
 				FuncionarioNaoEncontradoException {
 		
-		Funcionario f = this.buscaFuncionarioPorUID( usuarioId );
+		Funcionario f = this.buscaFuncionarioPorUID( logadoUID );
 		
 		Date hoje = dataUtil.apenasData( new Date() );
 		
@@ -93,12 +93,12 @@ public class CaixaDAO {
 		return cop.get();		
 	}
 	
-	public Funcionario buscaFuncionarioPorUID( Long usuarioId )
-			throws UsuarioNaoEncontradoException, 
+	public Funcionario buscaFuncionarioPorUID( Long logadoUID )
+			throws UsuarioLogadoNaoEncontradoException, 
 				PerfilCaixaRequeridoException,
 				FuncionarioNaoEncontradoException {
 		
-		Usuario u = usuarioRepository.findById( usuarioId ).orElseThrow( UsuarioNaoEncontradoException::new );
+		Usuario u = usuarioRepository.findById( logadoUID ).orElseThrow( UsuarioLogadoNaoEncontradoException::new );
 		
 		if ( !u.getGrupo().getNome().equalsIgnoreCase( UsuarioGrupo.CAIXA ) )
 			throw new PerfilCaixaRequeridoException();

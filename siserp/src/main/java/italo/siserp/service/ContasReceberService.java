@@ -22,7 +22,7 @@ import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.LongInvalidoException;
 import italo.siserp.exception.ParcelaNaoEncontradaException;
 import italo.siserp.exception.PerfilCaixaRequeridoException;
-import italo.siserp.exception.UsuarioNaoEncontradoException;
+import italo.siserp.exception.UsuarioLogadoNaoEncontradoException;
 import italo.siserp.exception.ValorRecebidoInvalidoException;
 import italo.siserp.model.Caixa;
 import italo.siserp.model.Cliente;
@@ -33,6 +33,7 @@ import italo.siserp.model.VendaParcela;
 import italo.siserp.model.request.BuscaContasReceberRequest;
 import italo.siserp.model.request.EfetuarRecebimentoRequest;
 import italo.siserp.model.response.ContasReceberResponse;
+import italo.siserp.model.response.RecebimentoEfetuadoResponse;
 import italo.siserp.repository.ClienteRepository;
 import italo.siserp.repository.LancamentoRepository;
 import italo.siserp.repository.VendaParcelaRepository;
@@ -67,12 +68,12 @@ public class ContasReceberService  {
 	private NumeroUtil numeroUtil;
 				
 	@Transactional
-	public void efetuaRecebimento( Long usuarioId, EfetuarRecebimentoRequest request ) 
+	public RecebimentoEfetuadoResponse efetuaRecebimento( Long usuarioId, EfetuarRecebimentoRequest request ) 
 			throws ClienteNaoEncontradoException, 
 				ValorRecebidoInvalidoException, 
 				PerfilCaixaRequeridoException, 
 				CaixaNaoAbertoException, 
-				UsuarioNaoEncontradoException,
+				UsuarioLogadoNaoEncontradoException,
 				FuncionarioNaoEncontradoException, 
 				LongInvalidoException {
 		
@@ -81,30 +82,30 @@ public class ContasReceberService  {
 		Caixa caixa = caixaDAO.buscaHojeCaixaBean( usuarioId );
 		Cliente cliente = clienteRepository.findById( clienteId ).orElseThrow( ClienteNaoEncontradoException::new );		
 		
-		double valor;
+		double valorPago;
 		try {
-			valor = numeroUtil.stringParaDouble( request.getValorPago() );
+			valorPago = numeroUtil.stringParaDouble( request.getValorPago() );
 		} catch (DoubleInvalidoException e) {
 			throw new ValorRecebidoInvalidoException();
 		} 
-	
-		double debito = valor;
+				
+		double troco = valorPago;
 				
 		List<Venda> vendas = cliente.getVendas();
 		int size = vendas.size();
-		for( int i = 0; debito > 0 && i < size; i++ ) {
+		for( int i = 0; troco > 0 && i < size; i++ ) {
 			Venda v = vendas.get( i );
 
 			List<VendaParcela> parcelas = v.getParcelas();
 			int size2 = parcelas.size();
-			for( int j = 0; debito > 0 && j < size2; j++ ) {
+			for( int j = 0; troco > 0 && j < size2; j++ ) {
 				VendaParcela p = parcelas.get( j );
-				if ( debito > p.getDebito() ) {
-					debito -= p.getDebito();
+				if ( troco > p.getDebito() ) {
+					troco -= p.getDebito();
 					p.setDebito( 0 ); 
 				} else {
-					p.setDebito( p.getDebito() - debito );
-					debito = 0;
+					p.setDebito( p.getDebito() - troco );
+					troco = 0;
 				}			
 				p.setDebitoRestaurado( false );
 				
@@ -116,9 +117,13 @@ public class ContasReceberService  {
 		Lancamento l = lancamentoBuilder.novoINILancamento( caixa );
 		l.setTipo( LancamentoTipo.CREDITO );
 		l.setObs( Lancamento.CLIENTE_PAGOU ); 
-		l.setValor( valor - debito );
+		l.setValor( valorPago - troco );
 				
 		lancamentoRepository.save( l );
+		
+		RecebimentoEfetuadoResponse resp = contasReceberBuilder.novoRecebimentoEfetuadoResponse();
+		resp.setTroco( numeroUtil.doubleParaString( troco ) );		
+		return resp;
 	}
 	
 	@Transactional

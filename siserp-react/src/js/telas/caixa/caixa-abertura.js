@@ -24,7 +24,7 @@ export default class CaixaAbertura extends React.Component {
 		if ( e != null )
 			e.preventDefault();
 					
-		sistema.wsPost(	"/api/caixa/abre/"+sistema.usuario.id, {
+		sistema.wsPost(	"/api/caixa/abre", {
 			lancamento : {
 				"tipo" : "CREDITO",
 				"valor" : sistema.paraFloat( this.valorInicial.current.value )

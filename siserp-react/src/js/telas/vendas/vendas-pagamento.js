@@ -6,8 +6,7 @@ import sistema from '../../logica/sistema';
 import MensagemPainel from '../../componente/mensagem-painel';
 import InputDropdown from '../../componente/input-dropdown';
 
-import ContasReceber from '../contas/contas-receber';
-import toDate from 'date-fns/esm/toDate/index';
+import Vendas from '../vendas/vendas';
 
 export default class VendasPagamento extends React.Component {
 	
@@ -27,7 +26,8 @@ export default class VendasPagamento extends React.Component {
 			
 			vendas : [],
 			
-			debito : 0
+			debito : 0,
+			troco : 0
 		};
 		this.valorPago = React.createRef();
 	}
@@ -37,18 +37,21 @@ export default class VendasPagamento extends React.Component {
 		
 		let clienteId = this.state.clienteId;
 		
-		sistema.wsPost( '/api/conta/receber/efetuarecebimento/'+sistema.usuario.id, {
+		sistema.wsPost( '/api/conta/receber/efetuarecebimento', {
 			"clienteId" : clienteId,
 			"valorPago" : sistema.paraFloat( this.valorPago.current.value )
 		}, (resposta) => {
-			this.valorPago.current.value = '';
-			this.carregaVendas( clienteId );
-			this.setState( { infoMsg : 'Pagamento efetuado com sucesso' } );
+			resposta.json().then( (dados) => {
+				this.setState( { troco : sistema.paraFloat( dados.troco ) } )
+
+				this.valorPago.current.value = '';
+				this.carregaVendas( clienteId );
+			} );			
 		}, this );		
 	}
 								
 	carregaVendas( clienteId ) {
-		sistema.wsGet( '/api/venda/lista/porcliente/'+clienteId, (resposta) => {
+		sistema.wsGet( '/api/venda/lista/emdebito/porcliente/'+clienteId, (resposta) => {
 			resposta.json().then( (dados) => {
 				let vendas = dados;
 				
@@ -80,7 +83,7 @@ export default class VendasPagamento extends React.Component {
 		for( let i = 0; !carregou && i < vendas.length; i++ ) {
 			let venda = vendas[ i ];
 			if ( venda.id === vendaId ) {
-				if ( venda.parcelas.length == 0 ) {
+				if ( venda.parcelas.length === 0 ) {
 					this.setState( { infoMsg : "Nenhuma parcela para esta venda." } );
 				} else {
 					this.setState( { parcelas : venda.parcelas } );
@@ -121,12 +124,12 @@ export default class VendasPagamento extends React.Component {
 		}, this );
 	}
 
-	paraTelaContasReceber() {
-		ReactDOM.render( <ContasReceber />, sistema.paginaElemento() ); 
+	paraTelaVendas() {
+		ReactDOM.render( <Vendas />, sistema.paginaElemento() ); 
 	}	
 		
 	render() {
-		const { infoMsg, erroMsg, clientesNomeLista, vendas, parcelas, debito } = this.state;
+		const { infoMsg, erroMsg, clientesNomeLista, vendas, parcelas, debito, troco } = this.state;
 		
 		return(	
 			<div>												
@@ -165,7 +168,7 @@ export default class VendasPagamento extends React.Component {
 				<br />
 				<Row>
 					<Col>
-						<h4 className="text-center">Lista de vendas</h4>
+						<h4 className="text-center">Lista de vendas em débito</h4>
 						<div className="tbl-pnl-pequeno">
 							<Table striped bordered hover>
 								<thead>
@@ -227,6 +230,9 @@ export default class VendasPagamento extends React.Component {
 							<span className="display-inline" style={{fontSize : '1.6em'}}> 
 								Débito total: &nbsp;
 								<span className="text-danger">{sistema.formataReal( debito ) }</span>
+								<br />
+								Troco: &nbsp;
+								<span className="text-primary">{sistema.formataReal( troco ) }</span>
 							</span>
 						</Card>
 					</Col>
@@ -248,7 +254,7 @@ export default class VendasPagamento extends React.Component {
 				
 				<Card className="p-3">					
 					<Form>
-						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaContasReceber( e ) }>Ir para tela de vendas</button>
+						<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaVendas( e ) }>Ir para tela de vendas</button>
 					</Form>
 				</Card>				
 			</div>

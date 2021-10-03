@@ -82,6 +82,8 @@ public class CategoriaMapService {
 		String catIni = categoriaIni.equals( "*" ) ? "" : categoriaIni;
 		List<CategoriaMap> maps = categoriaMapRepository.filtraCategorias( catIni+"%", p );
 		
+		this.apenasCategoriasDiferentes( maps );
+		
 		List<CategoriaMapResponse> responses = new ArrayList<>();
 		
 		for( CategoriaMap map : maps ) {			
@@ -125,6 +127,25 @@ public class CategoriaMapService {
 			throw new CategoriaMapNaoEncontradaException();
 		
 		categoriaMapRepository.deleteById( id ); 
+	}
+	
+	private void apenasCategoriasDiferentes( List<CategoriaMap> categorias ) {
+		int size = categorias.size();
+		for( int i = 1; i < size; i++ ) {
+			CategoriaMap map = categorias.get( i );
+			boolean jaExiste = false;
+			for( int j = 0; !jaExiste && j < i; j++ ) {
+				CategoriaMap map2 = categorias.get( j );
+				if ( map.getCategoria().equalsIgnoreCase( map2.getCategoria() ) )
+					jaExiste = true;
+			}
+			
+			if ( jaExiste ) {
+				categorias.remove( i );
+				i--;
+				size--;
+			}
+		}			
 	}
 		
 }

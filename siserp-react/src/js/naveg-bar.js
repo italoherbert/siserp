@@ -147,9 +147,11 @@ export default class NavegBar extends React.Component {
 												Contas a pagar
 											</NavDropdown.Item>
 										) }
-										<NavDropdown.Item onClick={ () => this.paraTelaContasReceber() }>
-											Contas a receber
-										</NavDropdown.Item>
+										{ (  sistema.usuario.grupo.nome !== 'CAIXA' ) && (
+											<NavDropdown.Item onClick={ () => this.paraTelaContasReceber() }>
+												Contas a receber
+											</NavDropdown.Item>
+										) }
 									</NavDropdown>						
 								</Row>
 							</div>

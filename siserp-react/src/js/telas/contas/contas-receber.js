@@ -1,13 +1,10 @@
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 import {Container, Row, Col, Card, Form, Table, Button} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 
 import MensagemPainel from './../../componente/mensagem-painel';
 import sistema from './../../logica/sistema';
-
-import VendasPagamento from '../vendas/vendas-pagamento';
 
 export default class ContasReceber extends React.Component {
 	
