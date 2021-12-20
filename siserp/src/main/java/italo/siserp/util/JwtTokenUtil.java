@@ -71,7 +71,7 @@ public class JwtTokenUtil {
 	}
 	
 	public Claims getTokenClaims( String token ) {
-		return Jwts.parser().setSigningKey( secret ).parseClaimsJws( token ).getBody();
+		return Jwts.parser().setSigningKey( secret ).parseClaimsJws( token ).getBody();		
 	}	
 
 }

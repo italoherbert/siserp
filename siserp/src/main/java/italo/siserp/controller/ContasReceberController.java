@@ -37,7 +37,7 @@ public class ContasReceberController {
 	
 	@PreAuthorize("hasAuthority('vendaWRITE')")
 	@PostMapping(value="/efetuarecebimento")
-	public ResponseEntity<Object> efetuaRecebimento( @RequestHeader Long locadoUID, @RequestBody EfetuarRecebimentoRequest request ) {
+	public ResponseEntity<Object> efetuaRecebimento( @RequestHeader Long logadoUID, @RequestBody EfetuarRecebimentoRequest request ) {
 		
 		if ( request.getClienteId() == null )
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
@@ -45,7 +45,7 @@ public class ContasReceberController {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
 		
 		try {
-			RecebimentoEfetuadoResponse resp = contasReceberService.efetuaRecebimento( locadoUID, request );
+			RecebimentoEfetuadoResponse resp = contasReceberService.efetuaRecebimento( logadoUID, request );
 			return ResponseEntity.ok( resp );
 		} catch (ClienteNaoEncontradoException e) {
 			return ResponseEntity.badRequest().body( new ErroResponse( ErroResponse.CLIENTE_NAO_ENCONTRADO ) );
