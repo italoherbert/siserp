@@ -10,132 +10,139 @@ import Clientes from './clientes';
 
 export default class ClienteDetalhes extends React.Component {
 
-	constructor( props ) {
-		super( props );
-		
-		this.state = { 
-			erroMsg : null, 
-			infoMsg : null, 
-			cliente : {
-				pessoa : {
-					endereco : {}
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			erroMsg: null,
+			primaryMsg: null,
+			cliente: {
+				pessoa: {
+					endereco: {}
 				}
-			} 
+			}
 		};
 	}
-	
-	componentDidMount() {		
-		sistema.wsGet( "/api/cliente/get/"+this.props.clienteId, (resposta) => {
-			resposta.json().then( (dados) => {											
-				this.setState( { cliente : dados } );
-			} );
-		}, this );		
+
+	componentDidMount() {
+		sistema.wsGet("/api/cliente/get/" + this.props.clienteId, (resposta) => {
+			resposta.json().then((dados) => {
+				this.setState({ cliente: dados });
+			});
+		}, this);
 	}
-		
-	editar( e ) {
+
+	editar(e) {
 		e.preventDefault();
-					
-		ReactDOM.render( 
+
+		ReactDOM.render(
 			<ClienteForm op="editar" clienteId={this.props.clienteId} />,
-				sistema.paginaElemento() );
+			sistema.paginaElemento());
 	}
-		
+
 	paraTelaClientes() {
-		ReactDOM.render( <Clientes />, sistema.paginaElemento() );
+		ReactDOM.render(<Clientes />, sistema.paginaElemento());
 	}
-	
+
 	render() {
-		const { cliente, erroMsg, infoMsg } = this.state;
-		
-		return( 
+		const { cliente, erroMsg, primaryMsg } = this.state;
+
+		return (
 			<Container>
 				<Row>
 					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
-						<h4 className="text-center">Dados do cliente</h4>																
-						
-						<Card className="p-3">								
+						<h3>Dados do cliente</h3>
+
+						<br />
+
+						<Card className="p-3">
 							<h4>Dados gerais</h4>
-							
+
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Nome: </span>
-									<span className="text-info">{cliente.pessoa.nome}</span>
+									<span className="text-primary">{cliente.pessoa.nome}</span>
 								</Col>
 							</Row>
-							
+
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Telefone: </span>
-									<span className="text-info">{cliente.pessoa.telefone}</span>
+									<span className="text-primary">{cliente.pessoa.telefone}</span>
 								</Col>
 							</Row>
-							
+
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">E-Mail: </span>
-									<span className="text-info">{cliente.pessoa.email}</span>
+									<span className="text-primary">{cliente.pessoa.email}</span>
 								</Col>
 							</Row>
 						</Card>
-						
+
 						<br />
-						
-						<Card className="p-3">								
+
+						<Card className="p-3">
 							<h4 className="card-title">Endereço</h4>
-							
+
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Ender: </span>
-									<span className="text-info">{cliente.pessoa.endereco.ender}</span>
+									<span className="text-primary">{cliente.pessoa.endereco.ender}</span>
 								</Col>
 							</Row>
-							
+
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Numero: </span>
-									<span className="text-info">{cliente.pessoa.endereco.numero}</span>
+									<span className="text-primary">{cliente.pessoa.endereco.numero}</span>
 								</Col>
 								<Col>
 									<span className="text-dark font-weight-bold">Logradouro: </span>
-									<span className="text-info">{cliente.pessoa.endereco.logradouro}</span>
+									<span className="text-primary">{cliente.pessoa.endereco.logradouro}</span>
 								</Col>
 								<Col>
 									<span className="text-dark font-weight-bold">Bairro: </span>
-									<span className="text-info">{cliente.pessoa.endereco.bairro}</span>
+									<span className="text-primary">{cliente.pessoa.endereco.bairro}</span>
 								</Col>
 							</Row>
 							<Row className="mb-2">
 								<Col>
 									<span className="text-dark font-weight-bold">Cidade: </span>
-									<span className="text-info">{cliente.pessoa.endereco.cidade}</span>
+									<span className="text-primary">{cliente.pessoa.endereco.cidade}</span>
 								</Col>
 								<Col>
 									<span className="text-dark font-weight-bold">UF: </span>
-									<span className="text-info">{cliente.pessoa.endereco.uf}</span>
-								</Col>																
+									<span className="text-primary">{cliente.pessoa.endereco.uf}</span>
+								</Col>
 							</Row>
 						</Card>
-												
+
 						<br />
-						
-						<Card className="p-3">								
+
+						<Card className="p-3">
 							<MensagemPainel cor="danger" msg={erroMsg} />
-							<MensagemPainel cor="primary" msg={infoMsg} />
-						
+							<MensagemPainel cor="primary" msg={primaryMsg} />
+
 							<Row>
 								<Col>
 									<Form>
-										<Button variant="primary" onClick={(e) => this.editar( e )}>Editar cliente</Button>
+										<Button variant="primary" onClick={(e) => this.editar(e)}>
+											<i className="fa-solid fa-edit">&nbsp;</i>
+											Editar cliente
+										</Button>
 									</Form>
 									<br />
-									<br />
-									<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaClientes( e ) }>Ir para clientes</button>
+									<button className="btn btn-outline-primary" onClick={(e) => this.paraTelaClientes(e)}>
+										<i className="fa-solid fa-circle-up">&nbsp;</i>
+										Ir para clientes
+									</button>
 								</Col>
-							</Row>																																								
-						</Card>	
+							</Row>
+						</Card>
 					</Col>
-				</Row>															
+				</Row>
 			</Container>
 		);
 	}

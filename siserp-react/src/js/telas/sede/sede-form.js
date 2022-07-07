@@ -8,66 +8,67 @@ import sistema from './../../logica/sistema';
 import SedeDetalhes from './sede-detalhes';
 
 export default class SedeForm extends React.Component {
-	
-	constructor( props ) {
-		super( props );
-				
-		this.state = { 
-			erroMsg : null, 
-			infoMsg : null
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			erroMsg: null,
+			infoMsg: null
 		};
-		
+
 		this.cnpj = React.createRef();
 		this.inscricaoEstadual = React.createRef();
 	}
-	
-	componentDidMount() {			
-		if ( this.props.op === 'editar' )
-			this.carrega();				
+
+	componentDidMount() {
+		if (this.props.op === 'editar')
+			this.carrega();
 	}
-	
+
 	carrega() {
-		sistema.wsGet( '/api/sede/get', (resposta) => {
-			resposta.json().then( (dados) => {
+		sistema.wsGet('/api/sede/get', (resposta) => {
+			resposta.json().then((dados) => {
 				this.cnpj.current.value = dados.cnpj;
 				this.inscricaoEstadual.current.value = dados.inscricaoEstadual;
-			} );
-		}, this );
+			});
+		}, this);
 	}
-	
-	salvar( e ) {
+
+	salvar(e) {
 		e.preventDefault();
-		
-		sistema.wsPut( '/api/sede/salva', {
-			"cnpj" : this.cnpj.current.value,	
-			"inscricaoEstadual" : this.inscricaoEstadual.current.value	
+
+		sistema.wsPut('/api/sede/salva', {
+			"cnpj": this.cnpj.current.value,
+			"inscricaoEstadual": this.inscricaoEstadual.current.value
 		}, (resposta) => {
-			this.setState( { infoMsg : "Dados da sede salvos com sucesso." } );			
-		}, this );			
+			this.setState({ infoMsg: "Dados da sede salvos com sucesso." });
+		}, this);
 	}
-	
+
 	paraTelaSedeDetalhes() {
-		ReactDOM.render( <SedeDetalhes />, sistema.paginaElemento() );
+		ReactDOM.render(<SedeDetalhes />, sistema.paginaElemento());
 	}
-	
+
 	render() {
 		const { erroMsg, infoMsg } = this.state;
-				
-		return(
+
+		return (
 			<Container>
 				<Row>
 					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
-						<h4 className="card-title text-center">Registro de sede</h4>
-																
-						<Card className="p-3">																		
-							<Form onSubmit={(e) => this.salvar( e ) } className="container">
+						<h3>Registro de sede</h3>
+						<br />
+
+						<Card className="p-3">
+							<Form onSubmit={(e) => this.salvar(e)} className="container">
 								<h4 className="card-title">Dados gerais</h4>
-									
+
 								<Form.Group className="mb-2">
 									<Form.Label>CNPJ: </Form.Label>
 									<Form.Control type="text" ref={this.cnpj} name="cnpj" />
-								</Form.Group>	
+								</Form.Group>
 								<Form.Group className="mb-2">
 									<Form.Label>Inscrição estadual: </Form.Label>
 									<Form.Control type="text" ref={this.inscricaoEstadual} name="cnpj" />
@@ -75,18 +76,24 @@ export default class SedeForm extends React.Component {
 
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />
-								
-								<Button type="submit" variant="primary" className="my-1">Salvar</Button>
-								
+
+								<Button type="submit" variant="primary" className="my-1">
+									<i className="fa-solid fa-floppy-disk">&nbsp;</i>
+									Salvar
+								</Button>
+
 								<br />
 								<br />
-								<button className="btn btn-link p-0" onClick={(e) => this.paraTelaSedeDetalhes( e ) }>Ir para detalhes</button>
-							</Form>															
+								<button className="btn btn-outline-primary" onClick={(e) => this.paraTelaSedeDetalhes(e)}>
+									<i className="fa-solid fa-circle-up">&nbsp;</i>
+									Ir para detalhes
+								</button>
+							</Form>
 						</Card>
 					</Col>
 				</Row>
 			</Container>
 		);
 	}
-	
+
 }

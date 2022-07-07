@@ -6,122 +6,122 @@ import MensagemPainel from './../../../componente/mensagem-painel';
 import InputDropdown from './../../../componente/input-dropdown';
 
 export default class AddCompraProdutoCategorias extends React.Component {
-	
-	constructor( props ) {
-		super( props );
-				
-		this.state = { 			
-			erroMsg : null,
-			categoriasLista : [],
-			subcategoriasLista : []
-		};										
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			erroMsg: null,
+			categoriasLista: [],
+			subcategoriasLista: []
+		};
 		this.categoria = React.createRef();
 		this.subcategoria = React.createRef();
-	}			
-			
-	addCategoria( item ) {
-		item.preventDefault();				
+	}
 
-		this.setState( { erroMsg : null } );
-		
+	addCategoria(item) {
+		item.preventDefault();
+
+		this.setState({ erroMsg: null });
+
 		let catdesc = this.state.categoria;
 		let subcatdesc = this.state.subcategoria;
-		
-		if ( catdesc.length === 0 ) {
-			this.setState( { erroMsg : "A categoria é um campo obrigatório" } );
+
+		if (catdesc.length === 0) {
+			this.setState({ erroMsg: "A categoria é um campo obrigatório" });
 			return;
 		}
-		
-		if ( subcatdesc.length === 0 ) {
-			this.setState( { erroMsg : "A subcategoria (valor) é um campo obrigatório" } );
+
+		if (subcatdesc.length === 0) {
+			this.setState({ erroMsg: "A subcategoria (valor) é um campo obrigatório" });
 			return;
 		}
-					
+
 		let jaInserida = false;
-		for( let i = 0; jaInserida === false && i < this.props.categoriaMaps.length; i++ ) {
-			let map = this.props.categoriaMaps[ i ];
-			if( map.categoria.toLowerCase() === catdesc.toLowerCase() && map.subcategoria.toLowerCase() === subcatdesc ) 
+		for (let i = 0; jaInserida === false && i < this.props.categoriaMaps.length; i++) {
+			let map = this.props.categoriaMaps[i];
+			if (map.categoria.toLowerCase() === catdesc.toLowerCase() && map.subcategoria.toLowerCase() === subcatdesc)
 				jaInserida = true;
 		}
-				
-		if ( jaInserida === false ) {
-			this.props.categoriaMaps.push( {
-				categoria : this.categoria.current.value,
-				subcategoria : this.subcategoria.current.value
-			} );
-			
-			
+
+		if (jaInserida === false) {
+			this.props.categoriaMaps.push({
+				categoria: this.categoria.current.value,
+				subcategoria: this.subcategoria.current.value
+			});
+
+
 			this.categoria.current.value = '';
 			this.subcategoria.current.value = '';
-			
-			this.setState( { categoria : '', subcategoria : '' } );
+
+			this.setState({ categoria: '', subcategoria: '' });
 		} else {
-			this.setState( { erroMsg : 'Já existe inserida combinação de categoria e subcategoria informadas.' } );
+			this.setState({ erroMsg: 'Já existe inserida combinação de categoria e subcategoria informadas.' });
 		}
 	}
-	
-	removeCategoria( item, cat, subcat ) {
+
+	removeCategoria(item, cat, subcat) {
 		item.preventDefault();
-						
+
 		let fim = false;
 		let size = this.props.categoriaMaps.length;
-		
-		for( let i = 0; fim === false && i < size; i++ ) {
-			let catObj = this.props.categoriaMaps[ i ];
-			if ( catObj.categoria.toLowerCase() === cat.toLowerCase() && catObj.subcategoria.toLowerCase() === subcat.toLowerCase() ) {									
-			this.props.categoriaMaps.splice( i, 1 );	
+
+		for (let i = 0; fim === false && i < size; i++) {
+			let catObj = this.props.categoriaMaps[i];
+			if (catObj.categoria.toLowerCase() === cat.toLowerCase() && catObj.subcategoria.toLowerCase() === subcat.toLowerCase()) {
+				this.props.categoriaMaps.splice(i, 1);
 				fim = true;
 			}
 		}
-		this.setState( {} );
+		this.setState({});
 	}
-			
-	categoriaOnChange( item ) {
+
+	categoriaOnChange(item) {
 		let cat = item;
-		if ( cat.trim().length === 0 )
+		if (cat.trim().length === 0)
 			cat = "*";
-		
-		this.setState( { categoria : item } );	
 
-		sistema.wsGet( '/api/categoriamap/filtra/categoria/limit/'+cat+'/5', (resposta) => {
-			resposta.json().then( (dados) => {
-				this.setState( { categoriasLista : [] } );
-				
-				for( let i = 0; i < dados.length; i++ )
-					this.state.categoriasLista.push( dados[ i ].categoria );					
+		this.setState({ categoria: item });
 
-				this.setState( {} );
-			} );
-		}, this );				
+		sistema.wsGet('/api/categoriamap/filtra/categoria/limit/' + cat + '/5', (resposta) => {
+			resposta.json().then((dados) => {
+				this.setState({ categoriasLista: [] });
+
+				for (let i = 0; i < dados.length; i++)
+					this.state.categoriasLista.push(dados[i].categoria);
+
+				this.setState({});
+			});
+		}, this);
 	}
-	
-	subcategoriaOnChange( item ) {								
+
+	subcategoriaOnChange(item) {
 		let cat = this.state.categoria;
-		if ( cat.trim().length === 0 )
+		if (cat.trim().length === 0)
 			cat = "!";
-		
+
 		let subcat = item;
-		if ( subcat.trim().length === 0 )
+		if (subcat.trim().length === 0)
 			subcat = "*";
-		
-		this.setState( { subcategoria : item } );
-						
-		sistema.wsGet( '/api/categoriamap/filtra/subcategoria/limit/'+cat+'/'+subcat+'/5', (resposta) => {
-			resposta.json().then( (dados) => {
-				this.setState( { subcategoriasLista : [] } );
-				
-				for( let i = 0; i < dados.length; i++ )
-					this.state.subcategoriasLista.push( dados[ i ].subcategoria );					
-				
-				this.setState( {} );
-			} );
-		}, this );							
+
+		this.setState({ subcategoria: item });
+
+		sistema.wsGet('/api/categoriamap/filtra/subcategoria/limit/' + cat + '/' + subcat + '/5', (resposta) => {
+			resposta.json().then((dados) => {
+				this.setState({ subcategoriasLista: [] });
+
+				for (let i = 0; i < dados.length; i++)
+					this.state.subcategoriasLista.push(dados[i].subcategoria);
+
+				this.setState({});
+			});
+		}, this);
 	}
-		
+
 	render() {
 		const { erroMsg, categoriasLista, subcategoriasLista } = this.state;
-				
-		return(											
+
+		return (
 			<div>
 				<h4 className="text-center">Lista de categorias</h4>
 				<div className="tbl-pnl-pequeno">
@@ -129,47 +129,55 @@ export default class AddCompraProdutoCategorias extends React.Component {
 						<thead>
 							<tr>
 								<th>Categoria</th>
-								<th>Subcategoria</th>										
+								<th>Subcategoria</th>
 								<th>Remover</th>
 							</tr>
 						</thead>
 						<tbody>
-							{this.props.categoriaMaps.map( ( map, index ) => {
-								return (									
+							{this.props.categoriaMaps.map((map, index) => {
+								return (
 									<tr key={index}>
 										<td>{map.categoria}</td>
 										<td>{map.subcategoria}</td>
-										<td><button className="btn btn-link p-0" onClick={(item) => this.removeCategoria( item, map.categoria, map.subcategoria )}>remover</button></td>
-									</tr>										
+										<td>
+											<button className="btn btn-link p-0" onClick={(item) => this.removeCategoria(item, map.categoria, map.subcategoria)}>
+												<i className="fa-solid fa-x">&nbsp;</i>
+												Remover
+											</button>
+										</td>
+									</tr>
 								)
-							} ) }	
-						</tbody>							
+							})}
+						</tbody>
 					</Table>
-				</div>		
-				
+				</div>
+
 				<Card className="p-3 my-2">
 					<MensagemPainel cor="danger" msg={erroMsg} />
-					
+
 					<Form.Group className="my-2">
 						<Row>
 							<Col className="col-sm-4">
 								<Form.Label>Categoria</Form.Label>
-								<InputDropdown referencia={this.categoria} itens={categoriasLista} carregaItens={ (item) => this.categoriaOnChange( item ) } />																	
+								<InputDropdown referencia={this.categoria} itens={categoriasLista} carregaItens={(item) => this.categoriaOnChange(item)} />
 							</Col>
 							<Col className="col-sm-4">
 								<Form.Label>Subcategoria (Valor)</Form.Label>
-								<InputDropdown referencia={this.subcategoria} itens={subcategoriasLista} carregaItens={ (item) => this.subcategoriaOnChange( item ) } />						
+								<InputDropdown referencia={this.subcategoria} itens={subcategoriasLista} carregaItens={(item) => this.subcategoriaOnChange(item)} />
 							</Col>
 							<Col className="col-sm-4">
 								<Form.Label>+</Form.Label>
 								<br />
-								<Button variant="primary" onClick={ (item) => this.addCategoria( item ) }>Adicionar categoria</Button>
+								<Button variant="primary" onClick={(item) => this.addCategoria(item)}>
+									<i className="fa-solid fa-circle-plus">&nbsp;</i>
+									Adicionar categoria
+								</Button>
 							</Col>
 						</Row>
-					</Form.Group>									
-				</Card>	
+					</Form.Group>
+				</Card>
 			</div>
 		);
 	}
-	
+
 }

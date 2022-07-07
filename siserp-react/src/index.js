@@ -12,8 +12,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'react-tabs/style/react-tabs.css';
 
 import './css/estilo.css';
+import './font/fontes.css';
+import './font/awesome-all.css';
+import './font/bootstrap-icons.css';
 
-registerLocale( 'pt', pt );
+registerLocale('pt', pt);
 
 ReactDOM.render(
   <React.Fragment>

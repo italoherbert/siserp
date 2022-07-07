@@ -10,90 +10,96 @@ import CategoriaMaps from './categoria-maps';
 
 export default class CategoriaMapDetalhes extends React.Component {
 
-	constructor( props ) {
-		super( props );
-		
-		this.state = { 
-			erroMsg : null, 
-			infoMsg : null, 
-			categoriaMap : {}
-		};		
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			erroMsg: null,
+			infoMsg: null,
+			categoriaMap: {}
+		};
 	}
-	
+
 	componentDidMount() {
-		this.carregar( null );		
+		this.carregar(null);
 	}
-	
-	carregar( e ) {
-		if ( e != null )
+
+	carregar(e) {
+		if (e != null)
 			e.preventDefault();
-							
-		sistema.wsGet( "/api/categoriamap/get/"+this.props.categoriaMapId, (resposta) => {
-			resposta.json().then( (dados) => {		
-				this.setState( { categoriaMap : dados } );									
-			} );
-		}, this );						
+
+		sistema.wsGet("/api/categoriamap/get/" + this.props.categoriaMapId, (resposta) => {
+			resposta.json().then((dados) => {
+				this.setState({ categoriaMap: dados });
+			});
+		}, this);
 	}
-			
-	editar( e ) {
+
+	editar(e) {
 		e.preventDefault();
-					
-		ReactDOM.render( 
+
+		ReactDOM.render(
 			<CategoriaMapForm op="editar"
-				titulo="Altere a categoria" 
-				categoriaMapId={this.props.categoriaMapId} 
+				titulo="Altere a categoria"
+				categoriaMapId={this.props.categoriaMapId}
 			/>,
-			sistema.paginaElemento() );
+			sistema.paginaElemento());
 	}
-		
+
 	paraTelaCategoriaMaps() {
-		ReactDOM.render( <CategoriaMaps />, sistema.paginaElemento() );
+		ReactDOM.render(<CategoriaMaps />, sistema.paginaElemento());
 	}
-		
+
 	render() {
 		const { categoriaMap, erroMsg, infoMsg } = this.state;
-		
-		return( 
-			<Container>				
-				<h4 className="text-center">Dados do categoria</h4>																
-					
+
+		return (
+			<Container>
+				<h3>Dados do categoria</h3>
+
 				<br />
-				
+
 				<Row>
 					<Col className="col-md-8">
-						
-						<Card className="p-3">								
+
+						<Card className="p-3">
 							<h4 className="card-title">Dados gerais</h4>
-								
-							<div className="inline-block">	
+
+							<div className="inline-block">
 								<span className="text-dark font-weight-bold">Categoria: </span>
 								<span className="text-info">{categoriaMap.categoria}</span>
-							</div>	
+							</div>
 
-							<div className="inline-block">	
+							<div className="inline-block">
 								<span className="text-dark font-weight-bold">Subcategoria: </span>
 								<span className="text-info">{categoriaMap.subcategoria}</span>
-							</div>	
-							
+							</div>
+
 							<br />
 							<Form>
-								<Button variant="primary" onClick={(e) => this.editar( e )}>Editar categoria</Button>															
+								<Button variant="primary" onClick={(e) => this.editar(e)}>
+									<i className="fa-solid fa-pen-to-square">&nbsp;</i>
+									Editar categoria
+								</Button>
 							</Form>
 						</Card>
 					</Col>
 				</Row>
-																					
+
 				<br />
-				
+
 				<MensagemPainel cor="danger" msg={erroMsg} />
-				<MensagemPainel cor="primary" msg={infoMsg} />																						
-												
+				<MensagemPainel cor="primary" msg={infoMsg} />
+
 				<br />
-				
+
 				<Card className="p-3">
 					<Row>
 						<Col>
-							<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaCategoriaMaps( e ) }>Ir para categoria</button>
+							<button className="btn btn-outline-primary" onClick={(e) => this.paraTelaCategoriaMaps(e)}>
+								<i className="fa-solid fa-circle-up">&nbsp;</i>
+								Ir para categoria
+							</button>
 						</Col>
 					</Row>
 				</Card>

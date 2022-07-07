@@ -8,13 +8,13 @@ import MensagemPainel from './../../componente/mensagem-painel';
 import Produtos from './produtos';
 
 export default class ProdutoForm extends React.Component {
-	
-	constructor( props ) {
-		super( props );
-				
-		this.state = { 
-			erroMsg : null, 
-			infoMsg : null
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			erroMsg: null,
+			infoMsg: null
 		};
 		this.descricao = React.createRef();
 		this.precoUnitCompra = React.createRef();
@@ -23,79 +23,79 @@ export default class ProdutoForm extends React.Component {
 
 		this.codigoBarras = React.createRef();
 	}
-	
-	componentDidMount() {			
-		if ( this.props.op === 'editar' )
-			this.carrega();		
+
+	componentDidMount() {
+		if (this.props.op === 'editar')
+			this.carrega();
 	}
-	
+
 	carrega() {
-		sistema.wsGet( "/api/produto/get/"+this.props.produtoId, (resposta) => {
-			resposta.json().then( (dados) => {
+		sistema.wsGet("/api/produto/get/" + this.props.produtoId, (resposta) => {
+			resposta.json().then((dados) => {
 				this.descricao.current.value = dados.descricao;
 				this.precoUnitCompra.current.value = dados.precoUnitCompra;
 				this.precoUnitVenda.current.value = dados.precoUnitVenda;
 				this.unidade.current.value = dados.unidade;
 
 				this.codigoBarras.current.value = dados.codigoBarras;
-			} );
-		}, this );					
+			});
+		}, this);
 	}
-	
-	salvar( e ) {
+
+	salvar(e) {
 		e.preventDefault();
-		
-		sistema.wsPost( "/api/produto/salva", {
-			"codigoBarras" : this.codigoBarras.current.value,
-			"descricao" : this.descricao.current.value,
-			"precoUnitCompra" : sistema.paraFloat( this.precoUnitCompra.current.value ),
-			"precoUnitVenda" : sistema.paraFloat( this.precoUnitVenda.current.value ),
-			"unidade" : this.unidade.current.value
+
+		sistema.wsPost("/api/produto/salva", {
+			"codigoBarras": this.codigoBarras.current.value,
+			"descricao": this.descricao.current.value,
+			"precoUnitCompra": sistema.paraFloat(this.precoUnitCompra.current.value),
+			"precoUnitVenda": sistema.paraFloat(this.precoUnitVenda.current.value),
+			"unidade": this.unidade.current.value
 		}, (resposta) => {
-			this.setState( { infoMsg : "Produto cadastrado com sucesso." } );
-			
-			if ( typeof( this.props.registrou ) === "function" )
-				this.props.registrou.call( this );
-		}, this );				
-	}		
-	
-	buscar( e ) {
-		if ( e != null )
-			e.preventDefault();
-					
-		let codBarras = this.codigoBarras.current.value; 
+			this.setState({ infoMsg: "Produto cadastrado com sucesso." });
 
-		sistema.wsGet( "/api/produto/busca/"+codBarras, (resposta) => {
-			resposta.json().then( (dados) => {
+			if (typeof (this.props.registrou) === "function")
+				this.props.registrou.call(this);
+		}, this);
+	}
+
+	buscar(e) {
+		if (e != null)
+			e.preventDefault();
+
+		let codBarras = this.codigoBarras.current.value;
+
+		sistema.wsGet("/api/produto/busca/" + codBarras, (resposta) => {
+			resposta.json().then((dados) => {
 				this.codigoBarras.current.value = dados.codigoBarras;
 				this.descricao.current.value = dados.descricao;
 				this.precoUnitCompra.current.value = dados.precoUnitCompra;
 				this.precoUnitVenda.current.value = dados.precoUnitVenda;
 				this.unidade.current.value = dados.unidade;
-													
+
 				this.setState({});
-			} );
-		}, this );					
+			});
+		}, this);
 	}
-	
-	paraTelaProdutos( e ) {
+
+	paraTelaProdutos(e) {
 		e.preventDefault();
-		
-		ReactDOM.render( <Produtos />, sistema.paginaElemento() );
+
+		ReactDOM.render(<Produtos />, sistema.paginaElemento());
 	}
-	
+
 	render() {
 		const { erroMsg, infoMsg } = this.state;
-				
-		return(	
+
+		return (
 			<Container>
 				<Row>
-					<Col className="col-sm-2"></Col>	
-					<Col className="col-sm-8">															
+					<Col className="col-sm-2"></Col>
+					<Col className="col-sm-8">
 						<Card className="p-3">
-							<Form onSubmit={(e) => this.salvar( e ) }>																							
+							<Form onSubmit={(e) => this.salvar(e)}>
 								<h4 className="card-title">Salvar produto</h4>
-								
+
 								<Form.Group className="mb-2">
 									<Form.Label>Codigo de barras: </Form.Label>
 									<Row className="display-inline">
@@ -103,14 +103,17 @@ export default class ProdutoForm extends React.Component {
 											<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
 										</Col>
 										<Col className="col-sm-2">
-											<Button type="button" variant="primary" onClick={ (e) => this.buscar( e ) }>Buscar</Button>
+											<Button type="button" variant="primary" onClick={(e) => this.buscar(e)}>
+												<i className="fa-solid fa-search">&nbsp;</i>
+												Buscar
+											</Button>
 										</Col>
 									</Row>
 								</Form.Group>
 								<Form.Group className="mb-2">
 									<Form.Label>Descrição: </Form.Label>
 									<Form.Control type="text" ref={this.descricao} name="descricao" />
-								</Form.Group>								
+								</Form.Group>
 								<Form.Group className="mb-2">
 									<Row>
 										<Col>
@@ -127,21 +130,27 @@ export default class ProdutoForm extends React.Component {
 									<Form.Label>Unidade: </Form.Label>
 									<Form.Control type="text" ref={this.unidade} name="unidade" />
 								</Form.Group>
-							
+
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />
-								
-								<Button type="submit" variant="primary">Salvar</Button>
-								
+
+								<Button type="submit" variant="primary">
+									<i className="fa-solid fa-floppy-disk">&nbsp;</i>
+									Salvar
+								</Button>
+
 								<br />
 								<br />
-								<button className="btn btn-link p-0" onClick={ (e) => this.paraTelaProdutos( e ) }>Para tela de produtos</button>																											
+								<button className="btn btn-outline-primary fa-arrow-right-to-arc" onClick={(e) => this.paraTelaProdutos(e)}>
+									<i className="fa-solid fa-circle-up">&nbsp;</i>
+									Para tela de produtos
+								</button>
 							</Form>
 						</Card>
 					</Col>
-				</Row>					
+				</Row>
 			</Container>
 		);
 	}
-	
+
 }

@@ -8,129 +8,130 @@ import sistema from './../../logica/sistema';
 import Funcionarios from './funcionarios';
 
 export default class FuncionarioForm extends React.Component {
-	
-	constructor( props ) {
-		super( props );
-				
-		this.state = { 
-			erroMsg : null, 
-			infoMsg : null, 
-			usuarioGrupos : []
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			erroMsg: null,
+			infoMsg: null,
+			usuarioGrupos: []
 		};
-		
+
 		this.nome = React.createRef();
 		this.telefone = React.createRef();
 		this.email = React.createRef();
-		
+
 		this.ender = React.createRef();
 		this.numero = React.createRef();
 		this.logradouro = React.createRef();
 		this.bairro = React.createRef();
 		this.cidade = React.createRef();
-		this.uf = React.createRef();		
-		
+		this.uf = React.createRef();
+
 		this.usuarioGrupo = React.createRef();
-		this.username = React.createRef();		
-		this.password = React.createRef();		
+		this.username = React.createRef();
+		this.password = React.createRef();
 		this.password2 = React.createRef();
 	}
-	
-	componentDidMount() {			
+
+	componentDidMount() {
 		this.carregaGrupos();
-		
-		if ( this.props.op === 'editar' )
-			this.carregaFuncionario();		
+
+		if (this.props.op === 'editar')
+			this.carregaFuncionario();
 	}
-	
+
 	carregaFuncionario() {
-		sistema.wsGet( '/api/funcionario/get/'+this.props.funcId, (resposta) => {
-			resposta.json().then( (dados) => {
+		sistema.wsGet('/api/funcionario/get/' + this.props.funcId, (resposta) => {
+			resposta.json().then((dados) => {
 				this.nome.current.value = dados.pessoa.nome;
 				this.telefone.current.value = dados.pessoa.telefone;
 				this.email.current.value = dados.pessoa.email;
-				
+
 				this.ender.current.value = dados.pessoa.endereco.ender;
 				this.numero.current.value = dados.pessoa.endereco.numero;
 				this.logradouro.current.value = dados.pessoa.endereco.logradouro;
 				this.bairro.current.value = dados.pessoa.endereco.bairro;
 				this.cidade.current.value = dados.pessoa.endereco.cidade;
 				this.uf.current.value = dados.pessoa.endereco.uf;
-				
+
 				this.username.current.value = dados.usuario.username;
 				this.usuarioGrupo.current.value = dados.usuario.grupo.nome;
-				
-				this.setState( {} );
-			} );
-		}, this );		
+
+				this.setState({});
+			});
+		}, this);
 	}
-		
+
 	carregaGrupos() {
-		sistema.wsGet( "/api/usuario/grupo/lista", (resposta) => {
-			resposta.json().then( (dados) => {
-				this.setState( { usuarioGrupos : dados } );										
-			} );
-		}, this );		
+		sistema.wsGet("/api/usuario/grupo/lista", (resposta) => {
+			resposta.json().then((dados) => {
+				this.setState({ usuarioGrupos: dados });
+			});
+		}, this);
 	}
-	
-	salvar( e ) {
+
+	salvar(e) {
 		e.preventDefault();
-				
+
 		let url;
 		let metodo;
-		if ( this.props.op === 'editar' ) {			
-			url = "/api/funcionario/atualiza/"+this.props.funcId;
-			metodo = 'PUT';									
+		if (this.props.op === 'editar') {
+			url = "/api/funcionario/atualiza/" + this.props.funcId;
+			metodo = 'PUT';
 		} else {
 			url = "/api/funcionario/registra";
 			metodo = 'POST';
 		}
-				
-		sistema.wsSave( url, metodo, {
-			"pessoa" : {
-				"nome" : this.nome.current.value,
-				"telefone" : this.telefone.current.value,				
-				"email" : this.email.current.value,
-				
-				"endereco" : {
-					"ender" : this.ender.current.value,
-					"numero" : this.numero.current.value,
-					"bairro" : this.bairro.current.value,
-					"cidade" : this.cidade.current.value,
-					"uf" : this.uf.current.value,
-					"logradouro" : this.logradouro.current.value				
+
+		sistema.wsSave(url, metodo, {
+			"pessoa": {
+				"nome": this.nome.current.value,
+				"telefone": this.telefone.current.value,
+				"email": this.email.current.value,
+
+				"endereco": {
+					"ender": this.ender.current.value,
+					"numero": this.numero.current.value,
+					"bairro": this.bairro.current.value,
+					"cidade": this.cidade.current.value,
+					"uf": this.uf.current.value,
+					"logradouro": this.logradouro.current.value
 				}
 			},
-			
-			"usuario" : {
-				"username" : this.username.current.value,
-				"password" : this.password.current.value,
-				"grupo" : {
-					"nome" : this.usuarioGrupo.current.value	
+
+			"usuario": {
+				"username": this.username.current.value,
+				"password": this.password.current.value,
+				"grupo": {
+					"nome": this.usuarioGrupo.current.value
 				}
 			}
 		}, (resposta) => {
-			this.setState( { infoMsg : "Funcionario salvo com sucesso." } );
-		}, this );						
+			this.setState({ infoMsg: "Funcionario salvo com sucesso." });
+		}, this);
 	}
-	
+
 	paraTelaFuncionarios() {
-		ReactDOM.render( <Funcionarios />, sistema.paginaElemento() );
+		ReactDOM.render(<Funcionarios />, sistema.paginaElemento());
 	}
-	
+
 	render() {
 		const { erroMsg, infoMsg, usuarioGrupos } = this.state;
-				
-		return(
+
+		return (
 			<Container>
 				<Row>
 					<Col className="col-md-2"></Col>
 					<Col className="col-md-8">
-						<h4 className="text-center">Registro de funcionarios</h4>
-																
-						<Form onSubmit={(e) => this.salvar( e ) }>
-							<Card className="p-3">																
+						<h3>Registro de funcionarios</h3>
+						<br />
+
+						<Form onSubmit={(e) => this.salvar(e)}>
+							<Card className="p-3">
 								<h4 className="card-title">Dados gerais</h4>
-								
+
 								<Row className="mb-2">
 									<Col>
 										<Form.Group>
@@ -149,17 +150,17 @@ export default class FuncionarioForm extends React.Component {
 									<Col>
 										<Form.Group>
 											<Form.Label>E-Mail: </Form.Label>
-											<Form.Control type="email" ref={this.email} name="email" />						
+											<Form.Control type="email" ref={this.email} name="email" />
 										</Form.Group>
 									</Col>
 								</Row>
 							</Card>
-							
+
 							<br />
-												
-							<Card className="p-3">								
+
+							<Card className="p-3">
 								<h4 className="card-title">Endereço</h4>
-								
+
 								<Row className="mb-2">
 									<Col>
 										<Form.Group>
@@ -168,7 +169,7 @@ export default class FuncionarioForm extends React.Component {
 										</Form.Group>
 									</Col>
 								</Row>
-								
+
 								<Row className="mb-2">
 									<Col>
 										<Form.Group>
@@ -189,7 +190,7 @@ export default class FuncionarioForm extends React.Component {
 										</Form.Group>
 									</Col>
 								</Row>
-																	
+
 								<Row className="mb-2">
 									<Col>
 										<Form.Group>
@@ -200,68 +201,74 @@ export default class FuncionarioForm extends React.Component {
 									<Col>
 										<Form.Group>
 											<Form.Label>UF:</Form.Label>
-											<Form.Control type="text" ref={this.uf} name="uf" />							
+											<Form.Control type="text" ref={this.uf} name="uf" />
 										</Form.Group>
 									</Col>
 								</Row>
 							</Card>
-							
+
 							<br />
-							
+
 							<Card className="p-3">
 								<h4 className="card-title">Usuario:</h4>
-								
+
 								<Row className="mb-2">
 									<Col>
 										<Form.Group>
 											<Form.Label>Nome de usuário:</Form.Label>
 											<Form.Control type="text" ref={this.username} name="username" />
 										</Form.Group>
-									</Col>									
+									</Col>
 									<Col>
 										<Form.Group>
 											<Form.Label>Grupos de usuário:</Form.Label>
-											<select name="usuarioGrupo" ref={this.usuarioGrupo} className="form-control">
+											<select name="usuarioGrupo" ref={this.usuarioGrupo} className="form-select">
 												<option key="0" value="NONE">Selecione um grupo!</option>
-												{ usuarioGrupos.map( (item, i) => {
-													return <option key={i+1} value={item}>{item}</option>
-												} )	}
+												{usuarioGrupos.map((item, i) => {
+													return <option key={i + 1} value={item}>{item}</option>
+												})}
 											</select>
 										</Form.Group>
-									</Col>																				
+									</Col>
 								</Row>
 								<Row className="mb-2">
-									<Col>																			
+									<Col>
 										<Form.Label>Senha:</Form.Label>
 										<Form.Control type="password" ref={this.password} name="password" />
 									</Col>
 									<Col>
 										<Form.Label>Repita a senha:</Form.Label>
-										<Form.Control type="password" ref={this.password2} name="password2" />							
+										<Form.Control type="password" ref={this.password2} name="password2" />
 									</Col>
-								</Row>																		
+								</Row>
 							</Card>
-							
+
 							<br />
-							
-							<Card className="p-3">																
+
+							<Card className="p-3">
 								<MensagemPainel cor="danger" msg={erroMsg} />
 								<MensagemPainel cor="primary" msg={infoMsg} />
-									
+
 								<Row>
 									<Col>
-										<Button type="submit" variant="primary">Salvar</Button>
+										<Button type="submit" variant="primary">
+											<i className="fa-solid fa-floppy-disk">&nbsp;</i>
+											Salvar
+										</Button>
 										<br />
 										<br />
-										<button className="btn btn-link p-0" onClick={(e) => this.paraTelaFuncionarios(e) }>Ir para funcionarios</button>
+										<button className="btn btn-outline-primary" onClick={(e) => this.paraTelaFuncionarios(e)}>
+											<i className="fa-solid fa-circle-up">&nbsp;</i>
+											Ir para funcionarios
+										</button>
 									</Col>
-								</Row>																
-							</Card>									
+								</Row>
+							</Card>
 						</Form>
 					</Col>
 				</Row>
 			</Container>
 		);
 	}
-	
+
 }
