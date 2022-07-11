@@ -170,7 +170,7 @@ export default class VendasPagamento extends React.Component {
 					<Col>
 						<h4 className="text-center">Lista de vendas em débito</h4>
 						<div className="tbl-pnl-pequeno">
-							<Table striped bordered hover>
+							<Table striped hover>
 								<thead>
 									<tr>
 										<th>Data venda</th>

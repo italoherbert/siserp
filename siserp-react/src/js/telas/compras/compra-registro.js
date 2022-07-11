@@ -139,7 +139,7 @@ export default class CompraRegistro extends React.Component {
 												<td>{p.codigoBarras}</td>
 												<td>{sistema.formataFloat(p.paraAddQuantidade)} {p.unidade}</td>
 												<td>
-													<select>
+													<select className="form-select">
 														{p.categoriaMaps.map((map, index2) => {
 															return (
 																<option key={produtos.length + index2}>{map.categoria} {map.subcategoria}</option>
@@ -178,7 +178,7 @@ export default class CompraRegistro extends React.Component {
 					<MensagemPainel cor="danger" msg={erroMsg} />
 					<MensagemPainel cor="primary" msg={infoMsg} />
 
-					<Form className="text-center">
+					<Form className="text-end">
 						<Button variant="primary" onClick={(e) => this.registrarCompra(e)}>
 							<i className="fa-solid fa-floppy-disk">&nbsp;</i>
 							Registrar compra

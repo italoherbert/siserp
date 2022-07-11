@@ -29,12 +29,29 @@ export default class AddCompraProdutoCategorias extends React.Component {
 		let catdesc = this.state.categoria;
 		let subcatdesc = this.state.subcategoria;
 
-		if (catdesc.length === 0) {
+		let catlenzero = false;
+		let subcatlenzero = false;
+
+		if (catdesc) {
+			if (catdesc.length === 0)
+				catlenzero = true;
+		} else {
+			catlenzero = true;
+		}
+
+		if (subcatdesc) {
+			if (subcatdesc.length === 0)
+				subcatlenzero = true;
+		} else {
+			subcatlenzero = true;
+		}
+
+		if (catlenzero === true) {
 			this.setState({ erroMsg: "A categoria é um campo obrigatório" });
 			return;
 		}
 
-		if (subcatdesc.length === 0) {
+		if (subcatlenzero === 0) {
 			this.setState({ erroMsg: "A subcategoria (valor) é um campo obrigatório" });
 			return;
 		}
@@ -173,7 +190,7 @@ export default class AddCompraProdutoCategorias extends React.Component {
 							<Col className="col-sm-4">
 								<Form.Label>+</Form.Label>
 								<br />
-								<Button variant="primary" onClick={(item) => this.addCategoria(item)}>
+								<Button variant="success" onClick={(item) => this.addCategoria(item)}>
 									<i className="fa-solid fa-circle-plus">&nbsp;</i>
 									Adicionar categoria
 								</Button>

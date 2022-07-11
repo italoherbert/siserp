@@ -2,6 +2,7 @@ package italo.siserp.service;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -257,7 +258,7 @@ public class VendaService {
 	
 	public List<VendaResponse> buscaVendasPorClienteId( Long clienteId ) {
 		List<Venda> vendas = vendaRepository.buscaVendasPorClienteId( clienteId );
-		
+				
 		List<VendaResponse> lista = new ArrayList<>();
 		for( Venda v : vendas ) {
 			VendaResponse resp = vendaBuilder.novoVendaResponse();
