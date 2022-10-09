@@ -27,12 +27,29 @@ export default class AddCompraProdutoCategorias extends React.Component {
 		let catdesc = this.state.categoria;
 		let subcatdesc = this.state.subcategoria;
 
-		if (catdesc.length === 0) {
+		let catlenzero = false;
+		let subcatlenzero = false;
+
+		if (catdesc) {
+			if (catdesc.length === 0)
+				catlenzero = true;
+		} else {
+			catlenzero = true;
+		}
+
+		if (subcatdesc) {
+			if (subcatdesc.length === 0)
+				subcatlenzero = true;
+		} else {
+			subcatlenzero = true;
+		}
+
+		if (catlenzero === true) {
 			this.setState({ erroMsg: "A categoria é um campo obrigatório" });
 			return;
 		}
 
-		if (subcatdesc.length === 0) {
+		if (subcatlenzero === 0) {
 			this.setState({ erroMsg: "A subcategoria (valor) é um campo obrigatório" });
 			return;
 		}
@@ -140,7 +157,7 @@ export default class AddCompraProdutoCategorias extends React.Component {
 										<td>{map.categoria}</td>
 										<td>{map.subcategoria}</td>
 										<td>
-											<button className="btn btn-link p-0" onClick={(item) => this.removeCategoria(item, map.categoria, map.subcategoria)}>
+											<button className="btn btn-danger" onClick={(item) => this.removeCategoria(item, map.categoria, map.subcategoria)}>
 												<i className="fa-solid fa-x">&nbsp;</i>
 												Remover
 											</button>

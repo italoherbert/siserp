@@ -105,6 +105,10 @@ public class VendaBuilder {
 		
 		List<VendaParcelaResponse> parcelasResps = new ArrayList<>();
 		List<VendaParcela> parcelas = v.getParcelas();
+		parcelas.sort( ( p1, p2 ) -> {
+			return p1.getDataPagamento().compareTo( p2.getDataPagamento() );
+		} );
+		
 		for( VendaParcela p : parcelas ) {
 			VendaParcelaResponse pResp = vendaParcelaBuilder.novoVendaParcelaResponse();
 			vendaParcelaBuilder.carregaVendaParcelaResponse( pResp, p );

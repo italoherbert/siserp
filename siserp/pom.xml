@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>italo</groupId>
-	<artifactId>supermercado</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>supermercado</name>
-	<packaging>jar</packaging>
-	<description>Sistema de gestão de supermercado</description>
+	<artifactId>siserp</artifactId>
+	<version>1.0</version>
+	<name>siserp</name>
+	<packaging>war</packaging>
+	<description>Sistema de gestão empresarial</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -71,7 +71,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<dependency>
+		<!--dependency>
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger2</artifactId>
 			<version>2.7.0</version>
@@ -81,7 +81,7 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.7.0</version>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>commons-codec</groupId>

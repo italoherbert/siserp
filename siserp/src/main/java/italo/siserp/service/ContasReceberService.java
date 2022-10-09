@@ -96,7 +96,7 @@ public class ContasReceberService  {
 		for( int i = 0; troco > 0 && i < size; i++ ) {
 			Venda v = vendas.get( i );
 
-			List<VendaParcela> parcelas = v.getParcelas();
+			List<VendaParcela> parcelas = vendaParcelaRepository.buscaParcelas( v.getId() );
 			int size2 = parcelas.size();
 			for( int j = 0; troco > 0 && j < size2; j++ ) {
 				VendaParcela p = parcelas.get( j );

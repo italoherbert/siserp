@@ -83,7 +83,7 @@ export default class GeraCompraParcelas extends React.Component {
 						<Form.Control type="text" ref={quantParcelasRef} name="quantParcelas" />
 					</Form.Group>
 
-					<Button type="submit" variant="primary">
+					<Button type="submit" variant="success">
 						<i className="fa-solid fa-calculator">&nbsp;</i>
 						Calcular parcelas
 					</Button>

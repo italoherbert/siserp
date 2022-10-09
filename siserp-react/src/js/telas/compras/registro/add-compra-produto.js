@@ -5,7 +5,7 @@ import { Tab, Tabs, TabPanel, TabList } from 'react-tabs';
 import MensagemPainel from './../../../componente/mensagem-painel';
 import sistema from './../../../logica/sistema';
 
-import AddCompraProdutocategoriaMaps from './add-compra-produto-categoria-maps';
+import AddCompraProdutoCategoriaMaps from './add-compra-produto-categoria-maps';
 
 export default class AddCompraProduto extends React.Component {
 
@@ -126,7 +126,7 @@ export default class AddCompraProduto extends React.Component {
 										<Form.Control type="text" ref={this.codigoBarras} name="codigoBarras" />
 									</Col>
 									<Col className="col-sm-2">
-										<Button type="button" variant="primary" onClick={(e) => this.buscar(e)}>
+										<Button type="button" variant="success" onClick={(e) => this.buscar(e)}>
 											<i className="fa-solid fa-search">&nbsp;</i>
 											Buscar
 										</Button>
@@ -164,7 +164,7 @@ export default class AddCompraProduto extends React.Component {
 						</Card>
 					</TabPanel>
 					<TabPanel>
-						<AddCompraProdutocategoriaMaps categoriaMaps={categoriaMaps} />
+						<AddCompraProdutoCategoriaMaps categoriaMaps={categoriaMaps} />
 					</TabPanel>
 				</Tabs>
 
@@ -173,7 +173,7 @@ export default class AddCompraProduto extends React.Component {
 				<MensagemPainel cor="danger" msg={erroMsg} />
 				<MensagemPainel cor="primary" msg={infoMsg} />
 
-				<Button type="submit" variant="primary" className="my-3">
+				<Button type="submit" variant="success" className="my-3">
 					<i className="fa-solid fa-circle-plus">&nbsp;</i>
 					Adicionar produto
 				</Button>

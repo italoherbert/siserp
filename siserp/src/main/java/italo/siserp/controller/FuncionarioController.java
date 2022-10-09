@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import italo.siserp.exception.FuncionarioNaoEncontradoException;
 import italo.siserp.exception.PessoaJaExisteException;
+import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.exception.UsuarioJaExisteException;
 import italo.siserp.model.request.BuscaFuncionariosRequest;
 import italo.siserp.model.request.SaveFuncionarioRequest;
 import italo.siserp.model.response.ErroResponse;
 import italo.siserp.model.response.FuncionarioResponse;
 import italo.siserp.model.response.IdResponse;
-import italo.siserp.exception.UsuarioGrupoNaoEncontradoException;
 import italo.siserp.service.FuncionarioService;
 
 @RestController

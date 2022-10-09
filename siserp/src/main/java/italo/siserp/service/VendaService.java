@@ -257,7 +257,7 @@ public class VendaService {
 	
 	public List<VendaResponse> buscaVendasPorClienteId( Long clienteId ) {
 		List<Venda> vendas = vendaRepository.buscaVendasPorClienteId( clienteId );
-		
+				
 		List<VendaResponse> lista = new ArrayList<>();
 		for( Venda v : vendas ) {
 			VendaResponse resp = vendaBuilder.novoVendaResponse();
