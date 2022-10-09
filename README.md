@@ -14,7 +14,7 @@ a pasta "recursos" do projeto e, então, utilizar o seguinte comando para se aut
     psql -U postgres sgescolar
     Senha: postgres
 
-Para executar o script contido na pasta "recursos" faça o seguinte:
+Para executar o script contido na pasta "siserp/recursos" faça o seguinte:
 
     \i script.sql
 
