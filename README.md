@@ -1,6 +1,4 @@
-# Sistema ERP
-
-# como rodar o sistema
+# Sistema ERP - como rodar o sistema
 
 O sistema ERP de automação utiliza Java, Spring Boot/Data/Security e autenticação stateles e autorização com Java Web Token (JWT). 
 
