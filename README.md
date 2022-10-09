@@ -18,24 +18,26 @@ Para executar o script contido na pasta "siserp/recursos" faça o seguinte:
 
     \i script.sql
 
-Após isto, execute o seguinte comando para configurar o charset, isto é, a codificação padrão do banco de dados:
+Após executado o script de criação dos grupos, recursos e os usuários padrão. Você deve executar o sistema que está empacotado em formato WAR. Isto é, o arquivo 
+da raiz do repositório de nome "siserp-1.0.war". Execute com o seguinte comando:
 
-    set client_encoding=ISO88591
+    java -jar siserp-1.0.war
 
-Após executado o script de criação dos grupos, recursos e o super usuário padrão, se pode logar no sistema com os seguintes dados:
+    Tenha a certeza que está utilizando uma versão do Java igual ou superior a versão 11.
 
-    Username: admin
-    Senha: admin
+Você pode logar no sistema com os seguintes dados:
 
-Claro, para isto, é necessário rodar o sistema no servidor tomcat embutido. 
+    Username    password
+    admin       admin
+    supervisor  supervisor
+    gerente     gerente
 
-Feito isto, você deve ter o npm instalado para executar o react em modo dev, navegando até a pasta siserp-react do projeto e executando o seguinte comando:
-
-    npm start
+Inclusive, você pode entrar como supervisor e registrar um funcionário (na tela e função "registrar funcionario") e registrar um funcionário com peril de caixa para
+ter acesso ao sistema na versão de caixa!
 
 Após isto, será iniciada a página de login no navegador acessível pela seguinte url:
 
-    localhost:3000
+    localhost:8080
 
-Após logado como usuário admin, se pode criar as contas de nível ADMIN, GERENTE, SUPERVISOR e CAIXA. Esses são os quatro perfis
+Após logado como usuário supervisor, se pode criar as contas com perfis de SUPERVISOR e CAIXA. Esses são os quatro perfis
 suportados pelo sistema e que têm associados os devidos recursos.
