@@ -1,25 +1,31 @@
 {
   "files": {
-    "main.css": "/static/css/main.ee04aa2f.chunk.css",
-    "main.js": "/static/js/main.167a7acf.chunk.js",
-    "main.js.map": "/static/js/main.167a7acf.chunk.js.map",
-    "runtime-main.js": "/static/js/runtime-main.28ff7f9f.js",
-    "runtime-main.js.map": "/static/js/runtime-main.28ff7f9f.js.map",
+    "main.css": "/static/css/main.cbf8d94e.chunk.css",
+    "main.js": "/static/js/main.5a2bb6f3.chunk.js",
+    "main.js.map": "/static/js/main.5a2bb6f3.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.a0297197.js",
+    "runtime-main.js.map": "/static/js/runtime-main.a0297197.js.map",
     "static/css/2.d7bb3ac9.chunk.css": "/static/css/2.d7bb3ac9.chunk.css",
-    "static/js/2.58bb65dc.chunk.js": "/static/js/2.58bb65dc.chunk.js",
-    "static/js/2.58bb65dc.chunk.js.map": "/static/js/2.58bb65dc.chunk.js.map",
-    "static/js/3.d37cdf5d.chunk.js": "/static/js/3.d37cdf5d.chunk.js",
-    "static/js/3.d37cdf5d.chunk.js.map": "/static/js/3.d37cdf5d.chunk.js.map",
+    "static/js/2.1e1db990.chunk.js": "/static/js/2.1e1db990.chunk.js",
+    "static/js/2.1e1db990.chunk.js.map": "/static/js/2.1e1db990.chunk.js.map",
+    "static/js/3.7eb2377c.chunk.js": "/static/js/3.7eb2377c.chunk.js",
+    "static/js/3.7eb2377c.chunk.js.map": "/static/js/3.7eb2377c.chunk.js.map",
     "index.html": "/index.html",
     "static/css/2.d7bb3ac9.chunk.css.map": "/static/css/2.d7bb3ac9.chunk.css.map",
-    "static/css/main.ee04aa2f.chunk.css.map": "/static/css/main.ee04aa2f.chunk.css.map",
-    "static/js/2.58bb65dc.chunk.js.LICENSE.txt": "/static/js/2.58bb65dc.chunk.js.LICENSE.txt"
+    "static/css/main.cbf8d94e.chunk.css.map": "/static/css/main.cbf8d94e.chunk.css.map",
+    "static/js/2.1e1db990.chunk.js.LICENSE.txt": "/static/js/2.1e1db990.chunk.js.LICENSE.txt",
+    "static/media/fontes.css": "/static/media/Roboto-Light.8be2d148.ttf",
+    "static/media/bootstrap-icons.css": "/static/media/bootstrap-icons.dfd0ea12.woff2",
+    "static/media/caixa.94379cc7.png": "/static/media/caixa.94379cc7.png",
+    "static/media/compras.cdfeffdc.png": "/static/media/compras.cdfeffdc.png",
+    "static/media/awesome-all.css": "/static/media/fa-v4compatibility.afac8956.woff2",
+    "static/media/login.fa1618a2.png": "/static/media/login.fa1618a2.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.28ff7f9f.js",
+    "static/js/runtime-main.a0297197.js",
     "static/css/2.d7bb3ac9.chunk.css",
-    "static/js/2.58bb65dc.chunk.js",
-    "static/css/main.ee04aa2f.chunk.css",
-    "static/js/main.167a7acf.chunk.js"
+    "static/js/2.1e1db990.chunk.js",
+    "static/css/main.cbf8d94e.chunk.css",
+    "static/js/main.5a2bb6f3.chunk.js"
   ]
 }

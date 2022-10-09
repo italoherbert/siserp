@@ -5,11 +5,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>italo</groupId>
-	<artifactId>supermercado</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>supermercado</name>
-	<packaging>jar</packaging>
-	<description>Sistema de gestão de supermercado</description>
+	<artifactId>siserp</artifactId>
+	<version>1.0</version>
+	<name>siserp</name>
+	<packaging>war</packaging>
+	<description>Sistema de gestão empresarial</description>
 
 	<properties>
 		<java.version>11</java.version>
