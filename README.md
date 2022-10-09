@@ -1,5 +1,4 @@
-# siserp
-Sistema ERP
+# Sistema ERP
 
 # como rodar o sistema
 
