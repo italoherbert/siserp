@@ -30,9 +30,15 @@ Após executado o script de criação dos grupos, recursos e o super usuário pa
     Username: admin
     Senha: admin
 
-Claro, para isto, é necessário rodar o sistema no servidor tomcat embutido e, então, acessar a seguinte página de login:
+Claro, para isto, é necessário rodar o sistema no servidor tomcat embutido. 
 
-    localhost:8080
+Feito isto, você deve ter o npm instalado para executar o react em modo dev, navegando até a pasta siserp-react do projeto e executando o seguinte comando:
+
+    npm start
+
+Após isto, será iniciada a página de login no navegador acessível pela seguinte url:
+
+    localhost:3000
 
 Após logado como usuário admin, se pode criar as contas de nível ADMIN, GERENTE, SUPERVISOR e CAIXA. Esses são os quatro perfis
 suportados pelo sistema e que têm associados os devidos recursos.
